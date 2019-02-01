@@ -19,6 +19,9 @@ class MainMenu: SKScene {
     /// Background music of the main menu
     let backgroundMusic = SKAudioNode(fileNamed: "DYATHON - Monologue.mp3")
     
+    /// Soundeffects for the clicked chapter
+    var clickedChapterSfx = SKAction.playSoundFileNamed("Clicked Chapter.wav", waitForCompletion: false)
+    
     // Screen size
     var screenW: CGFloat!
     var screenH: CGFloat!
@@ -34,18 +37,33 @@ class MainMenu: SKScene {
     var activeChapter = SKSpriteNode()
     var activeChapterName = String()
     
+    // Camera Down Animation elements
+    var cameraDownOnGoing: Bool!
+    var skyFinalY: CGFloat!
+    var gameTitalFinalY: CGFloat!
+    var groundFinalY: CGFloat!
+    
     override func didMove(to view: SKView) {
-        setNodes()
-        snowEmitter()
+        self.setNodes()
+        self.snowEmitter()
+        self.startBackgroundMusic()
+        
+        self.cameraDownOnGoing = true
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.cameraDownAnimation()
+            if (self.cameraDownOnGoing == true) {
+                self.cameraDownAnimation()
+            }
         }
     }
     
     func startBackgroundMusic() {
         self.backgroundMusic.autoplayLooped = true
         self.addChild(self.backgroundMusic)
+    }
+    
+    func stopBackgroundMusic() {
+        self.backgroundMusic.removeFromParent()
     }
     
     func setNodes() {
@@ -71,6 +89,12 @@ class MainMenu: SKScene {
                 self.mountain = child
             }
         }
+        
+        // Assign nodes final position after animation
+        let goingUpRange: CGFloat = self.ground.size.height + self.gameTitle.size.height
+        self.skyFinalY = self.sky.position.y + goingUpRange
+        self.groundFinalY = self.ground.position.y + goingUpRange
+        self.gameTitalFinalY = self.gameTitle.position.y + goingUpRange
     } // Initialize all nodes in the main menu
     
     func snowEmitter() {
@@ -82,19 +106,26 @@ class MainMenu: SKScene {
     } // Snow Emitter Declaration
     
     func cameraDownAnimation() {
-        let goingUpRange: CGFloat = self.ground.size.height + self.gameTitle.size.height
         let goUpDuration = 3.0
+        beginMoveByAnimation(goUpDuration: goUpDuration)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.cameraDownOnGoing = false
+        }
+    } // To manage initial animation
+    
+    func beginMoveByAnimation(goUpDuration: Double) {
         
         let actionGameTitle: [SKAction] = [
-            SKAction.moveBy(x: 0, y: goingUpRange, duration: goUpDuration),
+            SKAction.moveTo(y: self.gameTitalFinalY, duration: goUpDuration),
             SKAction.removeFromParent()
         ]
         
         self.gameTitle.run(SKAction.sequence(actionGameTitle))
         self.gameTitle.run(SKAction.fadeOut(withDuration: goUpDuration))
-        self.sky.run(SKAction.moveBy(x: 0, y: goingUpRange, duration: goUpDuration))
-        self.ground.run(SKAction.moveBy(x: 0, y: goingUpRange, duration: goUpDuration))
-    } // To manage initial animation
+        self.sky.run(SKAction.moveTo(y: self.skyFinalY, duration: goUpDuration))
+        self.ground.run(SKAction.moveTo(y: self.groundFinalY, duration: goUpDuration))
+    }
     
     func inactivateSelectedChapterAnimation(node: SKSpriteNode) {
         
@@ -129,6 +160,14 @@ class MainMenu: SKScene {
         let touch: UITouch = touches.first! as UITouch
         let positionInScene = touch.location(in: self.ground)
         let touchedNodes = self.ground.nodes(at: positionInScene)
+        
+        if (self.cameraDownOnGoing == true) {
+            self.gameTitle.removeAllActions()
+            self.ground.removeAllActions()
+            self.sky.removeAllActions()
+            self.beginMoveByAnimation(goUpDuration: 1)
+            self.cameraDownOnGoing = false
+        }
         
         for node in touchedNodes {
             // Check if the selected node is the chapter node
@@ -173,10 +212,13 @@ class MainMenu: SKScene {
                             chapterNumber.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
                         }
                         
-                        // Go up and scale the selected chapter
+                        // Snowflakes go up
                         let chapterSnowflake = node.children[0] as! SKSpriteNode
                         node.run(SKAction.moveBy(x: 0, y: CGFloat(Follie.chapterRiseRatio) * Follie.screenSize.height, duration: 0.5))
                         chapterSnowflake.run(SKAction.repeatForever(SKAction.rotate(byAngle: -0.5, duration: 1)), withKey: "repeatForeverActionKey")
+                        
+                        // Play Sound Effect
+                        self.run(self.clickedChapterSfx)
                         
                         // Apply glowing effect on the snowflake
                         let glow = SKSpriteNode(texture: mainMenuAtlas.textureNamed("Fairy Glow"))
@@ -198,6 +240,7 @@ class MainMenu: SKScene {
                     } else {
                         
                         self.run(SKAction.fadeOut(withDuration: 2.0))
+                        self.stopBackgroundMusic()
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                             // Preload animation

@@ -35,7 +35,7 @@ class Background {
     } // Sky background (static)
     
     private var grounds: [SKSpriteNode] {
-        let groundTexture = SKTexture(imageNamed: "shortGround")
+        let groundTexture = SKTextureAtlas(named: "Main Menu").textureNamed("Ground")
         var tempGrounds: [SKSpriteNode] = []
         
         for i in 0 ... 1 {

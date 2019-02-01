@@ -26,6 +26,7 @@
 		85C932C621FB71D200CB47BC /* Music.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C932C521FB71D200CB47BC /* Music.swift */; };
 		85C932C821FB764C00CB47BC /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C932C721FB764C00CB47BC /* Block.swift */; };
 		85C932CA21FB82EB00CB47BC /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C932C921FB82EB00CB47BC /* Chapter.swift */; };
+		BA5313CD220437D30044BDFD /* Clicked Chapter.wav in Resources */ = {isa = PBXBuildFile; fileRef = BA5313CC220437D20044BDFD /* Clicked Chapter.wav */; };
 		BA5467C4220362390078924A /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5467C3220362390078924A /* MainMenu.swift */; };
 		BA5467C8220362660078924A /* MainMenu.sks in Resources */ = {isa = PBXBuildFile; fileRef = BA5467C7220362660078924A /* MainMenu.sks */; };
 		BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */; };
@@ -57,6 +58,7 @@
 		85C932C521FB71D200CB47BC /* Music.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Music.swift; sourceTree = "<group>"; };
 		85C932C721FB764C00CB47BC /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		85C932C921FB82EB00CB47BC /* Chapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chapter.swift; sourceTree = "<group>"; };
+		BA5313CC220437D20044BDFD /* Clicked Chapter.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Clicked Chapter.wav"; sourceTree = "<group>"; };
 		BA5467C3220362390078924A /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		BA5467C7220362660078924A /* MainMenu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MainMenu.sks; sourceTree = "<group>"; };
 		BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Monologue.mp3"; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 		85BD970821F97A7F004099DB /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				BA5313CC220437D20044BDFD /* Clicked Chapter.wav */,
 				BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */,
 				85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */,
 			);
@@ -261,6 +264,7 @@
 				BA5467D12203630F0078924A /* DEARJI__.TTF in Resources */,
 				8505DD5E21E5E2FF001D66A6 /* Assets.xcassets in Resources */,
 				BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */,
+				BA5313CD220437D30044BDFD /* Clicked Chapter.wav in Resources */,
 				BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */,
 				8505DD6121E5E2FF001D66A6 /* LaunchScreen.storyboard in Resources */,
 			);
