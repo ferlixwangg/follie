@@ -61,6 +61,7 @@ class MainMenu: SKScene {
             self.cameraDownOnGoing = false
             let goUpDuration = 0.0
             self.beginMoveByAnimation(goUpDuration: goUpDuration)
+            UserDefaults.standard.set(true, forKey: "ShowFollieTitle")
         }
         
     }
