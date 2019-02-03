@@ -26,6 +26,7 @@
 		85C932C821FB764C00CB47BC /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C932C721FB764C00CB47BC /* Block.swift */; };
 		85C932CA21FB82EB00CB47BC /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C932C921FB82EB00CB47BC /* Chapter.swift */; };
 		BA5313CD220437D30044BDFD /* Clicked Chapter.wav in Resources */ = {isa = PBXBuildFile; fileRef = BA5313CC220437D20044BDFD /* Clicked Chapter.wav */; };
+		BA5313CF220742B10044BDFD /* FollieMainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5313CE220742B10044BDFD /* FollieMainMenu.swift */; };
 		BA5467C4220362390078924A /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5467C3220362390078924A /* MainMenu.swift */; };
 		BA5467C8220362660078924A /* MainMenu.sks in Resources */ = {isa = PBXBuildFile; fileRef = BA5467C7220362660078924A /* MainMenu.sks */; };
 		BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */; };
@@ -57,6 +58,7 @@
 		85C932C721FB764C00CB47BC /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		85C932C921FB82EB00CB47BC /* Chapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chapter.swift; sourceTree = "<group>"; };
 		BA5313CC220437D20044BDFD /* Clicked Chapter.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Clicked Chapter.wav"; sourceTree = "<group>"; };
+		BA5313CE220742B10044BDFD /* FollieMainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollieMainMenu.swift; sourceTree = "<group>"; };
 		BA5467C3220362390078924A /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		BA5467C7220362660078924A /* MainMenu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MainMenu.sks; sourceTree = "<group>"; };
 		BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Monologue.mp3"; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 			isa = PBXGroup;
 			children = (
 				85BD970D21F989EC004099DB /* Follie.swift */,
+				BA5313CE220742B10044BDFD /* FollieMainMenu.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -273,6 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA5313CF220742B10044BDFD /* FollieMainMenu.swift in Sources */,
 				BA5467C4220362390078924A /* MainMenu.swift in Sources */,
 				85BD971121F992AF004099DB /* Fairy.swift in Sources */,
 				85C932CA21FB82EB00CB47BC /* Chapter.swift in Sources */,
@@ -431,7 +435,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 98R673PJSG;
+				DEVELOPMENT_TEAM = W7GMLURGAQ;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -450,7 +454,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 98R673PJSG;
+				DEVELOPMENT_TEAM = W7GMLURGAQ;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
