@@ -255,12 +255,12 @@ class MainMenu: SKScene {
                             // Preload animation
                             var preAtlas = [SKTextureAtlas]()
                             preAtlas.append(SKTextureAtlas(named: "Fairy"))
-                            preAtlas.append(SKTextureAtlas(named: "Baby2"))
+                            preAtlas.append(SKTextureAtlas(named: "Baby"))
                             
                             // Move to next scene
                             SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
                                 DispatchQueue.main.sync {
-                                    let transition = SKTransition.fade(withDuration: 2.0)
+                                    let transition = SKTransition.fade(withDuration: 0)
                                     if let scene = SKScene(fileNamed: "GameScene") {
                                         scene.scaleMode = .aspectFill
                                         self.view?.presentScene(scene, transition: transition)

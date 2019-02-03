@@ -78,7 +78,7 @@ class Follie {
     
     static var colorIndex: Int = -1 // index of current aurora color
     
-    static var isRising: Bool = true
+    static var isRising: Bool = true // whether the color rotation is going up the index or down
     
     static let colorChangeDuration: Double = 2 // the time (seconds) it takes to gradually change from one color to another
     

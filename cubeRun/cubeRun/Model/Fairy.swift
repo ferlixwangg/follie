@@ -18,7 +18,7 @@ class Fairy {
     
     private let fairyLinePositionXRatio: Double = Follie.hiddenSkyX // fairy line x-position ratio to the screen width
     
-    private let fairyHeight: CGFloat = 40 // fairy size height
+    private let fairyHeight: CGFloat = 50 // fairy size height
     
     var fairyLine: SKSpriteNode {
         let fairyLineTexture = SKTexture(imageNamed: "fairyLine")
@@ -38,7 +38,7 @@ class Fairy {
     } // the specified line/path the fairy is allowed to move around in
     
     private var fairyAnimationTextures: [SKTexture] {
-        let fairyAtlas = SKTextureAtlas(named: "Baby2")
+        let fairyAtlas = SKTextureAtlas(named: "Baby")
         var fairyFrames: [SKTexture] = []
         
         let numImages = fairyAtlas.textureNames.count
@@ -74,7 +74,7 @@ class Fairy {
         let fairyGlowTexture = SKTexture(imageNamed: "fairyGlow")
         let fairyGlow = SKSpriteNode(texture: fairyGlowTexture)
         
-        fairyGlow.size = self.fairyNode.size
+        fairyGlow.size = CGSize(width: self.fairyNode.size.width * 1.2, height: self.fairyNode.size.height * 1.2)
         fairyGlow.zPosition = Follie.zPos.fairyGlow.rawValue
         
         let minAlpha: CGFloat = 0.4
@@ -83,15 +83,15 @@ class Fairy {
         let waitDuration: Double = 0.15
         let glowAnimationDuration: Double = 1
         
-//        let glowAnimation: [SKAction] = [
-//            SKAction.fadeAlpha(to: maxAlpha, duration: glowAnimationDuration),
-//            SKAction.wait(forDuration: waitDuration),
-//            SKAction.fadeAlpha(to: minAlpha, duration: glowAnimationDuration),
-//            SKAction.wait(forDuration: waitDuration)
-//        ]
-//        fairyGlow.run(SKAction.repeatForever(SKAction.sequence(glowAnimation)))
+        //        let glowAnimation: [SKAction] = [
+        //            SKAction.fadeAlpha(to: maxAlpha, duration: glowAnimationDuration),
+        //            SKAction.wait(forDuration: waitDuration),
+        //            SKAction.fadeAlpha(to: minAlpha, duration: glowAnimationDuration),
+        //            SKAction.wait(forDuration: waitDuration)
+        //        ]
+        //        fairyGlow.run(SKAction.repeatForever(SKAction.sequence(glowAnimation)))
         fairyGlow.alpha = 0
-
+        
         return fairyGlow
     } // glow effect around fairy
     

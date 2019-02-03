@@ -24,6 +24,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var fairyGlow: SKSpriteNode!
     var fairyMaxY: CGFloat!
     var fairyMinY: CGFloat!
+    var fairyUp: Bool = false
+    var fairyDown: Bool = false
     
     // Emitters
     var aurora: SKEmitterNode!
@@ -39,7 +41,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nextCountdown: Int = 0 // new block will appear when countdown reaches 0
     var blockNameFlag: Int = 0 // incremental flag to give each block a unique name identifier
     let maxInterval: Int = 1 // max beat interval between blocks
-    let maxHoldNum: Int = 4 // max number of connected blocks (hold gesture)
+    let maxHoldNum: Int = 1 // max number of connected blocks (hold gesture)
     let maxHoldBeat: Int = 2 // max number of beats in one hold gesture between 2 blocks
     let holdChance: Double = 4/10 // percentage of connecting blocks appearing
     var currBlockNameFlag: Int = 0 // name flag of closest block to reach the fairy
@@ -47,12 +49,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var currBlock: SKSpriteNode! // name of closest block node to reach fairy
     var currLine: SKShapeNode! // name of closest connecting line node to reach fairy
     var isBlockContact: Bool = false // whether block node is currently in contact with fairy
-    var isLineContact: Bool = false // whether connecting line node is currently in contact with fairy
     var isHit: Bool = false // whether the player has successfully hit the passing block
-    var isHolding: Bool = false // whether the player is holding
     
     var upcomingLines: [SKShapeNode] = [] // list of upcoming lines from the closest
+    var contactingLines: [SKShapeNode] = []
     var isAtLine: Bool = false // whether fairy is currently at line
+    
+    let maxAurora: CGFloat = 16
+    var currAurora: CGFloat = 0
+    var stepAurora: CGFloat = 2
     
     override func didMove(to view: SKView) {
         self.initialSetup()
@@ -300,12 +305,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func hideAurora() {
-        self.aurora.particleBirthRate = 0
-        
+        self.currAurora = 0
+        self.aurora.particleBirthRate = self.currAurora
     }
     
     func showAurora() {
-        self.aurora.particleBirthRate = 15
+        if (self.currAurora < self.maxAurora) {
+            self.currAurora += self.stepAurora
+        }
+        
+        self.aurora.particleBirthRate = self.currAurora
         self.changeAuroraColor()
     }
     
@@ -324,39 +333,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 block = (contact.bodyB.node as! SKSpriteNode)
             }
             
+            self.currBlock = block
+            self.isBlockContact = true
+            
             if (block.name == "\(self.currBlockNameFlag)") {
-                self.currBlock = block
-                self.isBlockContact = true
+                self.currBlockNameFlag += 1
+            }
+            
+            if (self.upcomingLines.first?.name == "\(self.currBlockNameFlag)") {
+                // check whether block is connected by a line
+                self.contactingLines.append(self.upcomingLines.first!)
+                self.upcomingLines.remove(at: 0)
             }
         }
-        else if ((contact.bodyA.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.holdLineCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.holdLineCategory.rawValue)) {
-            // contact fairyLine & line
-            var line: SKShapeNode!
-            
-            if (contact.bodyA.categoryBitMask == Follie.categories.holdLineCategory.rawValue) {
-                // bodyA is line
-                line = (contact.bodyA.node as! SKShapeNode)
-            }
-            else {
-                // bodyB is line
-                line = (contact.bodyB.node as! SKShapeNode)
-            }
-            
-            
-            if (self.currLine == nil){
-                self.currLine = line
-            }
-            else if (Int(line.name!)! < self.currBlockNameFlag) {
-                self.currLine = line
-            }
-        }
-    }
-    
-    func didEnd(_ contact: SKPhysicsContact) {
-        if ((contact.bodyA.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.blockCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue)) {
-            // contact end fairyLine & block
+        else if ((contact.bodyA.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.blockCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue)) {
+            // contact fairy & block
+            //            print("allow hit")
             var block: SKSpriteNode!
-            //            print("miss")
+            
             if (contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue) {
                 // bodyA is block
                 block = (contact.bodyA.node as! SKSpriteNode)
@@ -370,23 +364,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.currBlockNameFlag += 1
             }
             
-            if (!self.isHit) {
-                self.hideAurora()
-                
-                if (self.upcomingLines.first?.name == "\(self.currBlockNameFlag)") {
-                    // check whether missed block is connected by a line
-                    self.upcomingLines.first?.run(SKAction.fadeOut(withDuration: 0.3))
-                    self.upcomingLines.first?.strokeColor = SKColor.red
-                    self.upcomingLines.remove(at: 0)
-                }
+            if (self.upcomingLines.first?.name == "\(self.currBlockNameFlag)") {
+                // check whether block is connected by a line
+                self.contactingLines.append(self.upcomingLines.first!)
+                self.upcomingLines.remove(at: 0)
             }
-            
-            self.isHit = false
         }
-        else if ((contact.bodyA.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.blockCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue)) {
-            // contact end fairy & block
+    }
+    
+    func didEnd(_ contact: SKPhysicsContact) {
+        if ((contact.bodyA.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.blockCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue)) {
+            // contact end fairyLine & block
             var block: SKSpriteNode!
-            //            print("dont allow hit")
             if (contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue) {
                 // bodyA is block
                 block = (contact.bodyA.node as! SKSpriteNode)
@@ -396,10 +385,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 block = (contact.bodyB.node as! SKSpriteNode)
             }
             
-            if (block.name == "\(self.currBlockNameFlag)") {
-                self.currBlock = nil
-                self.isBlockContact = false
+            if (self.isAtLine && self.isHit) {
+                
             }
+            else if (!self.isHit) {
+                // miss single block
+                self.hideAurora()
+                self.isAtLine = false
+                
+                if (self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
+                    self.contactingLines.first!.strokeColor = SKColor.red
+                    
+                    let actions: [SKAction] = [
+                        SKAction.fadeOut(withDuration: 0.3),
+                        SKAction.removeFromParent()
+                    ]
+                    self.contactingLines.first!.run(SKAction.sequence(actions))
+                    self.contactingLines.remove(at: 0)
+                }
+                
+                block.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat.pi, duration: 1)))
+                block.run(SKAction.moveBy(x: 0, y: -(block.position.y + block.size.height/2), duration: 1.5))
+                block.run(SKAction.fadeOut(withDuration: 1))
+            }
+            
+            self.isHit = false
+            
+            if (self.contactingLines.first?.name == block.name) {
+                self.contactingLines.remove(at: 0)
+            }
+        }
+        else if ((contact.bodyA.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.blockCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue)) {
+            // contact end fairy & block
+            self.isBlockContact = false
+            self.currBlock = nil
         }
         else if ((contact.bodyA.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.holdLineCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.holdLineCategory.rawValue)) {
             // contact end fairy & line
@@ -413,15 +432,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 line = (contact.bodyB.node as! SKShapeNode)
             }
             
-            if (self.isAtLine && (line.name == self.currLine.name)) {
-                if (self.currBlock.name == line.name) {
+            if (self.isAtLine && (line.name == self.contactingLines.first?.name)) {
+                if (self.isBlockContact && self.currBlock.name == line.name) {
+                    // safe
                     return
                 }
-                //                print("end is atline \(line.name)")
-                self.isAtLine = false
-                line.run(SKAction.fadeOut(withDuration: 0.3))
-                line.strokeColor = SKColor.red
-                self.currLine = self.upcomingLines.first
+                self.hideAurora()
+                self.contactingLines.first!.strokeColor = SKColor.red
+                
+                let actions: [SKAction] = [
+                    SKAction.fadeOut(withDuration: 0.3),
+                    SKAction.removeFromParent()
+                ]
+                self.contactingLines.first!.run(SKAction.sequence(actions))
+                self.contactingLines.remove(at: 0)
             }
         }
     }
@@ -431,9 +455,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if (point.x > screenW/2) {
             // touch right part of the screen start
-            self.isHolding = true
-            
-            if (self.isBlockContact && !self.isHit) {
+            if (self.isBlockContact && !self.isHit && self.currBlock != nil) {
                 // successfully hit
                 self.isHit = true
                 self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
@@ -446,12 +468,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 self.showAurora()
                 
-                if (self.upcomingLines.first?.name == "\(Int(self.currBlock.name!)!+1)") {
+                if (self.contactingLines.count > 0) {
                     // hit connecting block
                     self.isAtLine = true
-                    self.currLine = self.upcomingLines.first
-                    self.upcomingLines.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
-                    self.upcomingLines.remove(at: 0)
+                    self.contactingLines.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
                 }
             }
         }
@@ -462,14 +482,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if (point.x > screenW/2) {
             // touch right part of the screen ends
-            self.isHolding = false
-            
-            if (self.isAtLine) {
-                self.isAtLine = false
-                self.currLine.run(SKAction.fadeOut(withDuration: 0.3))
-                self.currLine.strokeColor = SKColor.red
-                self.currLine = self.upcomingLines.first
+            if (self.isAtLine && self.isBlockContact && (self.currBlock.name == self.contactingLines.first?.name)) {
+                self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+                self.isHit = true
+                
+                let actions: [SKAction] = [
+                    SKAction.fadeIn(withDuration: 0.2),
+                    SKAction.fadeOut(withDuration: 0.2)
+                ]
+                self.fairyGlow.run(SKAction.sequence(actions))
             }
+            else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
+                self.hideAurora()
+                self.contactingLines.first!.strokeColor = SKColor.red
+                
+                let actions: [SKAction] = [
+                    SKAction.fadeOut(withDuration: 0.3),
+                    SKAction.removeFromParent()
+                ]
+                self.contactingLines.first!.run(SKAction.sequence(actions))
+                self.contactingLines.remove(at: 0)
+            }
+            
+            self.isAtLine = false
+        }
+        else {
+            if (self.fairyUp) {
+                self.fairyNode.run(SKAction.rotate(byAngle: -CGFloat.pi/13, duration: 0.2))
+            }
+            else if (self.fairyDown) {
+                self.fairyNode.run(SKAction.rotate(byAngle: CGFloat.pi/13, duration: 0.2))
+            }
+            self.fairyDown = false
+            self.fairyUp = false
         }
     }
     
@@ -490,6 +535,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 else if (newPositionY < self.fairyMinY) {
                     newPositionY = self.fairyMinY
                 }
+                
+                if (yMovement > 0) {
+                    if (!self.fairyUp) {
+                        self.fairyUp = true
+                        
+                        if (self.fairyDown) {
+                            self.fairyNode.run(SKAction.rotate(byAngle: CGFloat.pi/13*2, duration: 0.3))
+                        }
+                        else {
+                            self.fairyNode.run(SKAction.rotate(byAngle: CGFloat.pi/13, duration: 0.2))
+                        }
+                    }
+                    self.fairyDown = false
+                }
+                else {
+                    if (!self.fairyDown) {
+                        self.fairyDown = true
+                        
+                        if (self.fairyUp) {
+                            self.fairyNode.run(SKAction.rotate(byAngle: -CGFloat.pi/13*2, duration: 0.3))
+                        }
+                        else {
+                            self.fairyNode.run(SKAction.rotate(byAngle: -CGFloat.pi/13, duration: 0.2))
+                        }
+                    }
+                    self.fairyUp = false
+                }
+                
                 self.aurora.particlePosition.y = self.aurora.particlePosition.y + (newPositionY - self.fairyNode.position.y)
                 self.fairyNode.position.y = newPositionY
             }
