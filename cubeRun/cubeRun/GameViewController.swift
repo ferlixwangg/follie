@@ -15,8 +15,6 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        UserDefaults.standard.set(1, forKey: "AvailableChapter")
-        
         let mainMenuAtlas = SKTextureAtlas(named: "Main Menu")
         mainMenuAtlas.preload {
             DispatchQueue.main.sync {

@@ -16,6 +16,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let launchedBefore: Bool = UserDefaults.standard.bool(forKey: "LaunchedBefore")
+        
+        if (launchedBefore == false) {
+            UserDefaults.standard.set(1, forKey: "AvailableChapter")
+            UserDefaults.standard.set(true, forKey: "ShowFollieTitle")
+            UserDefaults.standard.set(true, forKey: "LaunchedBefore")
+            print("firstTime")
+        }
+        
         return true
     }
 

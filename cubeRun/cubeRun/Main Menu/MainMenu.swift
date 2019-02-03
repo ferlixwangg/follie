@@ -48,13 +48,21 @@ class MainMenu: SKScene {
         self.snowEmitter()
         self.startBackgroundMusic()
         
-        self.cameraDownOnGoing = true
+        let showFollieTitle = UserDefaults.standard.bool(forKey: "ShowFollieTitle")
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            if (self.cameraDownOnGoing == true) {
-                self.cameraDownAnimation()
+        if (showFollieTitle == true) {
+            self.cameraDownOnGoing = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                if (self.cameraDownOnGoing == true) {
+                    self.cameraDownAnimation()
+                }
             }
+        } else {
+            self.cameraDownOnGoing = false
+            let goUpDuration = 0.0
+            self.beginMoveByAnimation(goUpDuration: goUpDuration)
         }
+        
     }
     
     func startBackgroundMusic() {
@@ -107,7 +115,7 @@ class MainMenu: SKScene {
     
     func cameraDownAnimation() {
         let goUpDuration = 3.0
-        beginMoveByAnimation(goUpDuration: goUpDuration)
+        self.beginMoveByAnimation(goUpDuration: goUpDuration)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.cameraDownOnGoing = false
