@@ -59,6 +59,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var currAurora: CGFloat = 0
     var stepAurora: CGFloat = 2
     
+    var maxLife: Double = 5
+    var currLife: Double = 5
+    
     override func didMove(to view: SKView) {
         self.initialSetup()
         self.startGameplay()
@@ -307,6 +310,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func hideAurora() {
         self.currAurora = 0
         self.aurora.particleBirthRate = self.currAurora
+        
+        self.currLife -= 1
+        if (self.currLife <= 0) {
+            // lose
+        }
     }
     
     func showAurora() {
@@ -316,6 +324,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.aurora.particleBirthRate = self.currAurora
         self.changeAuroraColor()
+        
+        self.currLife += 0.5
+        if (self.currLife > self.maxLife) {
+            self.currLife = self.maxLife
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
