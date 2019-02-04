@@ -380,7 +380,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         for line in self.upcomingLines {
             line.removeAllActions()
             
-            line.run(SKAction.fadeAlpha(to: 1, duration: 1))
+            line.run(SKAction.fadeAlpha(to: 0, duration: 1))
         }
         self.fairyNode.run(SKAction.wait(forDuration: 2)) {
             self.fairyNode.run(SKAction.moveTo(x: -self.fairyNode.size.width/2, duration: 3))
@@ -413,6 +413,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let time = Double(distance) / (Follie.xSpeed*2)
         self.fairyNode.run(SKAction.wait(forDuration: 2)) {
             self.fairyNode.run(SKAction.moveBy(x: distance, y: 0, duration: time))
+            self.aurora.run(SKAction.moveBy(x: distance, y: 0, duration: time))
             self.screenCover.run(SKAction.fadeAlpha(to: 1, duration: time))
         }
         // go back to menu
