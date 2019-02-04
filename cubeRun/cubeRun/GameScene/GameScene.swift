@@ -310,6 +310,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func hideAurora() {
         self.currAurora = 0
         self.aurora.particleBirthRate = self.currAurora
+    }
+
+    func showAurora() {
+        if (self.currAurora < self.maxAurora) {
+            self.currAurora += self.stepAurora
+        }
+
+        self.aurora.particleBirthRate = self.currAurora
+        self.changeAuroraColor()
+    }
+    
+    func missed() {
+        self.hideAurora()
         
         self.currLife -= 1
         if (self.currLife <= 0) {
@@ -317,13 +330,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func showAurora() {
-        if (self.currAurora < self.maxAurora) {
-            self.currAurora += self.stepAurora
-        }
-        
-        self.aurora.particleBirthRate = self.currAurora
-        self.changeAuroraColor()
+    func correct() {
+        self.showAurora()
         
         self.currLife += 0.5
         if (self.currLife > self.maxLife) {
@@ -403,7 +411,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if (!self.isHit) {
                 // miss single block
-                self.hideAurora()
+                self.missed()
                 self.isAtLine = false
                 
                 if (self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
@@ -450,7 +458,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     // safe
                     return
                 }
-                self.hideAurora()
+                self.missed()
                 self.contactingLines.first!.strokeColor = SKColor.red
                 
                 let actions: [SKAction] = [
@@ -479,7 +487,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ]
                 self.fairyGlow.run(SKAction.sequence(actions))
                 
-                self.showAurora()
+                self.correct()
                 
                 if (self.contactingLines.count > 0) {
                     // hit connecting block
@@ -506,7 +514,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.fairyGlow.run(SKAction.sequence(actions))
             }
             else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
-                self.hideAurora()
+                self.missed()
                 self.contactingLines.first!.strokeColor = SKColor.red
                 
                 let actions: [SKAction] = [
