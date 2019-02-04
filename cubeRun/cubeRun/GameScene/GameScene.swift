@@ -576,6 +576,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
+//        self.blockTimer?.invalidate()
+//        self.blockTimer = nil
+        
         guard let point = touches.first?.location(in: self) else { return }
         
         if (point.x > screenW/2) {
