@@ -18,7 +18,7 @@ class Background {
         
         skyNode.size = Follie.screenSize
         skyNode.position = CGPoint(x: Follie.screenSize.width/2, y: Follie.screenSize.height/2)
-        skyNode.zPosition = Follie.zPos.sky.rawValue
+        skyNode.zPosition = FollieMainMenu.zPos.sky.rawValue
         
         return skyNode
     } // Sky background (static)

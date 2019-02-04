@@ -23,11 +23,6 @@ class Follie {
         case visibleBlock = -23
         case hiddenSky = -25
         case hiddenBlockArea = -28
-        case sky = -30
-        case mainMenuSky = -7
-        case mainMenuGroundAndSnow = 0
-        case mainMenuChapterNode = -3
-        
     } // z-position for nodes
     
     enum categories: UInt32 {
@@ -59,10 +54,6 @@ class Follie {
     static let screenMovementSec: Double = 25.0 // the time (seconds) it takes for a node to move a distance (screen width * 2)
     
     static let hiddenSkyX: Double = 1/3 // hidden sky to hide blocks that have passed the fairy line
-    
-    static let chapterNodeRatio: Double = 66/396 // ratio for chapter nodes' size in main menu
-    
-    static let chapterRiseRatio: Double = 63/396 // ratio for chapter go up animation when clicked
     
     static var xSpeed: Double {
         return (Double(Follie.screenSize.width*2) / Follie.screenMovementSec)
@@ -127,10 +118,5 @@ class Follie {
     
     static func getChapter() -> Chapter {
         return Chapter()
-    }
-    
-    // Main Menu Background
-    static func getMainMenuBackground() -> MainMenuBackground {
-        return MainMenuBackground()
     }
 }

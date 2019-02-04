@@ -43,12 +43,15 @@ class MainMenu: SKScene {
     var gameTitalFinalY: CGFloat!
     var groundFinalY: CGFloat!
     
+    // DispatchWorkTask for ChapterTitle Animation
+    var task: DispatchWorkItem!
+    
     override func didMove(to view: SKView) {
         self.setNodes()
         self.snowEmitter()
         self.startBackgroundMusic()
         
-        let showFollieTitle = UserDefaults.standard.bool(forKey: "ShowFollieTitle")
+        let showFollieTitle = FollieMainMenu.showFollieTitle
         
         if (showFollieTitle == true) {
             self.cameraDownOnGoing = true
@@ -61,9 +64,10 @@ class MainMenu: SKScene {
             self.cameraDownOnGoing = false
             let goUpDuration = 0.0
             self.beginMoveByAnimation(goUpDuration: goUpDuration)
-            UserDefaults.standard.set(true, forKey: "ShowFollieTitle")
+            FollieMainMenu.showFollieTitle = true
         }
         
+        self.setActiveChapter()
     }
     
     func startBackgroundMusic() {
@@ -75,8 +79,55 @@ class MainMenu: SKScene {
         self.backgroundMusic.removeFromParent()
     }
     
+    func moveChapterTitleAndNumber(durationStartDispatch: Double) {
+        
+        self.task = DispatchWorkItem {
+            self.chapterTitle.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+            self.chapterTitle.run(SKAction.moveTo(y: self.chapterTitle.position.y + 10, duration: 0.5))
+            
+            let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
+            chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+            chapterNumber.run(SKAction.moveTo(y: chapterNumber.position.y + 10, duration: 0.5))
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + durationStartDispatch, execute: self.task)
+    }
+    
+    func setActiveChapter() {
+        let index = self.availableChapter
+        self.activeChapter = self.ground.childNode(withName: "Chapter\(index)") as! SKSpriteNode
+        self.activeChapterName = "Chapter\(availableChapter)"
+        
+        self.chapterTitle.text = FollieMainMenu.getChapter().getTitle(chapterNo: index)
+        let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
+        chapterNumber.text = "Chapter \(index)"
+        chapterNumber.position = CGPoint(x: 0, y: -self.chapterTitle.frame.height/2 - 20)
+        
+        moveChapterTitleAndNumber(durationStartDispatch: 5.5)
+        
+        // Snowflakes go up
+        let chapterSnowflake = self.activeChapter.children[0] as! SKSpriteNode
+        self.activeChapter.run(SKAction.moveBy(x: 0, y: CGFloat(FollieMainMenu.chapterRiseRatio) * FollieMainMenu.screenSize.height, duration: 0))
+        chapterSnowflake.run(SKAction.repeatForever(SKAction.rotate(byAngle: -0.5, duration: 1)), withKey: "repeatForeverActionKey")
+        
+        // Apply glowing effect on the snowflake
+        let glow = SKSpriteNode(texture: mainMenuAtlas.textureNamed("Fairy Glow"))
+        let glowSize = chapterSnowflake.size.width+15
+        glow.size = CGSize(width: glowSize, height: glowSize)
+        glow.name = "Fairy Glow"
+        
+        let glowAction: [SKAction] = [
+            SKAction.fadeAlpha(to: 0.3, duration: 1),
+            SKAction.fadeAlpha(to: 1, duration: 1),
+            SKAction.wait(forDuration: 0.5)
+        ]
+        
+        glow.run(SKAction.repeatForever(SKAction.sequence(glowAction)))
+        self.activeChapter.addChild(glow)
+    }
+    
     func setNodes() {
-        let tempBackground = Follie.getMainMenuBackground()
+        let tempBackground = FollieMainMenu.getMainMenuBackground()
         
         self.sky = tempBackground.getSkyNode()
         self.addChild(self.sky)
@@ -104,11 +155,12 @@ class MainMenu: SKScene {
         self.skyFinalY = self.sky.position.y + goingUpRange
         self.groundFinalY = self.ground.position.y + goingUpRange
         self.gameTitalFinalY = self.gameTitle.position.y + goingUpRange
+        
     } // Initialize all nodes in the main menu
     
     func snowEmitter() {
-        let snowEmitter = Follie.getEmitters().getSnow()
-        snowEmitter.zPosition = Follie.zPos.mainMenuGroundAndSnow.rawValue
+        let snowEmitter = FollieMainMenu.getEmitters().getSnow()
+        snowEmitter.zPosition = FollieMainMenu.zPos.mainMenuGroundAndSnow.rawValue
         snowEmitter.position = CGPoint(x: 0, y: self.sky.size.height/2)
         snowEmitter.advanceSimulationTime(20)
         self.sky.addChild(snowEmitter)
@@ -144,7 +196,7 @@ class MainMenu: SKScene {
         let currentRotation = Double(round(1000*node.children[0].zRotation)/1000)
         let division = Int(currentRotation / pi) - 1
         
-        node.run(SKAction.moveBy(x: 0, y: -CGFloat(Follie.chapterRiseRatio) * Follie.screenSize.height, duration: 0.5))
+        node.run(SKAction.moveBy(x: 0, y: -CGFloat(FollieMainMenu.chapterRiseRatio) * FollieMainMenu.screenSize.height, duration: 0.5))
         node.children[0].run(SKAction.rotate(toAngle: CGFloat.pi/3 * CGFloat(division), duration: 0.5))
         
         // remove the glow
@@ -174,6 +226,8 @@ class MainMenu: SKScene {
             self.gameTitle.removeAllActions()
             self.ground.removeAllActions()
             self.sky.removeAllActions()
+            self.task.cancel()
+            self.moveChapterTitleAndNumber(durationStartDispatch: 0.5)
             self.beginMoveByAnimation(goUpDuration: 1)
             self.cameraDownOnGoing = false
         }
@@ -195,10 +249,10 @@ class MainMenu: SKScene {
                     if (node.name != self.activeChapterName) {
                         
                         // Assign chapter title and number
-                        self.chapterTitle.text = Follie.getChapter().getTitle(chapterNo: index!)
+                        self.chapterTitle.text = FollieMainMenu.getChapter().getTitle(chapterNo: index!)
                         let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
                         chapterNumber.text = "Chapter \(index!)"
-                        chapterNumber.position = CGPoint(x: 0, y: -self.chapterTitle.frame.height/2 - 30)
+                        chapterNumber.position = CGPoint(x: 0, y: -self.chapterTitle.frame.height/2 - 20)
                         
                         if (activeChapterName != "") {
                             
@@ -223,7 +277,7 @@ class MainMenu: SKScene {
                         
                         // Snowflakes go up
                         let chapterSnowflake = node.children[0] as! SKSpriteNode
-                        node.run(SKAction.moveBy(x: 0, y: CGFloat(Follie.chapterRiseRatio) * Follie.screenSize.height, duration: 0.5))
+                        node.run(SKAction.moveBy(x: 0, y: CGFloat(FollieMainMenu.chapterRiseRatio) * FollieMainMenu.screenSize.height, duration: 0.5))
                         chapterSnowflake.run(SKAction.repeatForever(SKAction.rotate(byAngle: -0.5, duration: 1)), withKey: "repeatForeverActionKey")
                         
                         // Play Sound Effect

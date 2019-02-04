@@ -21,9 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if (launchedBefore == false) {
             UserDefaults.standard.set(1, forKey: "AvailableChapter")
-            UserDefaults.standard.set(true, forKey: "ShowFollieTitle")
             UserDefaults.standard.set(true, forKey: "LaunchedBefore")
-            print("firstTime")
         }
         
         return true
