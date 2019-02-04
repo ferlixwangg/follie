@@ -14,6 +14,7 @@ class Follie {
     private init() {}
     
     enum zPos: CGFloat {
+        case screenCover = 10
         case fairy = 5
         case fairyGlow = -1
         case fairyLine = -4
@@ -23,6 +24,7 @@ class Follie {
         case visibleBlock = -23
         case hiddenSky = -25
         case hiddenBlockArea = -28
+        case sky = -30
     } // z-position for nodes
     
     enum categories: UInt32 {

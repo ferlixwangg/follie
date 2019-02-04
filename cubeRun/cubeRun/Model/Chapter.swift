@@ -12,7 +12,7 @@ class Chapter {
     init() {}
     
     private let chapterMusic: [Int:Music] = [
-        1: Music(name: "DYATHON - Goodbye.mp3", secPerBeat: 1)
+        1: Music(name: "DYATHON - Goodbye", secPerBeat: 1)
     ]
     
     private let chapterBlock: [Int:Block] = [

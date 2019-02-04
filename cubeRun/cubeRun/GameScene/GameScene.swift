@@ -6,10 +6,11 @@
 //  Copyright © 2019 Steven Muliamin. All rights reserved.
 //
 
+import AVFoundation
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Current chapter
     var chapterNo: Int = 1
@@ -32,10 +33,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Music and Block
     var music: Music!
-    var musicAction: SKAction!
     var block: Block!
     var blockTexture: SKTexture!
-    var blockTimer: Timer!
+    var blockTimer: Timer? = nil
+    var player: AVAudioPlayer!
     
     // Gameplay logic
     var nextCountdown: Int = 0 // new block will appear when countdown reaches 0
@@ -55,16 +56,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var contactingLines: [SKShapeNode] = []
     var isAtLine: Bool = false // whether fairy is currently at line
     
-    let maxAurora: CGFloat = 16
-    var currAurora: CGFloat = 0
-    var stepAurora: CGFloat = 2
+    var upcomingBlocks: [SKSpriteNode] = []
     
-    var maxLife: Double = 5
-    var currLife: Double = 5
+    let maxAurora: CGFloat = 16 // max aurora birthrate
+    var currAurora: CGFloat = 0 // current aurora birthrate
+    var stepAurora: CGFloat = 2 // increment step of aurora birthrate
+    
+    let maxLife: Double = 5 // max life
+    var currLife: Double = 5 // current life
+    let missVal: Double = 1 // life decrement when miss
+    let correctVal: Double = 0.5 // life increment when correct
+    
+    var screenCover: SKShapeNode! // screen cover covering the whole scene to make fade effect when miss
+    let maxCoverAlpha: CGFloat = 0.5 // screen cover max alpha
+    let minCoverAlpha: CGFloat = 0 // screen cover min alpha
+    var currCoverAlpha: CGFloat = 0 // screen cover current alpha
+    
+    var isLose: Bool = false // whether the player has lost or not
     
     override func didMove(to view: SKView) {
         self.initialSetup()
         self.startGameplay()
+    }
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        self.blockTimer?.invalidate()
+        self.blockTimer = nil
     }
     
     func initialSetup() {
@@ -73,6 +90,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.contactDelegate = self
         
         self.setScreenSize()
+        
+        self.screenCover = SKShapeNode(rectOf: CGSize(width: screenW, height: screenH))
+        self.screenCover.position = CGPoint(x: screenW/2, y: screenH/2)
+        self.screenCover.alpha = self.minCoverAlpha
+        self.screenCover.zPosition = Follie.zPos.screenCover.rawValue
+        self.screenCover.lineWidth = 0
+        self.screenCover.fillColor = SKColor.black
+        self.addChild(self.screenCover)
+        
         
         self.setBackground()
         self.setFairy()
@@ -87,13 +113,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.music = chapter.getMusic(chapterNo: self.chapterNo)
         self.block = chapter.getBlock(chapterNo: self.chapterNo)
         
-        self.musicAction = SKAction.playSoundFileNamed(self.music.name, waitForCompletion: false)
+//        self.musicAction = SKAction.playSoundFileNamed(self.music.name, waitForCompletion: false)
+        guard let url = Bundle.main.url(forResource: self.music.name, withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            self.player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            self.player.delegate = self
+        } catch let error {
+            print(error.localizedDescription)
+        }
         
         self.blockTexture = SKTexture(imageNamed: self.block.name)
     }
     
     func startGameplay() {
-        self.run(self.musicAction)
+        self.player.play()
         
         self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
     }
@@ -138,6 +174,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ]
         newBlock.run(SKAction.sequence(actions))
         self.addChild(newBlock)
+        self.upcomingBlocks.append(newBlock)
         self.blockNameFlag += 1
         
         // chance of connecting beats (hold)
@@ -177,7 +214,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ]
             connectingBlock.run(SKAction.sequence(connectingActions))
             self.addChild(connectingBlock)
-            
+            self.upcomingBlocks.append(connectingBlock)
+
             // Define start & end point for line
             let startPoint = prevNodePos
             let endPoint = connectingBlock.position
@@ -321,19 +359,75 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.changeAuroraColor()
     }
     
+    func lose() {
+        self.isLose = true
+        
+        for block in self.upcomingBlocks {
+            block.removeAllActions()
+            
+            let actions: [SKAction] = [
+                SKAction.wait(forDuration: 1),
+                SKAction.group([
+                    SKAction.repeatForever(
+                        SKAction.rotate(byAngle: CGFloat.pi, duration: 1)),
+                    SKAction.moveBy(x: 0, y: -(block.position.y + block.size.height/2), duration: 3),
+                    SKAction.fadeOut(withDuration: 2)
+                    ])
+            ]
+            block.run(SKAction.sequence(actions))
+        }
+        
+        for line in self.upcomingLines {
+            line.removeAllActions()
+            
+            line.run(SKAction.fadeAlpha(to: 1, duration: 1))
+        }
+        self.fairyNode.run(SKAction.wait(forDuration: 2)) {
+            self.fairyNode.run(SKAction.moveTo(x: -self.fairyNode.size.width/2, duration: 3))
+            self.fairyNode.run(SKAction.moveTo(y: -self.fairyNode.size.height/2, duration: 5))
+            self.screenCover.run(SKAction.fadeAlpha(to: 1, duration: 5))
+        }
+        
+        self.player.setVolume(0, fadeDuration: 6)
+        
+        self.blockTimer?.invalidate()
+        self.blockTimer = nil
+        // go to menu (chap selection/retry)
+    }
+    
     func missed() {
         self.hideAurora()
         
-        self.currLife -= 1
+        self.currCoverAlpha = self.screenCover.alpha + (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.missVal))
+        self.screenCover.run(SKAction.fadeAlpha(to: self.currCoverAlpha, duration: 0.2))
+        
+        self.currLife -= self.missVal
         if (self.currLife <= 0) {
             // lose
+            self.lose()
         }
+    }
+    
+    func win() {
+        let distance = self.fairyNode.size.width/2 + self.screenW - self.fairyNode.position.x
+        let time = Double(distance) / (Follie.xSpeed*2)
+        self.fairyNode.run(SKAction.wait(forDuration: 2)) {
+            self.fairyNode.run(SKAction.moveBy(x: distance, y: 0, duration: time))
+            self.screenCover.run(SKAction.fadeAlpha(to: 1, duration: time))
+        }
+        // go back to menu
     }
     
     func correct() {
         self.showAurora()
         
-        self.currLife += 0.5
+        self.currCoverAlpha = self.screenCover.alpha - (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.correctVal))
+        if (self.currCoverAlpha <= self.minCoverAlpha) {
+            self.currCoverAlpha = self.minCoverAlpha
+        }
+        self.screenCover.run(SKAction.fadeAlpha(to: self.currCoverAlpha, duration: 0.2))
+
+        self.currLife += self.correctVal
         if (self.currLife > self.maxLife) {
             self.currLife = self.maxLife
         }
@@ -431,6 +525,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             self.isHit = false
+            self.upcomingBlocks.remove(at: 0)
+            
+            if (!self.isLose && self.upcomingBlocks.isEmpty) {
+                self.win()
+            }
             
             if (self.contactingLines.first?.name == block.name) {
                 self.contactingLines.remove(at: 0)
@@ -472,6 +571,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if (self.isLose) {
+            return
+        }
+        
         guard let point = touches.first?.location(in: self) else { return }
         
         if (point.x > screenW/2) {
@@ -499,6 +602,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if (self.isLose) {
+            return
+        }
+        
         guard let point = touches.first?.location(in: self) else { return }
         
         if (point.x > screenW/2) {
@@ -512,6 +619,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     SKAction.fadeOut(withDuration: 0.2)
                 ]
                 self.fairyGlow.run(SKAction.sequence(actions))
+                
+                self.correct()
             }
             else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
                 self.missed()
@@ -540,6 +649,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if (self.isLose) {
+            return
+        }
+        
         for touch in touches{
             let point = touch.location(in: self)
             
