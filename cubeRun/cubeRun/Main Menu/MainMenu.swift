@@ -20,7 +20,8 @@ class MainMenu: SKScene {
     let backgroundMusic = SKAudioNode(fileNamed: "DYATHON - Monologue.mp3")
     
     /// Soundeffects for the clicked chapter
-    var clickedChapterSfx = SKAction.playSoundFileNamed("Clicked Chapter.wav", waitForCompletion: false)
+    var clickedChapterSfx = SKAction.playSoundFileNamed("Rising Chapter.wav", waitForCompletion: false)
+    var playedChapterSfx = SKAction.playSoundFileNamed("Play Chapter.wav", waitForCompletion: false)
     
     // Screen size
     var screenW: CGFloat!
@@ -303,6 +304,7 @@ class MainMenu: SKScene {
                     } else {
                         
                         self.run(SKAction.fadeOut(withDuration: 2.0))
+                        self.run(self.playedChapterSfx)
                         self.stopBackgroundMusic()
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
