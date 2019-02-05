@@ -38,6 +38,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var blockTimer: Timer? = nil
     var player: AVAudioPlayer!
     
+    // Tutorial
+    var onTuto: Bool = !(UserDefaults.standard.bool(forKey: "TutorialCompleted"))
+    var limitMovement: Bool = false // so that player cannot move before the first tutorial start
+    var firstTuto: Bool = false // indicator whether the first tutorial is done or not
+    var firstTutoDistance: CGFloat = 0 // how much movement should be done before the first tutorial is finished
+    var secondTuto: Bool = false // indicator whether the second tutorial is done or not
+    var secondTutoFlag: Bool = false // indicator when players can start tapping on the screen during the second tutorial
+    var thirdTuto: Bool = false // indicator whether the third tutorial (the first star part) is done or not
+    var thirdTuto2: Bool = false // indicator whether the third tutorial (the second star) is done or not
+    var thirdTutoFlag: Bool = false // // indicator when players can start tapping on the screen during the third tutorial
+    var thirdTutoFlag2: Bool = false
+    var thirdTutoCount: Int = 1 // To detect the number of the first star on the third tutorial
+    var tutorialText: SKLabelNode! // Text node
+    var helpingFingerUp: SKSpriteNode! // finger animation
+    var helpingFingerDown: SKSpriteNode!
+    var helpingFingerTap: SKSpriteNode!
+    var helpingFingerHold: SKSpriteNode!
+    var textHasBeenDisplayed: Bool = false // a flag so that the same text won't be displayed multiple times
+    
     // Gameplay logic
     var nextCountdown: Int = 0 // new block will appear when countdown reaches 0
     var blockNameFlag: Int = 0 // incremental flag to give each block a unique name identifier
@@ -76,12 +95,302 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     override func didMove(to view: SKView) {
         self.initialSetup()
-        self.startGameplay()
+        
+        if (onTuto == true) {
+            self.limitMovement = true
+            self.startTutorial()
+        } else {
+            self.startGameplay()
+        }
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         self.blockTimer?.invalidate()
         self.blockTimer = nil
+    }
+    
+    func setupTutorialLabel() {
+        self.tutorialText = SKLabelNode(fontNamed: "Roboto-Regular")
+        self.tutorialText.alpha = 0.0
+        self.tutorialText.fontSize = 20
+        self.tutorialText.fontColor = UIColor.white
+        self.tutorialText.position = CGPoint(x: Follie.screenSize.width*3/4, y: Follie.screenSize.height/2)
+        self.tutorialText.lineBreakMode = .byWordWrapping
+        self.tutorialText.numberOfLines = 0
+        self.tutorialText.preferredMaxLayoutWidth = 200
+    }
+    
+    func startTutorial() {
+        self.setupTutorialLabel()
+        self.tutorialText.text = "Use the left screen to move the penguin up and down"
+        self.addChild(self.tutorialText)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now()+2, execute: {
+            self.limitMovement = false
+            self.scene?.speed = 0.5
+            self.tutorialText.run(SKAction.fadeAlpha(to: 1.0, duration: 0.1))
+            
+            var texture = SKTexture(imageNamed: "Swipe Up")
+            self.helpingFingerUp = SKSpriteNode(texture: texture)
+            
+            texture = SKTexture(imageNamed: "Swipe Down")
+            self.helpingFingerDown = SKSpriteNode(texture: texture)
+            
+            self.helpingFingerUp.setScale(0.7)
+            self.helpingFingerUp.position = CGPoint(x: Follie.screenSize.width/6, y: Follie.screenSize.height/3)
+            self.helpingFingerUp.alpha = 0
+            
+            self.helpingFingerDown.setScale(0.7)
+            self.helpingFingerDown.position = CGPoint(x: Follie.screenSize.width/6, y: Follie.screenSize.height/3*2)
+            self.helpingFingerDown.alpha = 0
+            
+            let fingerDownAction: [SKAction] = [
+                SKAction.fadeAlpha(to: 1.0, duration: 0.3),
+                SKAction.moveTo(y: Follie.screenSize.height/3, duration: 0.7),
+                SKAction.fadeAlpha(to: 0, duration: 0.3),
+                SKAction.moveTo(y: Follie.screenSize.height/3*2, duration: 0),
+                SKAction.wait(forDuration: 1.5)
+            ]
+            
+            self.helpingFingerDown.run(SKAction.repeatForever((SKAction.sequence(fingerDownAction))))
+            self.helpingFingerDown.position.y = Follie.screenSize.height/3*2
+            
+            let fingerUpAction: [SKAction] = [
+                SKAction.wait(forDuration: 1.5),
+                SKAction.fadeAlpha(to: 1.0, duration: 0.3),
+                SKAction.moveTo(y: Follie.screenSize.height/3*2, duration: 0.7),
+                SKAction.fadeAlpha(to: 0, duration: 0.3),
+                SKAction.moveTo(y: Follie.screenSize.height/3, duration: 0)
+            ]
+            
+            self.helpingFingerUp.run(SKAction.repeatForever((SKAction.sequence(fingerUpAction))))
+            self.helpingFingerUp.position.y = Follie.screenSize.height/3
+            
+            self.addChild(self.helpingFingerDown)
+            self.addChild(self.helpingFingerUp)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.firstTuto = true
+            }
+        })
+    }
+    
+    func startTutorial2() {
+        DispatchQueue.main.asyncAfter(deadline: .now()+1, execute: {
+            let newBlock = SKSpriteNode(texture: self.blockTexture)
+            newBlock.size = CGSize(width: 15, height: 15)
+            newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
+            
+            newBlock.name = "\(self.blockNameFlag)"
+            newBlock.physicsBody = SKPhysicsBody(rectangleOf: newBlock.size)
+            newBlock.physicsBody?.isDynamic = true
+            newBlock.physicsBody?.categoryBitMask = Follie.categories.blockCategory.rawValue
+            newBlock.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+            newBlock.physicsBody?.collisionBitMask = 0
+            
+            // get min distance from fairy to newBlock, get min multiplier for how many beats for block to reach fairy
+            // get distance from min beats
+            let minDistance = self.screenW - self.fairyNode.position.x + newBlock.size.width/2
+            let xPerBeat = Follie.xSpeed * self.music.secPerBeat * Follie.blockToGroundSpeed
+            let minMultiplier: Double = ceil(Double(minDistance) / xPerBeat)
+            let distance = xPerBeat * minMultiplier
+            
+            let blockX = self.fairyNode.position.x + CGFloat(distance)
+            let blockY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
+            newBlock.position = CGPoint(x: blockX, y: blockY)
+            
+            let totalDistance: Double = Double(blockX + newBlock.size.width/2)
+            let toFairyTime: Double = minMultiplier * self.music.secPerBeat
+            let totalTime: Double = toFairyTime * (totalDistance / distance)
+            
+            let actions: [SKAction] = [
+                SKAction.moveBy(x: CGFloat(-totalDistance), y: 0, duration: totalTime),
+                SKAction.removeFromParent()
+            ]
+            newBlock.run(SKAction.sequence(actions))
+            self.addChild(newBlock)
+            self.upcomingBlocks.append(newBlock)
+            self.blockNameFlag += 1
+        })
+    }
+    
+    func startTutorial3() {
+        // new block
+        let newBlock = SKSpriteNode(texture: self.blockTexture)
+        newBlock.size = CGSize(width: 15, height: 15)
+        newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
+        
+        newBlock.name = "\(self.blockNameFlag)"
+        newBlock.physicsBody = SKPhysicsBody(rectangleOf: newBlock.size)
+        newBlock.physicsBody?.isDynamic = true
+        newBlock.physicsBody?.categoryBitMask = Follie.categories.blockCategory.rawValue
+        newBlock.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+        newBlock.physicsBody?.collisionBitMask = 0
+        
+        // get min distance from fairy to newBlock, get min multiplier for how many beats for block to reach fairy
+        // get distance from min beats
+        let minDistance = self.screenW - self.fairyNode.position.x + newBlock.size.width/2
+        let xPerBeat = Follie.xSpeed * self.music.secPerBeat * Follie.blockToGroundSpeed
+        let minMultiplier: Double = ceil(Double(minDistance) / xPerBeat)
+        let distance = xPerBeat * minMultiplier
+        
+        let blockX = self.fairyNode.position.x + CGFloat(distance)
+        let blockY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
+        newBlock.position = CGPoint(x: blockX, y: blockY)
+        
+        let totalDistance: Double = Double(blockX + newBlock.size.width/2)
+        let toFairyTime: Double = minMultiplier * self.music.secPerBeat
+        let totalTime: Double = toFairyTime * (totalDistance / distance)
+        let blockSpeed: Double = totalDistance / totalTime
+        
+        let actions: [SKAction] = [
+            SKAction.moveBy(x: CGFloat(-totalDistance), y: 0, duration: totalTime),
+            SKAction.removeFromParent()
+        ]
+        newBlock.run(SKAction.sequence(actions))
+        self.addChild(newBlock)
+        self.upcomingBlocks.append(newBlock)
+        self.blockNameFlag += 1
+        
+        // chance of connecting beats (hold)
+        var prevNodePos = newBlock.position
+        var n: Double = 0 // nth beat after newBlock
+        
+        let connectingBlock = SKSpriteNode(texture: self.blockTexture)
+        connectingBlock.size = CGSize(width: 15, height: 15)
+        connectingBlock.zPosition = Follie.zPos.visibleBlock.rawValue
+        
+        connectingBlock.name = "\(self.blockNameFlag)"
+        connectingBlock.physicsBody = SKPhysicsBody(rectangleOf: connectingBlock.size)
+        connectingBlock.physicsBody?.isDynamic = true
+        connectingBlock.physicsBody?.categoryBitMask = Follie.categories.blockCategory.rawValue
+        connectingBlock.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+        connectingBlock.physicsBody?.collisionBitMask = 0
+        
+        let holdBeatNum: Int = Int.random(in: 1 ... self.maxHoldBeat)
+        n += Double(holdBeatNum)
+        
+        let connectingX = blockX + CGFloat(xPerBeat * n)
+        let connectingY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
+        let connectingDistance = totalDistance + (xPerBeat * n)
+        let connectingTime = totalTime + (self.music.secPerBeat * n)
+        
+        connectingBlock.position = CGPoint(x: connectingX, y: connectingY)
+        
+        let connectingActions: [SKAction] = [
+            SKAction.moveBy(x: CGFloat(-connectingDistance), y: 0, duration: connectingTime),
+            SKAction.removeFromParent()
+        ]
+        connectingBlock.run(SKAction.sequence(connectingActions))
+        self.addChild(connectingBlock)
+        self.upcomingBlocks.append(connectingBlock)
+        
+        // Define start & end point for line
+        let startPoint = prevNodePos
+        let endPoint = connectingBlock.position
+        
+        // Create path
+        let path = UIBezierPath()
+        path.move(to: startPoint)
+        path.addLine(to: endPoint)
+        
+        let pattern : [CGFloat] = [5.0, 5.0]
+        let dashPath = path.cgPath.copy(dashingWithPhase: 1, lengths: pattern)
+        
+        let dashedLine = SKShapeNode(path: dashPath)
+        dashedLine.zPosition = Follie.zPos.visibleBlock.rawValue
+        dashedLine.lineWidth = 1.5
+        dashedLine.strokeColor = SKColor.white
+        
+        dashedLine.name = "\(self.blockNameFlag)"
+        dashedLine.physicsBody = SKPhysicsBody(edgeChainFrom: path.cgPath)
+        dashedLine.physicsBody?.isDynamic = true
+        dashedLine.physicsBody?.categoryBitMask = Follie.categories.holdLineCategory.rawValue
+        dashedLine.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+        dashedLine.physicsBody?.collisionBitMask = 0
+        
+        let lineX = prevNodePos.x + (connectingX - prevNodePos.x)/2
+        let lineDistance = CGFloat(totalDistance) + (lineX - blockX) + dashedLine.frame.width/2
+        let lineTime: Double = Double(lineDistance / CGFloat(blockSpeed))
+        
+        let lineActions: [SKAction] = [
+            SKAction.moveBy(x: -lineDistance, y: 0, duration: lineTime),
+            SKAction.removeFromParent()
+        ]
+        dashedLine.run(SKAction.sequence(lineActions))
+        self.addChild(dashedLine)
+        self.upcomingLines.append(dashedLine)
+        
+        self.blockNameFlag += 1
+        prevNodePos = connectingBlock.position
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        if self.onTuto == true {
+            self.enumerateChildNodes(withName: "*") {
+                node , stop in
+                
+                // Check if the star for first tutorial is getting closer
+                if (node is SKSpriteNode && node.name == "0") {
+                    if (node.position.x - self.fairyNode.position.x < 50 && node.position.x - self.fairyNode.position.x >= 15 && self.secondTuto == true) {
+                        self.scene?.speed = 0.3
+                        
+                        if (self.textHasBeenDisplayed == false) {
+                            self.tutorialText.text = "Move the penguin to the front of the star and tap on the right screen to get the star"
+                            self.addChild(self.tutorialText)
+                            self.textHasBeenDisplayed = true
+                            
+                            let texture = SKTexture(imageNamed: "Tap")
+                            self.helpingFingerTap = SKSpriteNode(texture: texture)
+                            self.helpingFingerTap.setScale(0.7)
+                            self.helpingFingerTap.position = CGPoint(x: Follie.screenSize.width/3*2, y: Follie.screenSize.height/3)
+                            self.helpingFingerTap.alpha = 0
+                            
+                            let fingerTapAction: [SKAction] = [
+                                SKAction.fadeAlpha(to: 1.0, duration: 0.1),
+                                SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+                            ]
+                            self.helpingFingerTap.run(SKAction.repeatForever((SKAction.sequence(fingerTapAction))))
+                            self.addChild(self.helpingFingerTap)
+                        }
+                    } else if (node.position.x - self.fairyNode.position.x < 15 && self.secondTuto == true) {
+                        self.secondTutoFlag = true
+                        self.scene?.speed = 0.0
+                    } else {
+                        self.scene?.speed = 1.0
+                    }
+                } else if (node is SKSpriteNode && node.name == "\(self.thirdTutoCount)") {
+                    
+                    // Check the first star of the third tutorial
+                    if (node.position.x - self.fairyNode.position.x < 50 && node.position.x - self.fairyNode.position.x >= 15  && self.thirdTuto == true) {
+                        self.scene?.speed = 0.3
+                        
+                        if (self.textHasBeenDisplayed == false) {
+                            self.addChild(self.tutorialText)
+                            self.textHasBeenDisplayed = true
+                            
+                            let texture = SKTexture(imageNamed: "Hold")
+                            self.helpingFingerHold = SKSpriteNode(texture: texture)
+                            self.helpingFingerHold.setScale(0.7)
+                            self.helpingFingerHold.position = CGPoint(x: Follie.screenSize.width/3*2, y: Follie.screenSize.height/3)
+                            self.helpingFingerHold.alpha = 0
+                            
+                            let fingerHoldAction: [SKAction] = [
+                                SKAction.fadeAlpha(to: 1.0, duration: 0.1),
+                                SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+                            ]
+                            self.helpingFingerHold.run(SKAction.repeatForever((SKAction.sequence(fingerHoldAction))))
+                            self.addChild(self.helpingFingerHold)
+                        }
+                    } else if (node.position.x - self.fairyNode.position.x < 15 && self.thirdTuto == true) {
+                        self.thirdTutoFlag = true
+                        self.scene?.speed = 0.0
+                    } else {
+                        self.scene?.speed = 1.0
+                    }
+                }
+            }
+        }
     }
     
     func initialSetup() {
@@ -506,7 +815,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
             else if (!self.isHit) {
                 // miss single block
-                self.missed()
+                if (onTuto == false){
+                    self.missed()
+                }
                 self.isAtLine = false
                 
                 if (self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
@@ -528,7 +839,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.isHit = false
             self.upcomingBlocks.remove(at: 0)
             
-            if (!self.isLose && self.upcomingBlocks.isEmpty) {
+            if (self.onTuto == false && !self.isLose && self.upcomingBlocks.isEmpty) {
                 self.win()
             }
             
@@ -571,6 +882,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         }
     }
     
+    func successfulHit() {
+        // successfully hit
+        self.isHit = true
+        self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+        
+        let actions: [SKAction] = [
+            SKAction.fadeIn(withDuration: 0.2),
+            SKAction.fadeOut(withDuration: 0.2)
+        ]
+        self.fairyGlow.run(SKAction.sequence(actions))
+        
+        self.showAurora()
+        
+        if (self.contactingLines.count > 0) {
+            // hit connecting block
+            self.isAtLine = true
+            self.contactingLines.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+        }
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if (self.isLose) {
             return
@@ -584,22 +915,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         if (point.x > screenW/2) {
             // touch right part of the screen start
             if (self.isBlockContact && !self.isHit && self.currBlock != nil) {
-                // successfully hit
-                self.isHit = true
-                self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
                 
-                let actions: [SKAction] = [
-                    SKAction.fadeIn(withDuration: 0.2),
-                    SKAction.fadeOut(withDuration: 0.2)
-                ]
-                self.fairyGlow.run(SKAction.sequence(actions))
+                if (self.currBlock.name == "\(self.thirdTutoCount)"){
+                    self.thirdTutoFlag2 = true
+                }
+                else{
+                    self.thirdTutoFlag2 = false
+                }
                 
-                self.correct()
-                
-                if (self.contactingLines.count > 0) {
-                    // hit connecting block
-                    self.isAtLine = true
-                    self.contactingLines.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+                if (self.onTuto == true) {
+                    // Tutorial 2 baru bisa done kalo udah berhenti
+                    if (self.secondTuto == true && self.secondTutoFlag == true) {
+                        self.scene?.speed = 1.0
+                        
+                        self.secondTuto = false
+                        self.secondTutoFlag = false
+                        
+                        self.tutorialText.removeFromParent()
+                        self.helpingFingerTap.removeFromParent()
+                        self.textHasBeenDisplayed = false
+                        
+                        self.tutorialText.text = "Hold onto the right screen to get stars with line"
+                        self.thirdTuto = true
+                        self.startTutorial3()
+                        self.successfulHit()
+                    }
+                    
+                    // Check Tuto 3 (Kalo scenenya uda berhenti baru bisa proceed)
+                    if (self.thirdTuto == true && thirdTutoFlag == true) {
+                        self.thirdTuto2 = true
+                        self.thirdTutoFlag = false
+                        self.thirdTuto = false
+                        self.successfulHit()
+                    }
+                }
+                else{
+                    self.successfulHit()
                 }
             }
         }
@@ -615,6 +966,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         if (point.x > screenW/2) {
             // touch right part of the screen ends
             if (self.isAtLine && self.isBlockContact && (self.currBlock.name == self.contactingLines.first?.name)) {
+                
+                // Passed Tutorial 3
+                if (self.thirdTuto2 == true && self.isAtLine == true && self.isBlockContact == true){
+                    self.thirdTuto2 = false
+                    self.tutorialText.removeFromParent()
+                    self.helpingFingerHold.removeFromParent()
+                    
+                    self.tutorialText.text = "Let's start the game! Focus on the music's beat to complete the game easily"
+                    
+                    let action: [SKAction] = [
+                        SKAction.wait(forDuration: 3),
+                        SKAction.fadeAlpha(to: 1, duration: 0.5),
+                        SKAction.wait(forDuration: 2.5),
+                        SKAction.fadeAlpha(to: 0, duration: 0.5)
+                    ]
+                    
+                    self.tutorialText.run(SKAction.sequence(action))
+                    self.addChild(self.tutorialText)
+                    
+                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 6) {
+                        self.tutorialText.removeFromParent()
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 6) {
+                        UserDefaults.standard.set(true, forKey: "TutorialCompleted")
+                        self.onTuto = false
+                        self.startGameplay()
+                    }
+                }
+                
                 self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
                 self.isHit = true
                 
@@ -627,7 +1008,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.correct()
             }
             else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
-                self.missed()
+                if (onTuto == false) {
+                    self.missed()
+                }
                 self.contactingLines.first!.strokeColor = SKColor.red
                 
                 let actions: [SKAction] = [
@@ -636,6 +1019,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 ]
                 self.contactingLines.first!.run(SKAction.sequence(actions))
                 self.contactingLines.remove(at: 0)
+            }
+            
+            // Repeat Tutorial 3 if players failed
+            if (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isAtLine == false || self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == false){
+                self.thirdTuto = true
+                self.thirdTutoFlag = false
+                self.thirdTutoFlag2 = false
+                self.thirdTutoCount += 2
+                
+                self.helpingFingerHold.removeFromParent()
+                self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
+                self.tutorialText.text = "Oops! You've missed the star. Let's try again"
+                self.tutorialText.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+                DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2) {
+                    self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
+                    
+                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1, execute: {
+                        self.textHasBeenDisplayed = false
+                        self.tutorialText.text = "Hold onto the right screen to get stars with line"
+                        self.tutorialText.removeFromParent()
+                        self.tutorialText.alpha = 1.0
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            self.startTutorial3()
+                        }
+                    })
+                }
             }
             
             self.isAtLine = false
@@ -657,15 +1067,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
+        if (onTuto == true && self.limitMovement == true) {
+            return
+        }
+        
         for touch in touches{
             let point = touch.location(in: self)
             
             // if left screen
             if (point.x < screenW/2) {
+                
+                // Passed Tutorial 1
+                if (self.firstTuto == true) {
+                    self.helpingFingerDown.removeFromParent()
+                    self.helpingFingerUp.removeFromParent()
+                }
+                
+                if (self.firstTuto == true && self.firstTutoDistance>200.0) {
+                    self.scene?.speed = 1.0
+                    self.tutorialText.removeFromParent()
+                    self.firstTuto = false
+                    self.secondTuto = true
+                    self.startTutorial2()
+                }
+                
                 let prevPoint = touch.previousLocation(in: self)
                 
                 let yMovement = point.y - prevPoint.y
                 var newPositionY = self.fairyNode.position.y + yMovement
+                
+                self.firstTutoDistance += abs(yMovement)
                 
                 if (newPositionY > self.fairyMaxY) {
                     newPositionY = self.fairyMaxY
