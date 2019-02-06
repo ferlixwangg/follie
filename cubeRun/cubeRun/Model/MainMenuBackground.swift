@@ -38,7 +38,7 @@ class MainMenuBackground {
     } // Game Title Follie
     
     private var ground: SKSpriteNode {
-        let groundTexture = self.mainMenuAtlas.textureNamed("Ground")
+        let groundTexture = self.mainMenuAtlas.textureNamed("Ground - Main Menu")
         let groundNode = SKSpriteNode(texture: groundTexture)
         groundNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundNode.size.width = CGFloat(Double(groundNode.size.width) * FollieMainMenu.groundRatio)
