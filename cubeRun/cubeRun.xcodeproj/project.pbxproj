@@ -27,6 +27,7 @@
 		BA5313CF220742B10044BDFD /* FollieMainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5313CE220742B10044BDFD /* FollieMainMenu.swift */; };
 		BA5313D6220826090044BDFD /* Play Chapter.wav in Resources */ = {isa = PBXBuildFile; fileRef = BA5313D4220826090044BDFD /* Play Chapter.wav */; };
 		BA5313D7220826090044BDFD /* Rising Chapter.wav in Resources */ = {isa = PBXBuildFile; fileRef = BA5313D5220826090044BDFD /* Rising Chapter.wav */; };
+		BA531427220B00500044BDFD /* Vignette.atlas in Resources */ = {isa = PBXBuildFile; fileRef = BA531426220B00500044BDFD /* Vignette.atlas */; };
 		BA5467C4220362390078924A /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5467C3220362390078924A /* MainMenu.swift */; };
 		BA5467C8220362660078924A /* MainMenu.sks in Resources */ = {isa = PBXBuildFile; fileRef = BA5467C7220362660078924A /* MainMenu.sks */; };
 		BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */; };
@@ -59,6 +60,7 @@
 		BA5313CE220742B10044BDFD /* FollieMainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollieMainMenu.swift; sourceTree = "<group>"; };
 		BA5313D4220826090044BDFD /* Play Chapter.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Play Chapter.wav"; sourceTree = "<group>"; };
 		BA5313D5220826090044BDFD /* Rising Chapter.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Rising Chapter.wav"; sourceTree = "<group>"; };
+		BA531426220B00500044BDFD /* Vignette.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Vignette.atlas; sourceTree = "<group>"; };
 		BA5467C3220362390078924A /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		BA5467C7220362660078924A /* MainMenu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MainMenu.sks; sourceTree = "<group>"; };
 		BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Monologue.mp3"; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 		85BD970921F97ACD004099DB /* Animations */ = {
 			isa = PBXGroup;
 			children = (
+				BA531426220B00500044BDFD /* Vignette.atlas */,
 				85286B9F2206FF83006BFF9A /* Baby.atlas */,
 			);
 			path = Animations;
@@ -254,6 +257,7 @@
 			files = (
 				BA5467CC220362C90078924A /* Snow.sks in Resources */,
 				BA5313D7220826090044BDFD /* Rising Chapter.wav in Resources */,
+				BA531427220B00500044BDFD /* Vignette.atlas in Resources */,
 				8505DD5C21E5E2FE001D66A6 /* Main.storyboard in Resources */,
 				BA5467C8220362660078924A /* MainMenu.sks in Resources */,
 				8505DD5321E5E2FE001D66A6 /* GameScene.sks in Resources */,

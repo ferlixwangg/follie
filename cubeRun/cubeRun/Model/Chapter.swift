@@ -20,7 +20,8 @@ class Chapter {
     ]
     
     private let chapterTitle: [Int:String] = [
-        1: "Hope"
+        1: "Hope",
+        2: "Blooming Romance"
     ]
     
     private let chapterBackground: [Int:Background] = [

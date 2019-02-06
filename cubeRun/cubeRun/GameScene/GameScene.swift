@@ -732,19 +732,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.fairyNode.run(SKAction.moveBy(x: distance, y: 0, duration: time)) {
                 self.auroraTimer?.invalidate()
                 self.auroraTimer = nil
+                
+                // go back to menu
+                let availableLevel = UserDefaults.standard.integer(forKey: "AvailableChapter")
+                if (self.chapterNo == availableLevel && availableLevel != 12) {
+                    UserDefaults.standard.set(availableLevel+1, forKey: "AvailableChapter")
+                }
+                
+                FollieMainMenu.showFollieTitle = false
+                
+                let transition = SKTransition.fade(withDuration: 2.0)
+                if let scene = SKScene(fileNamed: "MainMenu") {
+                    scene.scaleMode = .aspectFill
+                    self.view?.presentScene(scene, transition: transition)
+                }
             }
-        }
-        
-        // go back to menu
-        var availableLevel = UserDefaults.standard.integer(forKey: "AvailableChapter")
-        UserDefaults.standard.set(availableLevel+1, forKey: "AvailableChapter")
-        
-        FollieMainMenu.showFollieTitle = false
-        
-        let transition = SKTransition.fade(withDuration: 2.0)
-        if let scene = SKScene(fileNamed: "MainMenu") {
-            scene.scaleMode = .aspectFill
-            self.view?.presentScene(scene, transition: transition)
         }
     }
     
@@ -937,8 +939,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
-//        self.blockTimer?.invalidate()
-//        self.blockTimer = nil
+        self.blockTimer?.invalidate()
+        self.blockTimer = nil
         
         guard let point = touches.first?.location(in: self) else { return }
         

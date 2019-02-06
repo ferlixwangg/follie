@@ -50,30 +50,28 @@ class MainMenu: SKScene {
     override func didMove(to view: SKView) {
         let showFollieTitle = FollieMainMenu.showFollieTitle
         
-        if (showFollieTitle == true) {
-            self.createInitialBlackScreen()
-        }
+//        if (showFollieTitle == true) {
+//            self.initialVignette()
+//        }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.setNodes()
-            self.snowEmitter()
-            self.startBackgroundMusic()
-            
-            if (showFollieTitle == true) {
-                self.cameraDownOnGoing = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    if (self.cameraDownOnGoing == true) {
-                        self.cameraDownAnimation()
-                    }
+        self.setNodes()
+        self.snowEmitter()
+        self.startBackgroundMusic()
+        
+        if (showFollieTitle == true) {
+            self.cameraDownOnGoing = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                if (self.cameraDownOnGoing == true) {
+                    self.cameraDownAnimation()
                 }
-            } else {
-                self.cameraDownOnGoing = false
-                let goUpDuration = 0.0
-                self.beginMoveByAnimation(goUpDuration: goUpDuration)
-                FollieMainMenu.showFollieTitle = true
             }
-            
-            self.setActiveChapter()
+            self.setActiveChapter(duration: 5.5)
+        } else {
+            self.cameraDownOnGoing = false
+            let goUpDuration = 0.0
+            self.beginMoveByAnimation(goUpDuration: goUpDuration)
+            FollieMainMenu.showFollieTitle = true
+            self.setActiveChapter(duration: 0)
         }
     }
     
@@ -86,7 +84,7 @@ class MainMenu: SKScene {
         self.backgroundMusic.removeFromParent()
     }
     
-    func createInitialBlackScreen() {
+    func initialVignette() {
         let screen = SKShapeNode.init(rect: CGRect(x: -5, y: -5, width: FollieMainMenu.screenSize.width+10, height: FollieMainMenu.screenSize.height+10))
         
         screen.fillColor = UIColor.black
@@ -114,7 +112,7 @@ class MainMenu: SKScene {
         DispatchQueue.main.asyncAfter(deadline: .now() + durationStartDispatch, execute: self.task)
     }
     
-    func setActiveChapter() {
+    func setActiveChapter(duration: Double) {
         let index = self.availableChapter
         self.activeChapter = self.ground.childNode(withName: "Chapter\(index)") as! SKSpriteNode
         self.activeChapterName = "Chapter\(availableChapter)"
@@ -124,7 +122,7 @@ class MainMenu: SKScene {
         chapterNumber.text = "Chapter \(index)"
         chapterNumber.position = CGPoint(x: 0, y: -self.chapterTitle.frame.height/2 - 20)
         
-        moveChapterTitleAndNumber(durationStartDispatch: 5.5)
+        moveChapterTitleAndNumber(durationStartDispatch: duration)
         
         // Snowflakes go up
         let chapterSnowflake = self.activeChapter.children[0] as! SKSpriteNode
@@ -209,7 +207,7 @@ class MainMenu: SKScene {
         self.ground.run(SKAction.moveTo(y: self.groundFinalY, duration: goUpDuration))
     }
     
-    func inactivateSelectedChapterAnimation(node: SKSpriteNode) {
+    func changeActiveChapterTitleTransition(node: SKSpriteNode, index: Int) {
         
         // remove the rotating snowflake animation and go down
         node.children[0].removeAction(forKey: "repeatForeverActionKey")
@@ -232,8 +230,17 @@ class MainMenu: SKScene {
         chapterNumber.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
         chapterNumber.run(SKAction.moveBy(x: 0, y: -10, duration: 0.5))
         
-        // Remove the flag
-        self.activeChapterName = ""
+        // Assign new chapter title and number
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.chapterTitle.text = FollieMainMenu.getChapter().getTitle(chapterNo: index)
+            chapterNumber.text = "Chapter \(index)"
+            
+            // Animation of going up chapter title and number
+            self.chapterTitle.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+            self.chapterTitle.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
+            chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+            chapterNumber.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -269,32 +276,8 @@ class MainMenu: SKScene {
                     // Check whether the selected chapter is active or not
                     if (node.name != self.activeChapterName) {
                         
-                        // Assign chapter title and number
-                        self.chapterTitle.text = FollieMainMenu.getChapter().getTitle(chapterNo: index!)
-                        let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
-                        chapterNumber.text = "Chapter \(index!)"
-                        chapterNumber.position = CGPoint(x: 0, y: -self.chapterTitle.frame.height/2 - 20)
-                        
-                        if (activeChapterName != "") {
-                            
-                            // remove current selected chapter
-                            inactivateSelectedChapterAnimation(node: self.activeChapter)
-                            
-                            // Animation of going up chapter title and number
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
-                                self.chapterTitle.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-                                self.chapterTitle.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
-                                chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-                                chapterNumber.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
-                            })
-                        } else {
-                            
-                            // Animation of going down chapter title and number
-                            self.chapterTitle.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-                            self.chapterTitle.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
-                            chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-                            chapterNumber.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
-                        }
+                        // Change the chapter title
+                        changeActiveChapterTitleTransition(node: self.activeChapter, index: index!)
                         
                         // Snowflakes go up
                         let chapterSnowflake = node.children[0] as! SKSpriteNode
