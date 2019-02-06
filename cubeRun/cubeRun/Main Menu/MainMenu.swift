@@ -48,14 +48,16 @@ class MainMenu: SKScene {
     var task: DispatchWorkItem!
     
     override func didMove(to view: SKView) {
-        self.createInitialBlackScreen()
+        let showFollieTitle = FollieMainMenu.showFollieTitle
+        
+        if (showFollieTitle == true) {
+            self.createInitialBlackScreen()
+        }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.setNodes()
             self.snowEmitter()
             self.startBackgroundMusic()
-            
-            let showFollieTitle = FollieMainMenu.showFollieTitle
             
             if (showFollieTitle == true) {
                 self.cameraDownOnGoing = true

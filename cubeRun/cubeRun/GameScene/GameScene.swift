@@ -735,8 +735,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
         }
         
-        
         // go back to menu
+        var availableLevel = UserDefaults.standard.integer(forKey: "AvailableChapter")
+        UserDefaults.standard.set(availableLevel+1, forKey: "AvailableChapter")
+        
+        FollieMainMenu.showFollieTitle = false
+        
+        let transition = SKTransition.fade(withDuration: 2.0)
+        if let scene = SKScene(fileNamed: "MainMenu") {
+            scene.scaleMode = .aspectFill
+            self.view?.presentScene(scene, transition: transition)
+        }
     }
     
     func correct() {

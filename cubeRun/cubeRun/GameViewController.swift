@@ -15,12 +15,14 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let mainMenuAtlas = SKTextureAtlas(named: "Main Menu")
-        mainMenuAtlas.preload {
-            DispatchQueue.main.sync {
-                self.startScene()
-            }
-        }
+//        let mainMenuAtlas = SKTextureAtlas(named: "Main Menu")
+//        mainMenuAtlas.preload {
+//            DispatchQueue.main.sync {
+//                self.startScene()
+//            }
+//        }
+        
+        self.startScene()
     }
     
     func startScene() {
