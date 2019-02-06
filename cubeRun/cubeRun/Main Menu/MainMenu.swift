@@ -310,7 +310,6 @@ class MainMenu: SKScene {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                             // Preload animation
                             var preAtlas = [SKTextureAtlas]()
-                            preAtlas.append(SKTextureAtlas(named: "Fairy"))
                             preAtlas.append(SKTextureAtlas(named: "Baby"))
                             
                             // Move to next scene

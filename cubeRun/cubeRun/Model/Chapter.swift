@@ -23,6 +23,10 @@ class Chapter {
         1: "Hope"
     ]
     
+    private let chapterBackground: [Int:Background] = [
+        1: Background(skyName: "Sky", backgroundName: "Ground", bg1Name: "Background1", bg2Name: "Background2")
+    ]
+    
     func getMusic(chapterNo: Int) -> Music {
         return self.chapterMusic[chapterNo]!
     }
@@ -33,5 +37,9 @@ class Chapter {
     
     func getTitle(chapterNo: Int) -> String {
         return self.chapterTitle[chapterNo]!
+    }
+    
+    func getBackgroundNodes(chapterNo: Int) -> [SKSpriteNode] {
+        return self.chapterBackground[chapterNo]!.getAllBackgroundNodes()
     }
 }

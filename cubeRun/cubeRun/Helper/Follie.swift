@@ -103,11 +103,6 @@ class Follie {
         return self.auroraColors[self.colorIndex]
     } // returns current aurora color in rotation
     
-    // Background
-    static func getBackground() -> Background {
-        return Background()
-    }
-    
     // Fairy
     static func getFairy() -> Fairy {
         return Fairy()
@@ -118,6 +113,7 @@ class Follie {
         return Emitters()
     }
     
+    // Chapter
     static func getChapter() -> Chapter {
         return Chapter()
     }

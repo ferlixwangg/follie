@@ -14,7 +14,6 @@
 		8505DD5C21E5E2FE001D66A6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8505DD5A21E5E2FE001D66A6 /* Main.storyboard */; };
 		8505DD5E21E5E2FF001D66A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8505DD5D21E5E2FF001D66A6 /* Assets.xcassets */; };
 		8505DD6121E5E2FF001D66A6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8505DD5F21E5E2FF001D66A6 /* LaunchScreen.storyboard */; };
-		852319D6220190E500FA88FF /* Fairy.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 852319D5220190E500FA88FF /* Fairy.atlas */; };
 		85286BA02206FF83006BFF9A /* Baby.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 85286B9F2206FF83006BFF9A /* Baby.atlas */; };
 		85AAC5FA21E72F9C00E0E46B /* DYATHON - Goodbye.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */; };
 		85BD970E21F989EC004099DB /* Follie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD970D21F989EC004099DB /* Follie.swift */; };
@@ -47,7 +46,6 @@
 		8505DD5D21E5E2FF001D66A6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8505DD6021E5E2FF001D66A6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8505DD6221E5E2FF001D66A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		852319D5220190E500FA88FF /* Fairy.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Fairy.atlas; sourceTree = "<group>"; };
 		85286B9F2206FF83006BFF9A /* Baby.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Baby.atlas; sourceTree = "<group>"; };
 		85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Goodbye.mp3"; sourceTree = "<group>"; };
 		85BD970D21F989EC004099DB /* Follie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follie.swift; sourceTree = "<group>"; };
@@ -142,7 +140,6 @@
 			isa = PBXGroup;
 			children = (
 				85286B9F2206FF83006BFF9A /* Baby.atlas */,
-				852319D5220190E500FA88FF /* Fairy.atlas */,
 			);
 			path = Animations;
 			sourceTree = "<group>";
@@ -258,7 +255,6 @@
 				BA5467CC220362C90078924A /* Snow.sks in Resources */,
 				BA5313D7220826090044BDFD /* Rising Chapter.wav in Resources */,
 				8505DD5C21E5E2FE001D66A6 /* Main.storyboard in Resources */,
-				852319D6220190E500FA88FF /* Fairy.atlas in Resources */,
 				BA5467C8220362660078924A /* MainMenu.sks in Resources */,
 				8505DD5321E5E2FE001D66A6 /* GameScene.sks in Resources */,
 				85286BA02206FF83006BFF9A /* Baby.atlas in Resources */,
@@ -439,7 +435,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W7GMLURGAQ;
+				DEVELOPMENT_TEAM = 98R673PJSG;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -458,7 +454,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W7GMLURGAQ;
+				DEVELOPMENT_TEAM = 98R673PJSG;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -10,10 +10,20 @@ import SpriteKit
 
 // Contains all background elements and animations
 class Background {
-    init() {}
+    init(skyName: String, backgroundName: String, bg1Name: String, bg2Name: String) {
+        self.skyName = skyName
+        self.backgroundName = backgroundName
+        self.bg1Name = bg1Name
+        self.bg2Name = bg2Name
+    }
     
-    private var sky: SKSpriteNode {
-        let skyTexture = SKTexture(imageNamed: "Sky")
+    private var skyName: String
+    private var backgroundName: String
+    private var bg1Name: String
+    private var bg2Name: String
+    
+    private func sky() -> SKSpriteNode {
+        let skyTexture = SKTexture(imageNamed: self.skyName)
         let skyNode = SKSpriteNode(texture: skyTexture)
         
         skyNode.size = Follie.screenSize
@@ -23,8 +33,8 @@ class Background {
         return skyNode
     } // Sky background (static)
     
-    private var hiddenSky: SKSpriteNode {
-        let hiddenSkyTexture = SKTexture(imageNamed: "Sky")
+    private func hiddenSky() -> SKSpriteNode {
+        let hiddenSkyTexture = SKTexture(imageNamed: self.skyName)
         let hiddenSkyNode = SKSpriteNode(texture: hiddenSkyTexture)
         
         hiddenSkyNode.size = CGSize(width: Follie.screenSize.width * CGFloat(Follie.hiddenSkyX), height: Follie.screenSize.height)
@@ -34,8 +44,8 @@ class Background {
         return hiddenSkyNode
     } // Sky background (static)
     
-    private var grounds: [SKSpriteNode] {
-        let groundTexture = SKTextureAtlas(named: "Main Menu").textureNamed("Ground")
+    private func grounds() -> [SKSpriteNode] {
+        let groundTexture = SKTexture(imageNamed: self.backgroundName)
         var tempGrounds: [SKSpriteNode] = []
         
         for i in 0 ... 1 {
@@ -46,25 +56,25 @@ class Background {
             
             ground.size = CGSize(width: newWidth, height: newHeight)
             ground.zPosition = Follie.zPos.ground.rawValue
-
+            
             let newY: CGFloat = CGFloat(Double(Follie.screenSize.height) * Follie.groundRatio) - ground.size.height/2
             ground.position = CGPoint(x: (ground.size.width / 2.0 + (ground.size.width * CGFloat(i)) - (CGFloat(i))), y: newY)
-
+            
             let time: Double = Double(ground.size.width)/Follie.xSpeed
-
+            
             let moveLeft = SKAction.moveBy(x: -ground.size.width, y: 0, duration: time)
             let moveReset = SKAction.moveBy(x: ground.size.width, y: 0, duration: 0)
             let moveLoop = SKAction.sequence([moveLeft, moveReset])
             let moveForever = SKAction.repeatForever(moveLoop)
-
+            
             ground.run(moveForever)
             tempGrounds.append(ground)
         }
         return tempGrounds
     } // Moving ground
     
-    private var background1s: [SKSpriteNode] {
-        let background1Texture = SKTexture(imageNamed: "Background1")
+    private func background1s() -> [SKSpriteNode] {
+        let background1Texture = SKTexture(imageNamed: self.bg1Name)
         var tempBackground1s: [SKSpriteNode] = []
         
         for i in 0 ... 1 {
@@ -75,7 +85,7 @@ class Background {
             
             background1.size = CGSize(width: newWidth, height: newHeight)
             background1.zPosition = Follie.zPos.background1.rawValue
-    
+            
             let newY: CGFloat = CGFloat(Double(Follie.screenSize.height) * Follie.groundRatio + Double(background1.size.height/2))
             background1.position = CGPoint(x: (background1.size.width / 2.0 + (background1.size.width * CGFloat(i))), y: CGFloat(newY))
             
@@ -92,8 +102,8 @@ class Background {
         return tempBackground1s
     } // Moving background (background1)
     
-    private var background2s: [SKSpriteNode] {
-        let background2Texture = SKTexture(imageNamed: "Background2")
+    private func background2s() -> [SKSpriteNode] {
+        let background2Texture = SKTexture(imageNamed: self.bg2Name)
         var tempBackground2s: [SKSpriteNode] = []
         
         for i in 0 ... 1 {
@@ -124,11 +134,11 @@ class Background {
     func getAllBackgroundNodes() -> [SKSpriteNode] {
         var tempNodes: [SKSpriteNode] = []
         
-        tempNodes.append(self.sky)
-        tempNodes.append(self.hiddenSky)
-        tempNodes.append(contentsOf: self.grounds)
-        tempNodes.append(contentsOf: self.background1s)
-        tempNodes.append(contentsOf: self.background2s)
+        tempNodes.append(self.sky())
+        tempNodes.append(self.hiddenSky())
+        tempNodes.append(contentsOf: self.grounds())
+        tempNodes.append(contentsOf: self.background1s())
+        tempNodes.append(contentsOf: self.background2s())
         
         return tempNodes
     } // All background nodes combined

@@ -92,6 +92,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var currCoverAlpha: CGFloat = 0 // screen cover current alpha
     
     var isLose: Bool = false // whether the player has lost or not
+    var auroraTimer: Timer? = nil // aurora following fairy when game ends
+    var fairyCurrPosition: CGPoint! // fairy position when game ends, created this var to allow aurora to follow fairy
     
     override func didMove(to view: SKView) {
         self.initialSetup()
@@ -400,29 +402,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.setScreenSize()
         
-        self.screenCover = SKShapeNode(rectOf: CGSize(width: screenW, height: screenH))
-        self.screenCover.position = CGPoint(x: screenW/2, y: screenH/2)
-        self.screenCover.alpha = self.minCoverAlpha
-        self.screenCover.zPosition = Follie.zPos.screenCover.rawValue
-        self.screenCover.lineWidth = 0
-        self.screenCover.fillColor = SKColor.black
-        self.addChild(self.screenCover)
+        self.setChapter()
         
-        
-        self.setBackground()
         self.setFairy()
         self.setAurora()
         
-        self.setChapter()
+        self.setScreenCover()
     } // setup before gameplay starts (load and put in place all nodes)
     
     func setChapter() {
         let chapter = Follie.getChapter()
         
+        // chapter music
         self.music = chapter.getMusic(chapterNo: self.chapterNo)
-        self.block = chapter.getBlock(chapterNo: self.chapterNo)
         
-//        self.musicAction = SKAction.playSoundFileNamed(self.music.name, waitForCompletion: false)
         guard let url = Bundle.main.url(forResource: self.music.name, withExtension: "mp3") else { return }
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
@@ -434,7 +427,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             print(error.localizedDescription)
         }
         
+        // chapter block
+        self.block = chapter.getBlock(chapterNo: self.chapterNo)
         self.blockTexture = SKTexture(imageNamed: self.block.name)
+        
+        // chapter background
+        let tempNodes = chapter.getBackgroundNodes(chapterNo: self.chapterNo)
+        
+        for node in tempNodes {
+            self.addChild(node)
+        }
     }
     
     func startGameplay() {
@@ -574,6 +576,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.screenW = Follie.screenSize.width
     }
     
+    func setScreenCover() {
+        self.screenCover = SKShapeNode(rectOf: CGSize(width: screenW, height: screenH))
+        self.screenCover.position = CGPoint(x: screenW/2, y: screenH/2)
+        self.screenCover.alpha = self.minCoverAlpha
+        self.screenCover.zPosition = Follie.zPos.screenCover.rawValue
+        self.screenCover.lineWidth = 0
+        self.screenCover.fillColor = SKColor.black
+        self.addChild(self.screenCover)
+    }
+    
     func setAurora() {
         self.aurora = Follie.getEmitters().getAurora()
         self.aurora.position = CGPoint(x: (self.fairyNode.position.x - self.fairyNode.size.width/2), y: self.fairyNode.position.y)
@@ -616,15 +628,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.fairyLine.physicsBody?.categoryBitMask = Follie.categories.fairyLineCategory.rawValue
         self.fairyLine.physicsBody?.contactTestBitMask = Follie.categories.blockCategory.rawValue | Follie.categories.holdLineCategory.rawValue
         self.fairyLine.physicsBody?.collisionBitMask = 0
-    }
-    
-    func setBackground() {
-        let tempBackground = Follie.getBackground()
-        let tempNodes = tempBackground.getAllBackgroundNodes()
-        
-        for node in tempNodes {
-            self.addChild(node)
-        }
     }
     
     func changeAuroraColor() {
@@ -721,10 +724,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let distance = self.fairyNode.size.width/2 + self.screenW - self.fairyNode.position.x
         let time = Double(distance) / (Follie.xSpeed*2)
         self.fairyNode.run(SKAction.wait(forDuration: 2)) {
-            self.fairyNode.run(SKAction.moveBy(x: distance, y: 0, duration: time))
-            self.aurora.run(SKAction.moveBy(x: distance, y: 0, duration: time))
             self.screenCover.run(SKAction.fadeAlpha(to: 1, duration: time))
+            
+            self.fairyCurrPosition = self.fairyNode.position
+            self.auroraTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.auroraFollowFairy), userInfo: nil, repeats: true)
+            
+            self.fairyNode.run(SKAction.moveBy(x: distance, y: 0, duration: time)) {
+                self.auroraTimer?.invalidate()
+                self.auroraTimer = nil
+            }
         }
+        
+        
         // go back to menu
     }
     
@@ -741,6 +752,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         if (self.currLife > self.maxLife) {
             self.currLife = self.maxLife
         }
+    }
+    
+    @objc func auroraFollowFairy() {
+        let diffY = self.fairyNode.position.y - self.fairyCurrPosition.y
+        let diffX = self.fairyNode.position.x - self.fairyCurrPosition.x
+        
+        self.fairyCurrPosition = self.fairyNode.position
+        
+        self.aurora.particlePosition.y += diffY
+        self.aurora.particlePosition.x += diffX
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
