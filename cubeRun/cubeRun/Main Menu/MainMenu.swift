@@ -47,12 +47,15 @@ class MainMenu: SKScene {
     // DispatchWorkTask for ChapterTitle Animation
     var task: DispatchWorkItem!
     
+    // To disable the chances of tapping chapter multiple times
+    var chapterChosen: Bool!
+    
     override func didMove(to view: SKView) {
         let showFollieTitle = FollieMainMenu.showFollieTitle
         
-//        if (showFollieTitle == true) {
-//            self.initialVignette()
-//        }
+        if (showFollieTitle == true) {
+            self.initialVignette()
+        }
         
         self.setNodes()
         self.snowEmitter()
@@ -73,6 +76,8 @@ class MainMenu: SKScene {
             FollieMainMenu.showFollieTitle = true
             self.setActiveChapter(duration: 0)
         }
+        
+        self.chapterChosen = false
     }
     
     func startBackgroundMusic() {
@@ -85,17 +90,8 @@ class MainMenu: SKScene {
     }
     
     func initialVignette() {
-        let screen = SKShapeNode.init(rect: CGRect(x: -5, y: -5, width: FollieMainMenu.screenSize.width+10, height: FollieMainMenu.screenSize.height+10))
-        
-        screen.fillColor = UIColor.black
-        
-        let action: [SKAction] = [
-            SKAction.fadeOut(withDuration: 4.0),
-            SKAction.removeFromParent()
-        ]
-        
-        screen.run(SKAction.sequence(action))
-        self.addChild(screen)
+        let vignette = FollieMainMenu.getMainMenuBackground().getVignette()
+        self.addChild(vignette)
     }
     
     func moveChapterTitleAndNumber(durationStartDispatch: Double) {
@@ -116,6 +112,9 @@ class MainMenu: SKScene {
         let index = self.availableChapter
         self.activeChapter = self.ground.childNode(withName: "Chapter\(index)") as! SKSpriteNode
         self.activeChapterName = "Chapter\(availableChapter)"
+        
+        let dashLine: SKShapeNode = FollieMainMenu.getMainMenuBackground().getDashedLines()
+        self.activeChapter.addChild(dashLine)
         
         self.chapterTitle.text = FollieMainMenu.getChapter().getTitle(chapterNo: index)
         let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
@@ -179,7 +178,7 @@ class MainMenu: SKScene {
     
     func snowEmitter() {
         let snowEmitter = FollieMainMenu.getEmitters().getSnow()
-        snowEmitter.zPosition = FollieMainMenu.zPos.mainMenuGroundAndSnow.rawValue
+        snowEmitter.zPosition = FollieMainMenu.zPos.mainMenuSnow.rawValue
         snowEmitter.position = CGPoint(x: 0, y: self.sky.size.height/2)
         snowEmitter.advanceSimulationTime(20)
         self.sky.addChild(snowEmitter)
@@ -240,6 +239,9 @@ class MainMenu: SKScene {
             self.chapterTitle.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
             chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
             chapterNumber.run(SKAction.moveBy(x: 0, y: 10, duration: 0.5))
+            
+            // remove the dash line
+            node.childNode(withName: "Dashline")?.removeFromParent()
         }
     }
     
@@ -279,8 +281,16 @@ class MainMenu: SKScene {
                         // Change the chapter title
                         changeActiveChapterTitleTransition(node: self.activeChapter, index: index!)
                         
+                        self.activeChapter = node as! SKSpriteNode
+                        self.activeChapterName = node.name!
+                        
+                        // add dash line
+                        let dashLine: SKShapeNode = FollieMainMenu.getMainMenuBackground().getDashedLines()
+                        self.activeChapter.addChild(dashLine)
+                        
                         // Snowflakes go up
                         let chapterSnowflake = node.children[0] as! SKSpriteNode
+                        node.run(SKAction.wait(forDuration: 0.2))
                         node.run(SKAction.moveBy(x: 0, y: CGFloat(FollieMainMenu.chapterRiseRatio) * FollieMainMenu.screenSize.height, duration: 0.5))
                         chapterSnowflake.run(SKAction.repeatForever(SKAction.rotate(byAngle: -0.5, duration: 1)), withKey: "repeatForeverActionKey")
                         
@@ -301,30 +311,31 @@ class MainMenu: SKScene {
                         
                         glow.run(SKAction.repeatForever(SKAction.sequence(glowAction)))
                         node.addChild(glow)
-                        
-                        self.activeChapter = node as! SKSpriteNode
-                        self.activeChapterName = node.name!
                     } else {
                         
-                        self.run(SKAction.fadeOut(withDuration: 2.0))
-                        self.run(self.playedChapterSfx)
-                        self.stopBackgroundMusic()
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            // Preload animation
-                            var preAtlas = [SKTextureAtlas]()
-                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+                        if (self.chapterChosen == false) {
+                            self.chapterChosen = true
                             
-                            // Move to next scene
-                            SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
-                                DispatchQueue.main.sync {
-                                    let transition = SKTransition.fade(withDuration: 0)
-                                    if let scene = SKScene(fileNamed: "GameScene") {
-                                        scene.scaleMode = .aspectFill
-                                        self.view?.presentScene(scene, transition: transition)
+                            self.run(SKAction.fadeOut(withDuration: 2.0))
+                            self.run(self.playedChapterSfx)
+                            self.stopBackgroundMusic()
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                // Preload animation
+                                var preAtlas = [SKTextureAtlas]()
+                                preAtlas.append(SKTextureAtlas(named: "Baby"))
+                                
+                                // Move to next scene
+                                SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
+                                    DispatchQueue.main.sync {
+                                        let transition = SKTransition.fade(withDuration: 0)
+                                        if let scene = SKScene(fileNamed: "GameScene") {
+                                            scene.scaleMode = .aspectFill
+                                            self.view?.presentScene(scene, transition: transition)
+                                        }
                                     }
-                                }
-                            })
+                                })
+                            }
                         }
                     }
                 }

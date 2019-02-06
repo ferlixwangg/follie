@@ -14,14 +14,14 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
         
-//        let mainMenuAtlas = SKTextureAtlas(named: "Main Menu")
-//        mainMenuAtlas.preload {
-//            DispatchQueue.main.sync {
-//                self.startScene()
-//            }
+//        let vignetteAtlas = SKTextureAtlas(named: "Vignette")
+//        let textureAtlases: [SKTextureAtlas] = [vignetteAtlas]
+//        SKTextureAtlas.preloadTextureAtlases(textureAtlases) {
+//            self.startScene()
 //        }
-        
+
         self.startScene()
     }
     
@@ -58,5 +58,9 @@ class GameViewController: UIViewController {
 
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
+        return [.bottom]
     }
 }

@@ -42,7 +42,7 @@ class MainMenuBackground {
         let groundNode = SKSpriteNode(texture: groundTexture)
         groundNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundNode.size.width = CGFloat(Double(groundNode.size.width) * FollieMainMenu.groundRatio)
-        groundNode.zPosition = FollieMainMenu.zPos.mainMenuGroundAndSnow.rawValue
+        groundNode.zPosition = FollieMainMenu.zPos.mainMenuGround.rawValue
         
         let newY: CGFloat = -(groundNode.size.height/2) - self.gameTitle.size.height
         groundNode.position = CGPoint(x: Double(groundNode.size.width / 2.0), y: Double(newY))
@@ -69,7 +69,6 @@ class MainMenuBackground {
             
             if i <= availableChapter{
                 chapterNode.texture = snowTexture
-                invisibleParentForChapter.addChild(dashLine)
             } else {
                 chapterNode.texture = snowFrozenTexture
             }
@@ -87,12 +86,13 @@ class MainMenuBackground {
     private var dashLine: SKShapeNode {
         let linePath = UIBezierPath()
         linePath.move(to: CGPoint(x: 0, y: 0))
-        linePath.addLine(to: CGPoint(x: 0, y: -(CGFloat(FollieMainMenu.chapterRiseRatio) * FollieMainMenu.screenSize.height)*2))
+        linePath.addLine(to: CGPoint(x: 0, y: -(CGFloat(FollieMainMenu.chapterRiseRatio) * FollieMainMenu.screenSize.height)*3/2))
         
         let pattern: [CGFloat] = [6.0, 6.0]
         let dashLineNode = SKShapeNode(path: linePath.cgPath.copy(dashingWithPhase: 6, lengths: pattern))
         dashLineNode.strokeColor = UIColor.white
         dashLineNode.lineWidth = 3
+        dashLineNode.name = "Dashline"
         
         return dashLineNode
     } // Dash line
@@ -102,7 +102,7 @@ class MainMenuBackground {
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
         groundExtensionNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundExtensionNode.size.width = CGFloat(Double(groundExtensionNode.size.width) * FollieMainMenu.groundRatio)
-        groundExtensionNode.zPosition = FollieMainMenu.zPos.mainMenuGroundAndSnow.rawValue
+        groundExtensionNode.zPosition = FollieMainMenu.zPos.mainMenuGround.rawValue
         groundExtensionNode.position = CGPoint(x: groundExtensionNode.size.width, y: 0)
         
         return groundExtensionNode
@@ -113,7 +113,7 @@ class MainMenuBackground {
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
         groundExtensionNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundExtensionNode.size.width = CGFloat(Double(groundExtensionNode.size.width) * FollieMainMenu.groundRatio)
-        groundExtensionNode.zPosition = FollieMainMenu.zPos.mainMenuGroundAndSnow.rawValue
+        groundExtensionNode.zPosition = FollieMainMenu.zPos.mainMenuGround.rawValue
         groundExtensionNode.position = CGPoint(x: groundExtensionNode.size.width * 2, y: 0)
         
         return groundExtensionNode
@@ -151,6 +151,37 @@ class MainMenuBackground {
         return chapterNumber
     }
     
+    private var vignetteAnimationTextures: [SKTexture] {
+        let vignetteAtlas = SKTextureAtlas(named: "Vignette")
+        var vignetteFrames: [SKTexture] = []
+        
+        let numImages = vignetteAtlas.textureNames.count
+        for i in 1...numImages {
+            let vignetteTextureName = "Vignette\(i)"
+            vignetteFrames.append(vignetteAtlas.textureNamed(vignetteTextureName))
+        }
+        return vignetteFrames
+    } // contains vignette animation textures (picture per frame)
+    
+    var vignetteNode: SKSpriteNode {
+        let firstFrameTexture = self.vignetteAnimationTextures[0]
+        let vignette = SKSpriteNode(texture: firstFrameTexture)
+        
+        let newHeight = FollieMainMenu.screenSize.height
+        let newWidth = FollieMainMenu.screenSize.width
+        
+        vignette.size = CGSize(width: newWidth, height: newHeight)
+        vignette.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
+        
+        let action: [SKAction] = [
+            SKAction.animate(with: self.vignetteAnimationTextures, timePerFrame: 0.08),
+            SKAction.removeFromParent()
+        ]
+        
+        vignette.run(SKAction.sequence(action))
+        return vignette
+    } // vignette node + its animation
+
     // Getters
     func getSkyNode() -> SKSpriteNode {
         return self.sky
@@ -178,4 +209,12 @@ class MainMenuBackground {
         
         return tempNodes
     } // Ground children
+    
+    func getVignette() -> SKSpriteNode {
+        return self.vignetteNode
+    }
+    
+    func getDashedLines() -> SKShapeNode {
+        return self.dashLine
+    }
 }

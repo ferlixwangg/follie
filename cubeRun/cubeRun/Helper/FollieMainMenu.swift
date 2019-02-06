@@ -13,9 +13,9 @@ class FollieMainMenu {
     private init() {}
     
     enum zPos: CGFloat {
-        case sky = -30
-        case mainMenuSky = -7
-        case mainMenuGroundAndSnow = 0
+        case mainMenuSky = -8
+        case mainMenuGround = 5
+        case mainMenuSnow = 2
         case mainMenuChapterNode = -3
     } // z-position for nodes
     
