@@ -98,7 +98,7 @@ class MainMenuBackground {
     } // Dash line
     
     private var groundExtension1: SKSpriteNode {
-        let groundTexture = self.mainMenuAtlas.textureNamed("Ground")
+        let groundTexture = self.mainMenuAtlas.textureNamed("Ground - Main Menu")
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
         groundExtensionNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundExtensionNode.size.width = CGFloat(Double(groundExtensionNode.size.width) * FollieMainMenu.groundRatio)
@@ -109,7 +109,7 @@ class MainMenuBackground {
     } // Ground Extension 1
     
     private var groundExtension2: SKSpriteNode {
-        let groundTexture = self.mainMenuAtlas.textureNamed("Ground")
+        let groundTexture = self.mainMenuAtlas.textureNamed("Ground - Main Menu")
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
         groundExtensionNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundExtensionNode.size.width = CGFloat(Double(groundExtensionNode.size.width) * FollieMainMenu.groundRatio)

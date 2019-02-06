@@ -48,27 +48,31 @@ class MainMenu: SKScene {
     var task: DispatchWorkItem!
     
     override func didMove(to view: SKView) {
-        self.setNodes()
-        self.snowEmitter()
-        self.startBackgroundMusic()
+        self.createInitialBlackScreen()
         
-        let showFollieTitle = FollieMainMenu.showFollieTitle
-        
-        if (showFollieTitle == true) {
-            self.cameraDownOnGoing = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                if (self.cameraDownOnGoing == true) {
-                    self.cameraDownAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.setNodes()
+            self.snowEmitter()
+            self.startBackgroundMusic()
+            
+            let showFollieTitle = FollieMainMenu.showFollieTitle
+            
+            if (showFollieTitle == true) {
+                self.cameraDownOnGoing = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    if (self.cameraDownOnGoing == true) {
+                        self.cameraDownAnimation()
+                    }
                 }
+            } else {
+                self.cameraDownOnGoing = false
+                let goUpDuration = 0.0
+                self.beginMoveByAnimation(goUpDuration: goUpDuration)
+                FollieMainMenu.showFollieTitle = true
             }
-        } else {
-            self.cameraDownOnGoing = false
-            let goUpDuration = 0.0
-            self.beginMoveByAnimation(goUpDuration: goUpDuration)
-            FollieMainMenu.showFollieTitle = true
+            
+            self.setActiveChapter()
         }
-        
-        self.setActiveChapter()
     }
     
     func startBackgroundMusic() {
@@ -78,6 +82,20 @@ class MainMenu: SKScene {
     
     func stopBackgroundMusic() {
         self.backgroundMusic.removeFromParent()
+    }
+    
+    func createInitialBlackScreen() {
+        let screen = SKShapeNode.init(rect: CGRect(x: -5, y: -5, width: FollieMainMenu.screenSize.width+10, height: FollieMainMenu.screenSize.height+10))
+        
+        screen.fillColor = UIColor.black
+        
+        let action: [SKAction] = [
+            SKAction.fadeOut(withDuration: 4.0),
+            SKAction.removeFromParent()
+        ]
+        
+        screen.run(SKAction.sequence(action))
+        self.addChild(screen)
     }
     
     func moveChapterTitleAndNumber(durationStartDispatch: Double) {
