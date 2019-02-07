@@ -47,8 +47,8 @@ class FollieMainMenu {
         return Emitters()
     }
     
-    static func getChapter() -> Chapter {
-        return Chapter()
+    static func getChapter(chapterNo: Int) -> Chapter {
+        return Chapter(chapterNo: chapterNo)
     }
     
     // Main Menu Background

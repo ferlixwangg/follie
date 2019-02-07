@@ -10,9 +10,9 @@ import SpriteKit
 
 // Contains all block file names used in the project (incoming projectiles to fairy)
 class Block {
-    var name: String // block node filename
+    init() {}
     
-    init(name: String) {
-        self.name = name
+    var blockTexture: SKTexture {
+        return SKTexture(imageNamed: "Star")
     }
 }

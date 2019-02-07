@@ -9,14 +9,14 @@
 import SpriteKit
 
 class Chapter {
-    init() {}
+    init(chapterNo: Int) {
+       self.chapterNo = chapterNo
+    }
+    
+    var chapterNo: Int
     
     private let chapterMusic: [Int:Music] = [
         1: Music(name: "DYATHON - Goodbye", secPerBeat: 1)
-    ]
-    
-    private let chapterBlock: [Int:Block] = [
-        1: Block(name: "Star")
     ]
     
     private let chapterTitle: [Int:String] = [
@@ -28,19 +28,15 @@ class Chapter {
         1: Background(skyName: "Sky", backgroundName: "Ground", bg1Name: "Background1", bg2Name: "Background2")
     ]
     
-    func getMusic(chapterNo: Int) -> Music {
-        return self.chapterMusic[chapterNo]!
+    func getMusic() -> Music {
+        return self.chapterMusic[self.chapterNo]!
     }
     
-    func getBlock(chapterNo: Int) -> Block {
-        return self.chapterBlock[chapterNo]!
+    func getTitle() -> String {
+        return self.chapterTitle[self.chapterNo]!
     }
     
-    func getTitle(chapterNo: Int) -> String {
-        return self.chapterTitle[chapterNo]!
-    }
-    
-    func getBackgroundNodes(chapterNo: Int) -> [SKSpriteNode] {
-        return self.chapterBackground[chapterNo]!.getAllBackgroundNodes()
+    func getBackgroundNodes() -> [SKSpriteNode] {
+        return self.chapterBackground[self.chapterNo]!.getAllBackgroundNodes()
     }
 }

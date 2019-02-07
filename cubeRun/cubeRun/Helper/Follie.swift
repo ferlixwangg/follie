@@ -114,8 +114,13 @@ class Follie {
         return Emitters()
     }
     
+    // Block
+    static func getBlock() -> Block {
+        return Block()
+    }
+    
     // Chapter
-    static func getChapter() -> Chapter {
-        return Chapter()
+    static func getChapter(chapterNo: Int) -> Chapter {
+        return Chapter(chapterNo: chapterNo)
     }
 }

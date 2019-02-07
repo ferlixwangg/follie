@@ -34,7 +34,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Music and Block
     var music: Music!
-    var block: Block!
     var blockTexture: SKTexture!
     var blockTimer: Timer? = nil
     var player: AVAudioPlayer!
@@ -412,17 +411,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.setChapter()
         
+        self.setBlock()
         self.setFairy()
         self.setAurora()
         
         self.setScreenCover()
     } // setup before gameplay starts (load and put in place all nodes)
     
+    func setBlock() {
+        let block = Follie.getBlock()
+        self.blockTexture = block.blockTexture
+    }
+    
     func setChapter() {
-        let chapter = Follie.getChapter()
+        let chapter = Follie.getChapter(chapterNo: self.chapterNo)
         
         // chapter music
-        self.music = chapter.getMusic(chapterNo: self.chapterNo)
+        self.music = chapter.getMusic()
         
         guard let url = Bundle.main.url(forResource: self.music.name, withExtension: "mp3") else { return }
         do {
@@ -435,19 +440,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             print(error.localizedDescription)
         }
         
-        // chapter block
-        self.block = chapter.getBlock(chapterNo: self.chapterNo)
-        self.blockTexture = SKTexture(imageNamed: self.block.name)
-        
         // chapter background
-        let tempNodes = chapter.getBackgroundNodes(chapterNo: self.chapterNo)
+        let tempNodes = chapter.getBackgroundNodes()
         
         for node in tempNodes {
             self.addChild(node)
         }
         
         // chapter title
-        self.chapterTitle = chapter.getTitle(chapterNo: self.chapterNo)
+        self.chapterTitle = chapter.getTitle()
     }
     
     func startGameplay() {

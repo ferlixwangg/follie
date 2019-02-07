@@ -116,7 +116,7 @@ class MainMenu: SKScene {
         let dashLine: SKShapeNode = FollieMainMenu.getMainMenuBackground().getDashedLines()
         self.activeChapter.addChild(dashLine)
         
-        self.chapterTitle.text = FollieMainMenu.getChapter().getTitle(chapterNo: index)
+        self.chapterTitle.text = FollieMainMenu.getChapter(chapterNo: index).getTitle()
         let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
         chapterNumber.text = "Chapter \(index)"
         chapterNumber.position = CGPoint(x: 0, y: -self.chapterTitle.frame.height/2 - 20)
@@ -231,7 +231,7 @@ class MainMenu: SKScene {
         
         // Assign new chapter title and number
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.chapterTitle.text = FollieMainMenu.getChapter().getTitle(chapterNo: index)
+            self.chapterTitle.text = FollieMainMenu.getChapter(chapterNo: index).getTitle()
             chapterNumber.text = "Chapter \(index)"
             
             // Animation of going up chapter title and number
