@@ -1037,7 +1037,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 else if (node.name != nil && node.name == "retry") {
                     let newScene = GameScene(size: self.size)
                     newScene.scaleMode = self.scaleMode
-                    let animation = SKTransition.fade(withDuration: 1.0)
+                    let animation = SKTransition.fade(withDuration: 2.0)
                     self.view?.presentScene(newScene, transition: animation)
                     
                     self.isDismiss = true
