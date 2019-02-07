@@ -96,6 +96,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var auroraTimer: Timer? = nil // aurora following fairy when game ends
     var fairyCurrPosition: CGPoint! // fairy position when game ends, created this var to allow aurora to follow fairy
     
+    var isDismiss: Bool = false
+    
+    deinit {
+        print("game scene deinit")
+        // check if scene is dismissed after presenting another scene
+    }
+    
     override func didMove(to view: SKView) {
         self.initialSetup()
         
@@ -702,7 +709,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.fairyNode.run(SKAction.moveTo(x: -self.fairyNode.size.width/2, duration: 3))
             self.fairyNode.run(SKAction.moveTo(y: -self.fairyNode.size.height/2, duration: 5))
             
-            self.screenCover.run(SKAction.fadeAlpha(to: 1, duration: 5)) {
+            self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 5)) {
                 self.showLoseMenu()
             }
         }
@@ -757,6 +764,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         retry.zPosition = Follie.zPos.loseMenu.rawValue
         self.addChild(retry)
         retry.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        retry.name = "retry"
         
         let menuTexture = SKTexture(imageNamed: "mainMenuButton")
         let menu = SKSpriteNode(texture: menuTexture)
@@ -769,9 +777,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         menu.zPosition = Follie.zPos.loseMenu.rawValue
         self.addChild(menu)
         menu.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        menu.name = "menu"
     }
     
     func missed() {
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+        
         self.hideAurora()
         
         self.currCoverAlpha = self.screenCover.alpha + (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.missVal))
@@ -805,11 +817,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 
                 FollieMainMenu.showFollieTitle = false
                 
-                let transition = SKTransition.fade(withDuration: 2.0)
-                if let scene = SKScene(fileNamed: "MainMenu") {
-                    scene.scaleMode = .aspectFill
-                    self.view?.presentScene(scene, transition: transition)
-                }
+                let newScene = MainMenu(size: self.size)
+                newScene.scaleMode = self.scaleMode
+                let animation = SKTransition.fade(withDuration: 1.0)
+                self.view?.presentScene(newScene, transition: animation)
             }
         }
     }
@@ -925,6 +936,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     ]
                     self.contactingLines.first!.run(SKAction.sequence(actions))
                     self.contactingLines.remove(at: 0)
+                    
+                    self.missed()
                 }
                 
                 block.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat.pi, duration: 1)))
@@ -1000,6 +1013,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if (self.isLose) {
+            
+            if (self.isDismiss) {
+                return
+            }
+            
+            let touch: UITouch = touches.first! as UITouch
+            let positionInScene = touch.location(in: self.scene!)
+            let touchedNodes = self.scene!.nodes(at: positionInScene)
+            
+            for node in touchedNodes {
+                if (node.name != nil && node.name == "menu") {
+                    FollieMainMenu.showFollieTitle = false
+                    
+                    let newScene = MainMenu(size: self.size)
+                    newScene.scaleMode = self.scaleMode
+                    let animation = SKTransition.fade(withDuration: 1.0)
+                    self.view?.presentScene(newScene, transition: animation)
+                    
+                    self.isDismiss = true
+                    return
+                }
+                else if (node.name != nil && node.name == "retry") {
+                    let newScene = GameScene(size: self.size)
+                    newScene.scaleMode = self.scaleMode
+                    let animation = SKTransition.fade(withDuration: 1.0)
+                    self.view?.presentScene(newScene, transition: animation)
+                    
+                    self.isDismiss = true
+                    return
+                }
+            }
             return
         }
         
