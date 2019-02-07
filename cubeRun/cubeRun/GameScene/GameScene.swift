@@ -95,7 +95,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var auroraTimer: Timer? = nil // aurora following fairy when game ends
     var fairyCurrPosition: CGPoint! // fairy position when game ends, created this var to allow aurora to follow fairy
     
-    var isDismiss: Bool = false
+    var isDismiss: Bool = false // check if screen will be dismissed so it doesnt call presentScene multiple times
     
     deinit {
         print("game scene deinit")
