@@ -34,6 +34,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Music and Block
     var music: Music!
+    var currMusicDuration: Double = 0
+    var musicTimer: Timer? = nil
+    var musicTimerDuration: Double = 1
     var blockTexture: SKTexture!
     var blockTimer: Timer? = nil
     var player: AVAudioPlayer!
@@ -455,6 +458,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.player.play()
         
         self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
+        
+        self.musicTimer = Timer.scheduledTimer(timeInterval: self.musicTimerDuration, target: self, selector: #selector(countMusicDuration), userInfo: nil, repeats: true)
+    }
+    
+    @objc func countMusicDuration() {
+        self.currMusicDuration += self.musicTimerDuration
     }
     
     @objc func blockProjectiles() {
@@ -719,6 +728,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.blockTimer?.invalidate()
         self.blockTimer = nil
+        
+        self.musicTimer?.invalidate()
+        self.musicTimer = nil
         // go to menu (chap selection/retry)
     }
     
@@ -753,6 +765,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         progressBackground.zPosition = Follie.zPos.loseMenu.rawValue
         self.addChild(progressBackground)
         progressBackground.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        
+        let totalMusicDuration: Double = self.player.duration
+        let percentage: Double = self.currMusicDuration / totalMusicDuration
+        
+        let progressTexture = SKTexture(imageNamed: "progress")
+        let progress = SKSpriteNode(texture: progressTexture)
+        let progressWidth = CGFloat(percentage) * progressBackground.size.width
+        let progressHeight: CGFloat = 10
+        progress.size = CGSize(width: progressWidth, height: progressHeight)
+        let progressX = progressBackground.position.x - progressBackground.size.width/2 + progress.size.width/2
+        progress.position = CGPoint(x: progressX, y: progressBackground.position.y)
+        progress.alpha = 0
+        progress.zPosition = (Follie.zPos.loseMenu.rawValue + 1)
+        self.addChild(progress)
+        progress.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         
         let retryTexture = SKTexture(imageNamed: "retry")
         let retry = SKSpriteNode(texture: retryTexture)
