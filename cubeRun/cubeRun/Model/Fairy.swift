@@ -74,22 +74,9 @@ class Fairy {
         let fairyGlowTexture = SKTexture(imageNamed: "fairyGlow")
         let fairyGlow = SKSpriteNode(texture: fairyGlowTexture)
         
-        fairyGlow.size = CGSize(width: self.fairyNode.size.width * 1.2, height: self.fairyNode.size.height * 1.2)
+        fairyGlow.size = CGSize(width: self.fairyNode.size.width * 1.5, height: self.fairyNode.size.height * 1.5)
         fairyGlow.zPosition = Follie.zPos.fairyGlow.rawValue
         
-        let minAlpha: CGFloat = 0.4
-        let maxAlpha: CGFloat = 1
-        
-        let waitDuration: Double = 0.15
-        let glowAnimationDuration: Double = 1
-        
-        //        let glowAnimation: [SKAction] = [
-        //            SKAction.fadeAlpha(to: maxAlpha, duration: glowAnimationDuration),
-        //            SKAction.wait(forDuration: waitDuration),
-        //            SKAction.fadeAlpha(to: minAlpha, duration: glowAnimationDuration),
-        //            SKAction.wait(forDuration: waitDuration)
-        //        ]
-        //        fairyGlow.run(SKAction.repeatForever(SKAction.sequence(glowAnimation)))
         fairyGlow.alpha = 0
         
         return fairyGlow
