@@ -112,7 +112,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.limitMovement = true
             self.startTutorial()
         } else {
-            self.startGameplay()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.startGameplay()
+            }
         }
     }
     
@@ -717,9 +719,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         }
         self.fairyNode.run(SKAction.wait(forDuration: 2)) {
             self.fairyNode.run(SKAction.moveTo(x: -self.fairyNode.size.width/2, duration: 3))
-            self.fairyNode.run(SKAction.moveTo(y: -self.fairyNode.size.height/2, duration: 5))
+            self.fairyNode.run(SKAction.moveTo(y: -self.fairyNode.size.height/2, duration: 4))
             
-            self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 5)) {
+            self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 4)) {
+                self.scene?.run(SKAction.speed(to: 0, duration: 4))
                 self.showLoseMenu()
             }
         }
@@ -836,12 +839,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.fairyNode.run(SKAction.moveBy(x: distance, y: 0, duration: time)) {
                 self.auroraTimer?.invalidate()
                 self.auroraTimer = nil
-                
+
+                self.musicTimer?.invalidate()
+                self.musicTimer = nil
                 // go back to menu
                 let availableLevel = UserDefaults.standard.integer(forKey: "AvailableChapter")
                 if (self.chapterNo == availableLevel && availableLevel != 12) {
                     UserDefaults.standard.set(availableLevel+1, forKey: "AvailableChapter")
                 }
+                
+                self.removeAllActions()
                 
                 FollieMainMenu.showFollieTitle = false
                 
@@ -978,6 +985,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             if (self.onTuto == false && !self.isLose && self.upcomingBlocks.isEmpty) {
                 self.win()
+                return
             }
             
             if (self.contactingLines.first?.name == block.name) {
@@ -1030,7 +1038,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         ]
         self.fairyGlow.run(SKAction.sequence(actions))
         
-        self.showAurora()
+        self.correct()
         
         if (self.contactingLines.count > 0) {
             // hit connecting block
@@ -1052,23 +1060,58 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             for node in touchedNodes {
                 if (node.name != nil && node.name == "menu") {
+                    self.isDismiss = true
+
+                    self.removeAllActions()
+                    self.scene?.speed = 1
+
                     FollieMainMenu.showFollieTitle = false
                     
-                    let newScene = MainMenu(size: self.size)
-                    newScene.scaleMode = self.scaleMode
-                    let animation = SKTransition.fade(withDuration: 1.0)
-                    self.view?.presentScene(newScene, transition: animation)
+                    let fadeOutNode = SKShapeNode(rectOf: CGSize(width: screenW, height: screenH))
+                    fadeOutNode.position = CGPoint(x: screenW/2, y: screenH/2)
+                    fadeOutNode.alpha = 0
+                    fadeOutNode.fillColor = SKColor.black
+                    fadeOutNode.lineWidth = 0
+                    fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
+                    self.addChild(fadeOutNode)
                     
-                    self.isDismiss = true
+                    fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
+                        let newScene = MainMenu(size: self.size)
+                        newScene.scaleMode = self.scaleMode
+                        let animation = SKTransition.fade(withDuration: 1.0)
+                        self.view?.presentScene(newScene, transition: animation)
+                    }
                     return
                 }
                 else if (node.name != nil && node.name == "retry") {
-                    let newScene = GameScene(size: self.size)
-                    newScene.scaleMode = self.scaleMode
-                    let animation = SKTransition.fade(withDuration: 2.0)
-                    self.view?.presentScene(newScene, transition: animation)
-                    
                     self.isDismiss = true
+                    
+                    self.removeAllActions()
+                    self.scene?.speed = 1
+                    
+                    let fadeOutNode = SKShapeNode(rectOf: CGSize(width: screenW, height: screenH))
+                    fadeOutNode.position = CGPoint(x: screenW/2, y: screenH/2)
+                    fadeOutNode.alpha = 0
+                    fadeOutNode.fillColor = SKColor.black
+                    fadeOutNode.lineWidth = 0
+                    fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
+                    self.addChild(fadeOutNode)
+                    
+                    fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
+                        // Preload animation
+                        var preAtlas = [SKTextureAtlas]()
+                        preAtlas.append(SKTextureAtlas(named: "Baby"))
+                        
+                        // Move to next scene
+                        SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
+                            DispatchQueue.main.sync {
+                                let newScene = GameScene(size: self.size)
+                                newScene.scaleMode = self.scaleMode
+                                let animation = SKTransition.fade(withDuration: 2.0)
+                                self.view?.presentScene(newScene, transition: animation)
+                            }
+                        })
+                    }
                     return
                 }
             }

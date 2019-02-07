@@ -316,11 +316,10 @@ class MainMenu: SKScene {
                         if (self.chapterChosen == false) {
                             self.chapterChosen = true
                             
-                            self.run(SKAction.fadeOut(withDuration: 2.0))
                             self.run(self.playedChapterSfx)
                             self.stopBackgroundMusic()
                             
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            self.run(SKAction.fadeOut(withDuration: 2.0)) {
                                 // Preload animation
                                 var preAtlas = [SKTextureAtlas]()
                                 preAtlas.append(SKTextureAtlas(named: "Baby"))
@@ -328,7 +327,7 @@ class MainMenu: SKScene {
                                 // Move to next scene
                                 SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
                                     DispatchQueue.main.sync {
-                                        let transition = SKTransition.fade(withDuration: 0)
+                                        let transition = SKTransition.fade(withDuration: 1)
                                         if let scene = SKScene(fileNamed: "GameScene") {
                                             scene.scaleMode = .aspectFill
                                             self.view?.presentScene(scene, transition: transition)
