@@ -1165,6 +1165,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             // Repeat Tutorial 3 if players failed
             if (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isAtLine == false || self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == false){
                 self.thirdTuto = true
+                self.thirdTuto2 = false
                 self.thirdTutoFlag = false
                 self.thirdTutoFlag2 = false
                 self.thirdTutoCount += 2
