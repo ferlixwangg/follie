@@ -14,6 +14,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Current chapter
     var chapterNo: Int = 1
+    var chapterTitle: String!
     
     // Screen size
     var screenW: CGFloat!
@@ -437,6 +438,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         for node in tempNodes {
             self.addChild(node)
         }
+        
+        // chapter title
+        self.chapterTitle = chapter.getTitle(chapterNo: self.chapterNo)
     }
     
     func startGameplay() {
@@ -697,7 +701,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.fairyNode.run(SKAction.wait(forDuration: 2)) {
             self.fairyNode.run(SKAction.moveTo(x: -self.fairyNode.size.width/2, duration: 3))
             self.fairyNode.run(SKAction.moveTo(y: -self.fairyNode.size.height/2, duration: 5))
-            self.screenCover.run(SKAction.fadeAlpha(to: 1, duration: 5))
+            
+            self.screenCover.run(SKAction.fadeAlpha(to: 1, duration: 5)) {
+                self.showLoseMenu()
+            }
         }
         
         self.player.setVolume(0, fadeDuration: 6)
@@ -705,6 +712,63 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.blockTimer?.invalidate()
         self.blockTimer = nil
         // go to menu (chap selection/retry)
+    }
+    
+    func showLoseMenu() {
+        let chapterTitle = SKLabelNode(fontNamed: "dearJoeII")
+        chapterTitle.text = self.chapterTitle
+        chapterTitle.fontSize = 100
+        chapterTitle.fontColor = UIColor.white
+        chapterTitle.position = CGPoint(x: self.screenW/2, y: self.screenH/4*3)
+        chapterTitle.alpha = 0
+        chapterTitle.zPosition = Follie.zPos.loseMenu.rawValue
+        self.addChild(chapterTitle)
+        chapterTitle.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        
+        let chapterNumber = SKLabelNode(fontNamed: "Roboto-Regular")
+        chapterNumber.text = "Chapter \(self.chapterNo)"
+        chapterNumber.fontSize = 20
+        chapterNumber.fontColor = UIColor.white
+        chapterNumber.alpha = 0
+        chapterNumber.position = CGPoint(x: chapterTitle.position.x, y: chapterTitle.position.y - chapterTitle.frame.height/2 - 10)
+        chapterNumber.zPosition = Follie.zPos.loseMenu.rawValue
+        self.addChild(chapterNumber)
+        chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        
+        let progressBackgroundTexture = SKTexture(imageNamed: "progressBackground")
+        let progressBackground = SKSpriteNode(texture: progressBackgroundTexture)
+        let newWidth = self.screenW * 0.7
+        let newHeight: CGFloat = 10
+        progressBackground.size = CGSize(width: newWidth, height: newHeight)
+        progressBackground.position = CGPoint(x: screenW/2, y: screenH/2)
+        progressBackground.alpha = 0
+        progressBackground.zPosition = Follie.zPos.loseMenu.rawValue
+        self.addChild(progressBackground)
+        progressBackground.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        
+        let retryTexture = SKTexture(imageNamed: "retry")
+        let retry = SKSpriteNode(texture: retryTexture)
+        let retryWidth: CGFloat = 35
+        let retryHeight = retry.size.height * (retryWidth / retry.size.width)
+        retry.size = CGSize(width: retryWidth, height: retryHeight)
+        let retryX = progressBackground.position.x + progressBackground.size.width/2 - retry.size.width/2
+        retry.position = CGPoint(x: retryX, y: screenH/4)
+        retry.alpha = 0
+        retry.zPosition = Follie.zPos.loseMenu.rawValue
+        self.addChild(retry)
+        retry.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        
+        let menuTexture = SKTexture(imageNamed: "mainMenuButton")
+        let menu = SKSpriteNode(texture: menuTexture)
+        let menuWidth: CGFloat = 35
+        let menuHeight = menu.size.height * (menuWidth / menu.size.width)
+        menu.size = CGSize(width: menuWidth, height: menuHeight)
+        let menuX = progressBackground.position.x - progressBackground.size.width/2 + menu.size.width/2
+        menu.position = CGPoint(x: menuX, y: screenH/4)
+        menu.alpha = 0
+        menu.zPosition = Follie.zPos.loseMenu.rawValue
+        self.addChild(menu)
+        menu.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
     }
     
     func missed() {

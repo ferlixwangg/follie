@@ -14,6 +14,7 @@ class Follie {
     private init() {}
     
     enum zPos: CGFloat {
+        case loseMenu = 11
         case screenCover = 10
         case fairy = 5
         case fairyGlow = -1
