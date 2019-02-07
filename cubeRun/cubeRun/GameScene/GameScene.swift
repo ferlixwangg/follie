@@ -338,7 +338,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         self.scene?.speed = 0.3
                         
                         if (self.textHasBeenDisplayed == false) {
-                            self.tutorialText.text = "Move the penguin to the front of the star and tap on the right screen to get the star"
+                            self.tutorialText.text = "Move the penguin to the front of the star and tap on the right screen"
                             self.addChild(self.tutorialText)
                             self.textHasBeenDisplayed = true
                             
@@ -939,8 +939,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
-        self.blockTimer?.invalidate()
-        self.blockTimer = nil
+//        self.blockTimer?.invalidate()
+//        self.blockTimer = nil
         
         guard let point = touches.first?.location(in: self) else { return }
         
@@ -967,7 +967,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         self.helpingFingerTap.removeFromParent()
                         self.textHasBeenDisplayed = false
                         
-                        self.tutorialText.text = "Hold onto the right screen to get stars with line"
+                        self.tutorialText.text = "Hold and keep the penguin on the line, release the hold at the star at the end of the line"
                         self.thirdTuto = true
                         self.startTutorial3()
                         self.successfulHit()
