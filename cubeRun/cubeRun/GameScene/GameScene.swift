@@ -1178,6 +1178,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
                 if (onTuto == false) {
                     self.missed()
+                } else {
+                    self.hideAurora()
                 }
                 self.contactingLines.first!.strokeColor = SKColor.red
                 
@@ -1190,7 +1192,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
             
             // Repeat Tutorial 3 if players failed
-            if (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isAtLine == false || self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == false){
+            if (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isAtLine == false || self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == false || (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == true && self.isAtLine == true)){
                 self.thirdTuto = true
                 self.thirdTuto2 = false
                 self.thirdTutoFlag = false
@@ -1206,7 +1208,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     
                     DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1, execute: {
                         self.textHasBeenDisplayed = false
-                        self.tutorialText.text = "Hold onto the right screen to get stars with line"
+                        self.tutorialText.text = "Hold and keep the penguin on the line, release the hold at the star at the end of the line"
                         self.tutorialText.removeFromParent()
                         self.tutorialText.alpha = 1.0
                         
