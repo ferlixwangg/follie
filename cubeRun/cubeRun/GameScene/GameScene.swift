@@ -1223,6 +1223,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.missed()
                 } else {
                     self.hideAurora()
+                    let generator = UIImpactFeedbackGenerator(style: .light)
+                    generator.impactOccurred()
                 }
                 self.contactingLines.first!.strokeColor = SKColor.red
                 

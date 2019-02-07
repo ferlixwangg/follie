@@ -247,6 +247,10 @@ class MainMenu: SKScene {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
+        if (self.chapterChosen) {
+            return
+        }
+        
         // Obtain the node that is touched
         let touch: UITouch = touches.first! as UITouch
         let positionInScene = touch.location(in: self.ground)
@@ -312,29 +316,26 @@ class MainMenu: SKScene {
                         glow.run(SKAction.repeatForever(SKAction.sequence(glowAction)))
                         node.addChild(glow)
                     } else {
+                        self.chapterChosen = true
                         
-                        if (self.chapterChosen == false) {
-                            self.chapterChosen = true
+                        self.run(self.playedChapterSfx)
+                        self.stopBackgroundMusic()
+                        
+                        self.run(SKAction.fadeOut(withDuration: 2.0)) {
+                            // Preload animation
+                            var preAtlas = [SKTextureAtlas]()
+                            preAtlas.append(SKTextureAtlas(named: "Baby"))
                             
-                            self.run(self.playedChapterSfx)
-                            self.stopBackgroundMusic()
-                            
-                            self.run(SKAction.fadeOut(withDuration: 2.0)) {
-                                // Preload animation
-                                var preAtlas = [SKTextureAtlas]()
-                                preAtlas.append(SKTextureAtlas(named: "Baby"))
-                                
-                                // Move to next scene
-                                SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
-                                    DispatchQueue.main.sync {
-                                        let transition = SKTransition.fade(withDuration: 1)
-                                        if let scene = SKScene(fileNamed: "GameScene") {
-                                            scene.scaleMode = .aspectFill
-                                            self.view?.presentScene(scene, transition: transition)
-                                        }
+                            // Move to next scene
+                            SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
+                                DispatchQueue.main.sync {
+                                    let transition = SKTransition.fade(withDuration: 1)
+                                    if let scene = SKScene(fileNamed: "GameScene") {
+                                        scene.scaleMode = .aspectFill
+                                        self.view?.presentScene(scene, transition: transition)
                                     }
-                                })
-                            }
+                                }
+                            })
                         }
                     }
                 }
