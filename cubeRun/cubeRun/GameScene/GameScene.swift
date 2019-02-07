@@ -34,6 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Music and Block
     var music: Music!
+    var totalMusicDuration: Double!
     var currMusicDuration: Double = 0
     var musicTimer: Timer? = nil
     var musicTimerDuration: Double = 1
@@ -99,6 +100,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var fairyCurrPosition: CGPoint! // fairy position when game ends, created this var to allow aurora to follow fairy
     
     var isDismiss: Bool = false // check if screen will be dismissed so it doesnt call presentScene multiple times
+    
+    var progressNode: SKSpriteNode!
+    var progressDistance: CGFloat!
+    
+    var lifeArray: [SKSpriteNode] = []
     
     deinit {
         print("game scene deinit")
@@ -420,7 +426,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.setFairy()
         self.setAurora()
         
+        self.setupLife()
+        self.animateProgress()
+        
         self.setScreenCover()
+        
     } // setup before gameplay starts (load and put in place all nodes)
     
     func setBlock() {
@@ -441,6 +451,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             self.player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
             self.player.delegate = self
+            self.totalMusicDuration = self.player.duration
         } catch let error {
             print(error.localizedDescription)
         }
@@ -458,6 +469,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     func startGameplay() {
         self.player.play()
+        
+        self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
         
         self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
         
@@ -592,6 +605,57 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         }
         
         self.nextCountdown = Int.random(in: 0 ... self.maxInterval) + Int(n)
+    }
+    
+    func animateProgress() {
+        let progressLineTexture = SKTexture(imageNamed: "progressLine")
+        let progressLine = SKSpriteNode(texture: progressLineTexture)
+        
+        let newWidth = screenW * 0.7
+        let newHeight: CGFloat = 3
+        
+        progressLine.size = CGSize(width: newWidth, height: newHeight)
+        progressLine.position = CGPoint(x: screenW/2, y: screenH/10*9)
+        progressLine.zPosition = Follie.zPos.visibleBlock.rawValue
+        self.addChild(progressLine)
+        
+        
+        let progressNodeTexture = SKTexture(imageNamed: "gameSnowflake")
+        self.progressNode = SKSpriteNode(texture: progressNodeTexture)
+        
+        let newH: CGFloat = 20
+        let newW = self.progressNode.size.width * (newH / self.progressNode.size.height)
+        self.progressNode.size = CGSize(width: newW, height: newH)
+        
+        let newX = progressLine.position.x - progressLine.size.width/2
+        self.progressNode.position = CGPoint(x: newX, y: progressLine.position.y)
+        self.progressNode.zPosition = Follie.zPos.visibleBlock.rawValue
+        self.addChild(self.progressNode)
+        
+        self.progressDistance = progressLine.size.width
+    }
+    
+    func setupLife() {
+        let lifeTexture = SKTexture(imageNamed: "lifePiece")
+        
+        for i in 1 ... Int(self.maxLife) {
+            let lifeNode = SKSpriteNode(texture: lifeTexture)
+            lifeNode.anchorPoint = CGPoint(x: 0.5, y: -0.1)
+            
+            let newH: CGFloat = 15
+            let newW = lifeNode.size.width * (newH / lifeNode.size.height)
+            lifeNode.size = CGSize(width: newW, height: newH)
+            
+            lifeNode.position = CGPoint(x: self.screenW/10, y: screenH/10*9)
+            lifeNode.zPosition = Follie.zPos.visibleBlock.rawValue
+            
+            let radAngle = CGFloat(72 * -i) * .pi / 180
+            lifeNode.run(SKAction.rotate(toAngle: radAngle, duration: 0))
+            
+            self.addChild(lifeNode)
+            self.lifeArray.append(lifeNode)
+        }
+        self.lifeArray.reverse()
     }
     
     func setScreenSize() {
@@ -734,7 +798,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.musicTimer?.invalidate()
         self.musicTimer = nil
-        // go to menu (chap selection/retry)
+        
+        self.progressNode.removeAllActions()
     }
     
     func showLoseMenu() {
@@ -812,17 +877,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func missed() {
+        if (self.isLose) {
+            return
+        }
+        
         let generator = UIImpactFeedbackGenerator(style: .light)
         generator.impactOccurred()
         
         self.hideAurora()
         
-        self.currCoverAlpha = self.screenCover.alpha + (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.missVal))
-        self.screenCover.run(SKAction.fadeAlpha(to: self.currCoverAlpha, duration: 0.2))
+//        self.currCoverAlpha = self.screenCover.alpha + (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.missVal))
+//        self.screenCover.run(SKAction.fadeAlpha(to: self.currCoverAlpha, duration: 0.2))
         
         self.currLife -= self.missVal
+        
+        if !(self.currLife < 0) {
+            if (floor(self.currLife) != self.currLife) {
+                // currLife is not an integer, thus containing .5 (eg. 3.5)
+                self.lifeArray[Int(ceil(self.currLife))].run(SKAction.fadeOut(withDuration: 0.5))
+                self.lifeArray[Int(self.currLife)].run(SKAction.fadeAlpha(to: 0.5, duration: 0.5))
+            }
+            else {
+                self.lifeArray[Int(self.currLife)].run(SKAction.fadeOut(withDuration: 0.5))
+            }
+        }
+        
         if (self.currLife <= 0) {
             // lose
+            self.lifeArray[0].run(SKAction.fadeOut(withDuration: 0.5))
             self.lose()
         }
     }
@@ -863,15 +945,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func correct() {
         self.showAurora()
         
-        self.currCoverAlpha = self.screenCover.alpha - (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.correctVal))
-        if (self.currCoverAlpha <= self.minCoverAlpha) {
-            self.currCoverAlpha = self.minCoverAlpha
-        }
-        self.screenCover.run(SKAction.fadeAlpha(to: self.currCoverAlpha, duration: 0.2))
+//        self.currCoverAlpha = self.screenCover.alpha - (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.correctVal))
+//        if (self.currCoverAlpha <= self.minCoverAlpha) {
+//            self.currCoverAlpha = self.minCoverAlpha
+//        }
+//        self.screenCover.run(SKAction.fadeAlpha(to: self.currCoverAlpha, duration: 0.2))
 
         self.currLife += self.correctVal
         if (self.currLife > self.maxLife) {
             self.currLife = self.maxLife
+            return
+        }
+        
+        if (floor(self.currLife) != self.currLife) {
+            // currLife is not an integer, thus containing .5 (eg. 3.5)
+            self.lifeArray[Int(self.currLife)].run(SKAction.fadeAlpha(by: 0.5, duration: 0.5))
+        }
+        else {
+            self.lifeArray[Int(self.currLife)-1].run(SKAction.fadeAlpha(by: 0.5, duration: 0.5))
+
         }
     }
     
