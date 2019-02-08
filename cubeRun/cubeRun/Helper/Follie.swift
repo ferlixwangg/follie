@@ -51,6 +51,8 @@ class Follie {
         return CGSize(width: screenSize.width, height: height)
     } // get screen size for current device
     
+    static var selectedChapter: Int!
+    
     static let groundRatio: Double = 1/6 // ground height ratio to the screen height
     
     static let backgroundRatio: Double = 1/3 // background1 & background2 height ratio to the screen

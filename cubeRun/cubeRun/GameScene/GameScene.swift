@@ -13,7 +13,7 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Current chapter
-    var chapterNo: Int = 1
+    var chapterNo: Int = 0
     var chapterTitle: String!
     
     // Screen size
@@ -78,6 +78,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     let holdChance: Double = 4/10 // percentage of connecting blocks appearing
     var currBlockNameFlag: Int = 0 // name flag of closest block to reach the fairy
     var isChangedBlock: Bool = false
+    var isClickable: Bool = false
     
     var currBlock: SKSpriteNode! // name of closest block node to reach fairy
     var currLine: SKShapeNode! // name of closest connecting line node to reach fairy
@@ -123,6 +124,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     override func didMove(to view: SKView) {
+        self.chapterNo = Follie.selectedChapter
+        
         self.initialSetup()
         
         if (onTuto == true) {
@@ -459,6 +462,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             self.player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
             self.player.delegate = self
+            self.player.numberOfLoops = 0
             self.totalMusicDuration = self.player.duration
         } catch let error {
             print(error.localizedDescription)
@@ -812,6 +816,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 4)) {
                 self.scene?.run(SKAction.speed(to: 0, duration: 4))
+                self.isCurrentlyPaused = true
                 self.showLoseMenu()
             }
         }
@@ -960,6 +965,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 }
                 
                 self.removeAllActions()
+                self.isCurrentlyPaused = true
                 self.showWinMenu()
             }
         }
@@ -1086,6 +1092,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             self.currBlock = block
             self.isBlockContact = true
+            self.isClickable = true
             
             if (self.contactingLines.first?.name == block.name) {
                 self.contactingLines.remove(at: 0)
@@ -1130,6 +1137,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 block = (contact.bodyB.node as! SKSpriteNode)
             }
             
+            self.isClickable = true
+            
             if (self.contactingLines.first?.name == block.name) {
                 self.contactingLines.remove(at: 0)
             }
@@ -1159,6 +1168,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 block = (contact.bodyB.node as! SKSpriteNode)
             }
             
+            self.isClickable = false
             self.isChangedBlock = true
             
             if (self.isAtLine && self.isHit) {
@@ -1295,6 +1305,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         fadeOutNode.lineWidth = 0
         fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
         self.addChild(fadeOutNode)
+        
+        self.blockTimer?.invalidate()
+        self.blockTimer = nil
         
         fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
             let newScene = MainMenu(size: self.size)
@@ -1438,8 +1451,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     }
                 }
                 else{
-                    self.successfulHit()
-                    self.isChangedBlock = false
+                    if (self.isClickable) {
+                        self.successfulHit()
+                        self.isChangedBlock = false
+                    }
                 }
             }
         }

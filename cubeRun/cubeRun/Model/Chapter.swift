@@ -16,18 +16,18 @@ class Chapter {
     var chapterNo: Int
     
     private let chapterMusic: [Int:Music] = [
-        1: Music(name: "DYATHON - Goodbye", secPerBeat: 1)
-//        2: Music(name: <#T##String#>, secPerBeat: <#T##Double#>)
+        1: Music(name: "DYATHON - Your Eyes", secPerBeat: (Double(60)/Double(78))),
+        2: Music(name: "DYATHON - Blooming Romance", secPerBeat: (Double(60)/Double(89)))
     ]
     
     private let chapterTitle: [Int:String] = [
-        1: "Hope",
+        1: "Your Eyes",
         2: "Blooming Romance"
     ]
     
     private let chapterBackground: [Int:Background] = [
-        1: Background(skyName: "Sky", backgroundName: "Ground", bg1Name: "Background1", bg2Name: "Background2")
-//        2: Background(
+        1: Background(skyName: "Sky", backgroundName: "Ground", bg1Name: "Background1", bg2Name: "Background2"),
+        2: Background(skyName: "Sky", backgroundName: "Ground", bg1Name: "Background1", bg2Name: "Background2")
     ]
     
     func getMusic() -> Music {

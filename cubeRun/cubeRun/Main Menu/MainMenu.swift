@@ -317,6 +317,7 @@ class MainMenu: SKScene {
                         node.addChild(glow)
                     } else {
                         self.chapterChosen = true
+                        Follie.selectedChapter = index
                         
                         self.run(self.playedChapterSfx)
                         self.stopBackgroundMusic()
