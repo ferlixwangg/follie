@@ -42,7 +42,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Timer
     var onTrackTimer: Timer? = nil
-    var currTimerVal: Double = 0
     var currSec: Double!
     var diffSec: Double!
     
@@ -78,6 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     let maxHoldBeat: Int = 2 // max number of beats in one hold gesture between 2 blocks
     let holdChance: Double = 4/10 // percentage of connecting blocks appearing
     var currBlockNameFlag: Int = 0 // name flag of closest block to reach the fairy
+    var isChangedBlock: Bool = false
     
     var currBlock: SKSpriteNode! // name of closest block node to reach fairy
     var currLine: SKShapeNode! // name of closest connecting line node to reach fairy
@@ -920,9 +920,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.hideAurora()
         
-//        self.currCoverAlpha = self.screenCover.alpha + (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.missVal))
-//        self.screenCover.run(SKAction.fadeAlpha(to: self.currCoverAlpha, duration: 0.2))
-        
         self.currLife -= self.missVal
         
         if !(self.currLife < 0) {
@@ -1076,7 +1073,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         if ((contact.bodyA.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.blockCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue)) {
             // contact fairy & block
-            //            print("allow hit")
             var block: SKSpriteNode!
             
             if (contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue) {
@@ -1091,6 +1087,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.currBlock = block
             self.isBlockContact = true
             
+            if (self.contactingLines.first?.name == block.name) {
+                self.contactingLines.remove(at: 0)
+            }
+            
             if (block.name == "\(self.currBlockNameFlag)") {
                 self.currBlockNameFlag += 1
             }
@@ -1099,11 +1099,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 // check whether block is connected by a line
                 self.contactingLines.append(self.upcomingLines.first!)
                 self.upcomingLines.remove(at: 0)
+                
+                if (self.isAtLine) {
+                    self.isHit = true
+                    self.isChangedBlock = false
+                    
+                    self.contactingLines.first?.zPosition = Follie.zPos.hiddenSky.rawValue
+                    self.upcomingBlocks.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+                    
+                    let actions: [SKAction] = [
+                        SKAction.fadeIn(withDuration: 0.2),
+                        SKAction.fadeOut(withDuration: 0.2)
+                    ]
+                    self.fairyGlow.run(SKAction.sequence(actions))
+                    
+                    self.correct()
+                }
             }
         }
         else if ((contact.bodyA.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.blockCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyLineCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue)) {
-            // contact fairy & block
-            //            print("allow hit")
+            // contact fairyLine & block
             var block: SKSpriteNode!
             
             if (contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue) {
@@ -1113,6 +1128,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             else {
                 // bodyB is block
                 block = (contact.bodyB.node as! SKSpriteNode)
+            }
+            
+            if (self.contactingLines.first?.name == block.name) {
+                self.contactingLines.remove(at: 0)
             }
             
             if (block.name == "\(self.currBlockNameFlag)") {
@@ -1140,8 +1159,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 block = (contact.bodyB.node as! SKSpriteNode)
             }
             
+            self.isChangedBlock = true
+            
             if (self.isAtLine && self.isHit) {
-                
+                // safe
             }
             else if (!self.isHit) {
                 // miss single block
@@ -1151,6 +1172,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.isAtLine = false
                 
                 if (self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
+                    print("miss single")
                     self.contactingLines.first!.strokeColor = SKColor.red
                     
                     let actions: [SKAction] = [
@@ -1160,9 +1182,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.contactingLines.first!.run(SKAction.sequence(actions))
                     self.contactingLines.remove(at: 0)
                     
-                    if (onTuto == false) {
-                        self.missed()
-                    }
+                    self.missed()
                 }
                 
                 block.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat.pi, duration: 1)))
@@ -1177,15 +1197,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.win()
                 return
             }
-            
-            if (self.contactingLines.first?.name == block.name) {
-                self.contactingLines.remove(at: 0)
-            }
         }
         else if ((contact.bodyA.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.blockCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.blockCategory.rawValue)) {
             // contact end fairy & block
             self.isBlockContact = false
             self.currBlock = nil
+            
+            
         }
         else if ((contact.bodyA.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyB.categoryBitMask == Follie.categories.holdLineCategory.rawValue) || (contact.bodyB.categoryBitMask == Follie.categories.fairyCategory.rawValue && contact.bodyA.categoryBitMask == Follie.categories.holdLineCategory.rawValue)) {
             // contact end fairy & line
@@ -1199,26 +1217,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 line = (contact.bodyB.node as! SKShapeNode)
             }
             
-            if (self.isAtLine && (line.name == self.contactingLines.first?.name)) {
-                if (self.isBlockContact && self.currBlock.name == line.name) {
+            if (self.isAtLine) {
+                if (self.contactingLines.count > 0) {
+                    let lineNameInt = Int(line.name!)
+                    let tempName = Int((self.upcomingBlocks.first?.name)!)! + 1
+                    if ((!self.isBlockContact) || (tempName == lineNameInt)) {
+                        self.missed()
+                        
+                        self.contactingLines.first!.strokeColor = SKColor.red
+                        
+                        let actions: [SKAction] = [
+                            SKAction.fadeOut(withDuration: 0.3),
+                            SKAction.removeFromParent()
+                        ]
+                        self.contactingLines.first!.run(SKAction.sequence(actions))
+                        self.contactingLines.remove(at: 0)
+                        self.isAtLine = false
+                        self.isHit = false
+                    }
                     // safe
-                    return
                 }
-                
-                if (onTuto == false) {
+                else {
+                    // success on first star but fairy moved out of line
+                    print("miss long")
                     self.missed()
-                } else {
-                    self.hideAurora()
+                    
+                    self.contactingLines.first!.strokeColor = SKColor.red
+                    
+                    let actions: [SKAction] = [
+                        SKAction.fadeOut(withDuration: 0.3),
+                        SKAction.removeFromParent()
+                    ]
+                    self.contactingLines.first!.run(SKAction.sequence(actions))
+                    self.contactingLines.remove(at: 0)
+                    self.isAtLine = false
+                    self.isHit = false
                 }
-                
-                self.contactingLines.first!.strokeColor = SKColor.red
-                
-                let actions: [SKAction] = [
-                    SKAction.fadeOut(withDuration: 0.3),
-                    SKAction.removeFromParent()
-                ]
-                self.contactingLines.first!.run(SKAction.sequence(actions))
-                self.contactingLines.remove(at: 0)
             }
         }
     }
@@ -1226,7 +1260,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func successfulHit() {
         // successfully hit
         self.isHit = true
-        self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+        if (self.currBlock != nil) {
+            self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+        }
+        self.upcomingBlocks.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
         
         let actions: [SKAction] = [
             SKAction.fadeIn(withDuration: 0.2),
@@ -1365,9 +1402,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         if (point.x > screenW/2) {
             // touch right part of the screen start
-            if (self.isBlockContact && !self.isHit && self.currBlock != nil) {
+            if (self.isBlockContact && !self.isHit) {
                 
-                if (self.currBlock.name == "\(self.thirdTutoCount)"){
+                if (self.currBlock != nil && self.currBlock.name == "\(self.thirdTutoCount)"){
                     self.thirdTutoFlag2 = true
                 }
                 else{
@@ -1402,6 +1439,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 }
                 else{
                     self.successfulHit()
+                    self.isChangedBlock = false
                 }
             }
         }
@@ -1416,111 +1454,161 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         if (point.x > screenW/2) {
             // touch right part of the screen ends
-            if (self.isAtLine && self.isBlockContact && (self.currBlock.name == self.contactingLines.first?.name)) {
-                
-                // Passed Tutorial 3
-                if (self.thirdTuto2 == true && self.isAtLine == true && self.isBlockContact == true){
-                    self.thirdTuto2 = false
-                    self.tutorialText.removeFromParent()
-                    self.helpingFingerHold.removeFromParent()
+            if (self.onTuto) {
+                if (self.isAtLine && self.isBlockContact && (self.currBlock.name == self.contactingLines.first?.name)) {
                     
-                    let action: [SKAction] = [
-                        SKAction.wait(forDuration: 2),
-                        SKAction.fadeAlpha(to: 1, duration: 0.5),
-                        SKAction.wait(forDuration: 2.5),
-                        SKAction.fadeAlpha(to: 0, duration: 0.5)
-                    ]
-                    
-                    self.tutorialText.text = "Okay, you're all set!"
-                    self.tutorialText.run(SKAction.sequence(action))
-                    self.addChild(self.tutorialText)
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        self.tutorialText.text = "You have 5 lives. Try not to miss the beat"
+                    // Passed Tutorial 3
+                    if (self.thirdTuto2 == true && self.isAtLine == true && self.isBlockContact == true){
+                        self.thirdTuto2 = false
+                        self.tutorialText.removeFromParent()
+                        self.helpingFingerHold.removeFromParent()
+                        
+                        let action: [SKAction] = [
+                            SKAction.wait(forDuration: 2),
+                            SKAction.fadeAlpha(to: 1, duration: 0.5),
+                            SKAction.wait(forDuration: 2.5),
+                            SKAction.fadeAlpha(to: 0, duration: 0.5)
+                        ]
+                        
+                        self.tutorialText.text = "Okay, you're all set!"
                         self.tutorialText.run(SKAction.sequence(action))
+                        self.addChild(self.tutorialText)
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                            self.tutorialText.text = "Every 2 successful hits will regain 1 of your live"
+                            self.tutorialText.text = "You have 5 lives. Try not to miss the beat"
                             self.tutorialText.run(SKAction.sequence(action))
                             
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-                                self.tutorialText.text = "Let's catch the beat with follie!"
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                self.tutorialText.text = "Every 2 successful hits will regain 1 of your live"
                                 self.tutorialText.run(SKAction.sequence(action))
                                 
-                                DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
-                                    self.tutorialText.removeFromParent()
-                                }
-                                
-                                DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
-                                    UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-                                    self.onTuto = false
-                                    self.startGameplay()
-                                }
-                            })
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+                                    self.tutorialText.text = "Let's catch the beat with follie!"
+                                    self.tutorialText.run(SKAction.sequence(action))
+                                    
+                                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
+                                        self.tutorialText.removeFromParent()
+                                    }
+                                    
+                                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
+                                        UserDefaults.standard.set(true, forKey: "TutorialCompleted")
+                                        self.onTuto = false
+                                        self.startGameplay()
+                                    }
+                                })
+                            }
                         }
+                    }
+                    
+                    self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+                    self.isHit = true
+                    
+                    let actions: [SKAction] = [
+                        SKAction.fadeIn(withDuration: 0.2),
+                        SKAction.fadeOut(withDuration: 0.2)
+                    ]
+                    self.fairyGlow.run(SKAction.sequence(actions))
+                    
+                    self.correct()
+                }
+                else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
+                    if (onTuto == false) {
+                        self.missed()
+                    } else {
+                        self.hideAurora()
+                        let generator = UIImpactFeedbackGenerator(style: .light)
+                        generator.impactOccurred()
+                    }
+                    self.contactingLines.first!.strokeColor = SKColor.red
+                    
+                    let actions: [SKAction] = [
+                        SKAction.fadeOut(withDuration: 0.3),
+                        SKAction.removeFromParent()
+                    ]
+                    self.contactingLines.first!.run(SKAction.sequence(actions))
+                    self.contactingLines.remove(at: 0)
+                }
+                
+                // Repeat Tutorial 3 if players failed
+                if (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isAtLine == false || self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == false || (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == true && self.isAtLine == true)){
+                    self.thirdTuto = true
+                    self.thirdTuto2 = false
+                    self.thirdTutoFlag = false
+                    self.thirdTutoFlag2 = false
+                    self.thirdTutoCount += 2
+                    
+                    self.helpingFingerHold.removeFromParent()
+                    self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
+                    self.tutorialText.text = "Oops! You've missed the beat. Let's try again"
+                    self.tutorialText.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2) {
+                        self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
+                        
+                        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1, execute: {
+                            self.textHasBeenDisplayed = false
+                            self.tutorialText.text = "Try to keep the penguin on the line.\nHold and release at the end of the line"
+                            self.tutorialText.removeFromParent()
+                            self.tutorialText.alpha = 1.0
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                self.startTutorial3()
+                            }
+                        })
                     }
                 }
                 
-                self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
-                self.isHit = true
-                
-                let actions: [SKAction] = [
-                    SKAction.fadeIn(withDuration: 0.2),
-                    SKAction.fadeOut(withDuration: 0.2)
-                ]
-                self.fairyGlow.run(SKAction.sequence(actions))
-                
-                self.correct()
+                self.isAtLine = false
             }
-            else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
-                if (onTuto == false) {
-                    self.missed()
-                } else {
-                    self.hideAurora()
-                    let generator = UIImpactFeedbackGenerator(style: .light)
-                    generator.impactOccurred()
-                }
-                self.contactingLines.first!.strokeColor = SKColor.red
-                
-                let actions: [SKAction] = [
-                    SKAction.fadeOut(withDuration: 0.3),
-                    SKAction.removeFromParent()
-                ]
-                self.contactingLines.first!.run(SKAction.sequence(actions))
-                self.contactingLines.remove(at: 0)
-            }
-            
-            // Repeat Tutorial 3 if players failed
-            if (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isAtLine == false || self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == false || (self.thirdTutoFlag2 == true && self.thirdTuto2 == true && self.isBlockContact == true && self.isAtLine == true)){
-                self.thirdTuto = true
-                self.thirdTuto2 = false
-                self.thirdTutoFlag = false
-                self.thirdTutoFlag2 = false
-                self.thirdTutoCount += 2
-                
-                self.helpingFingerHold.removeFromParent()
-                self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
-                self.tutorialText.text = "Oops! You've missed the beat. Let's try again"
-                self.tutorialText.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-                DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2) {
-                    self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
+            else {
+                // not onTuto
+                if (self.isAtLine && self.isBlockContact && self.isChangedBlock && (Int((self.upcomingBlocks.first?.name)!) == (self.currBlockNameFlag-1))) {
+                    self.isHit = true
+                    self.isChangedBlock = false
                     
-                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1, execute: {
-                        self.textHasBeenDisplayed = false
-                        self.tutorialText.text = "Try to keep the penguin on the line.\nHold and release at the end of the line"
-                        self.tutorialText.removeFromParent()
-                        self.tutorialText.alpha = 1.0
+                    self.upcomingBlocks.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
+                    
+                    let actions: [SKAction] = [
+                        SKAction.fadeIn(withDuration: 0.2),
+                        SKAction.fadeOut(withDuration: 0.2)
+                    ]
+                    self.fairyGlow.run(SKAction.sequence(actions))
+                    
+                    self.correct()
+                    
+                    if (self.contactingLines.count > 0) {
+                        self.contactingLines.first!.strokeColor = SKColor.red
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            self.startTutorial3()
-                        }
-                    })
+                        let actions: [SKAction] = [
+                            SKAction.fadeOut(withDuration: 0.3),
+                            SKAction.removeFromParent()
+                        ]
+                        self.contactingLines.first!.run(SKAction.sequence(actions))
+                        self.contactingLines.remove(at: 0)
+                        
+                        self.missed()
+                    }
                 }
+                else if (self.isAtLine){
+                    if (self.contactingLines.count > 0) {
+                        self.contactingLines.first!.strokeColor = SKColor.red
+                        
+                        let actions: [SKAction] = [
+                            SKAction.fadeOut(withDuration: 0.3),
+                            SKAction.removeFromParent()
+                        ]
+                        self.contactingLines.first!.run(SKAction.sequence(actions))
+                        self.contactingLines.remove(at: 0)
+                        
+                        self.missed()
+                    }
+                }
+                
+                self.isAtLine = false
             }
             
-            self.isAtLine = false
         }
         else {
+            // touch left part of screen ends
             if (self.fairyUp) {
                 self.fairyNode.run(SKAction.rotate(byAngle: -CGFloat.pi/13, duration: 0.2))
             }
