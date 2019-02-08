@@ -15,12 +15,6 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
-        
-//        let vignetteAtlas = SKTextureAtlas(named: "Vignette")
-//        let textureAtlases: [SKTextureAtlas] = [vignetteAtlas]
-//        SKTextureAtlas.preloadTextureAtlases(textureAtlases) {
-//            self.startScene()
-//        }
 
         self.startScene()
     }
@@ -45,7 +39,7 @@ class GameViewController: UIViewController {
     }
 
     override var shouldAutorotate: Bool {
-        return true
+        return false
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {

@@ -31,6 +31,7 @@
 		BA5313D6220826090044BDFD /* Play Chapter.wav in Resources */ = {isa = PBXBuildFile; fileRef = BA5313D4220826090044BDFD /* Play Chapter.wav */; };
 		BA5313D7220826090044BDFD /* Rising Chapter.wav in Resources */ = {isa = PBXBuildFile; fileRef = BA5313D5220826090044BDFD /* Rising Chapter.wav */; };
 		BA531427220B00500044BDFD /* Vignette.atlas in Resources */ = {isa = PBXBuildFile; fileRef = BA531426220B00500044BDFD /* Vignette.atlas */; };
+		BA53144B220DED910044BDFD /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA53144A220DED910044BDFD /* StoreKit.framework */; };
 		BA5467C4220362390078924A /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5467C3220362390078924A /* MainMenu.swift */; };
 		BA5467C8220362660078924A /* MainMenu.sks in Resources */ = {isa = PBXBuildFile; fileRef = BA5467C7220362660078924A /* MainMenu.sks */; };
 		BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */; };
@@ -67,6 +68,7 @@
 		BA5313D4220826090044BDFD /* Play Chapter.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Play Chapter.wav"; sourceTree = "<group>"; };
 		BA5313D5220826090044BDFD /* Rising Chapter.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Rising Chapter.wav"; sourceTree = "<group>"; };
 		BA531426220B00500044BDFD /* Vignette.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Vignette.atlas; sourceTree = "<group>"; };
+		BA53144A220DED910044BDFD /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		BA5467C3220362390078924A /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		BA5467C7220362660078924A /* MainMenu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MainMenu.sks; sourceTree = "<group>"; };
 		BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Monologue.mp3"; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA53144B220DED910044BDFD /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,6 +95,7 @@
 			children = (
 				8505DD4F21E5E2FD001D66A6 /* cubeRun */,
 				8505DD4E21E5E2FD001D66A6 /* Products */,
+				BA531449220DED910044BDFD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -188,6 +192,14 @@
 			path = Emitters;
 			sourceTree = "<group>";
 		};
+		BA531449220DED910044BDFD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BA53144A220DED910044BDFD /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		BA5467C2220361F20078924A /* Main Menu */ = {
 			isa = PBXGroup;
 			children = (
@@ -238,6 +250,11 @@
 				TargetAttributes = {
 					8505DD4C21E5E2FD001D66A6 = {
 						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -451,14 +468,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 98R673PJSG;
+				DEVELOPMENT_TEAM = W7GMLURGAQ;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Steven-Muliamin.Follie";
+				PRODUCT_BUNDLE_IDENTIFIER = Ferlix.Follie;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -470,14 +487,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 98R673PJSG;
+				DEVELOPMENT_TEAM = W7GMLURGAQ;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Steven-Muliamin.Follie";
+				PRODUCT_BUNDLE_IDENTIFIER = Ferlix.Follie;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
