@@ -42,6 +42,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var blockTimer: Timer? = nil
     var player: AVAudioPlayer!
     
+    // Pause Menu
+    var pauseText: SKLabelNode!
+    var resumeButton: SKSpriteNode!
+    var backToMainMenuButton: SKSpriteNode!
+    
     // Tutorial
     var onTuto: Bool = !(UserDefaults.standard.bool(forKey: "TutorialCompleted"))
     var limitMovement: Bool = false // so that player cannot move before the first tutorial start
@@ -96,6 +101,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var currCoverAlpha: CGFloat = 0 // screen cover current alpha
     
     var isLose: Bool = false // whether the player has lost or not
+    var isWin: Bool = false // whether the player has win or not
+    var isCurrentlyPaused: Bool = false // whether the scene is paused
     var auroraTimer: Timer? = nil // aurora following fairy when game ends
     var fairyCurrPosition: CGPoint! // fairy position when game ends, created this var to allow aurora to follow fairy
     
@@ -426,9 +433,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.setFairy()
         self.setAurora()
         
-        self.setupLife()
-        self.animateProgress()
-        
         self.setScreenCover()
         
     } // setup before gameplay starts (load and put in place all nodes)
@@ -465,10 +469,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         // chapter title
         self.chapterTitle = chapter.getTitle()
+        
+        // Pause Button
+        let pauseTexture = SKTexture(imageNamed: "Pause Button")
+        let pauseButton = SKSpriteNode(texture: pauseTexture)
+        pauseButton.name = "pause"
+        pauseButton.position = CGPoint(x: self.screenW/10*9, y: self.screenH/10*9)
+        self.addChild(pauseButton)
     }
     
     func startGameplay() {
         self.player.play()
+        
+        self.setupLife()
+        self.animateProgress()
         
         self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
         
@@ -654,6 +668,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             self.addChild(lifeNode)
             self.lifeArray.append(lifeNode)
+            
         }
         self.lifeArray.reverse()
     }
@@ -809,68 +824,69 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         chapterTitle.fontColor = UIColor.white
         chapterTitle.position = CGPoint(x: self.screenW/2, y: self.screenH/4*3)
         chapterTitle.alpha = 0
-        chapterTitle.zPosition = Follie.zPos.loseMenu.rawValue
+        chapterTitle.zPosition = Follie.zPos.inGameMenu.rawValue
         self.addChild(chapterTitle)
         chapterTitle.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         
-        let chapterNumber = SKLabelNode(fontNamed: "Roboto-Regular")
+        let chapterNumber = SKLabelNode(fontNamed: ".SFUIText")
         chapterNumber.text = "Chapter \(self.chapterNo)"
         chapterNumber.fontSize = 20
         chapterNumber.fontColor = UIColor.white
         chapterNumber.alpha = 0
         chapterNumber.position = CGPoint(x: chapterTitle.position.x, y: chapterTitle.position.y - chapterTitle.frame.height/2 - 10)
-        chapterNumber.zPosition = Follie.zPos.loseMenu.rawValue
+        chapterNumber.zPosition = Follie.zPos.inGameMenu.rawValue
         self.addChild(chapterNumber)
         chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         
-        let progressBackgroundTexture = SKTexture(imageNamed: "progressBackground")
+        let progressBackgroundTexture = SKTexture(imageNamed: "Progress Bar - Pause&End")
         let progressBackground = SKSpriteNode(texture: progressBackgroundTexture)
         let newWidth = self.screenW * 0.7
-        let newHeight: CGFloat = 10
+        let newHeight: CGFloat = 2
         progressBackground.size = CGSize(width: newWidth, height: newHeight)
         progressBackground.position = CGPoint(x: screenW/2, y: screenH/2)
         progressBackground.alpha = 0
-        progressBackground.zPosition = Follie.zPos.loseMenu.rawValue
+        progressBackground.zPosition = Follie.zPos.inGameMenu.rawValue
         self.addChild(progressBackground)
-        progressBackground.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        progressBackground.run(SKAction.fadeAlpha(to: 0.7, duration: 0.5))
         
         let totalMusicDuration: Double = self.player.duration
         let percentage: Double = self.currMusicDuration / totalMusicDuration
         
-        let progressTexture = SKTexture(imageNamed: "progress")
-        let progress = SKSpriteNode(texture: progressTexture)
-        let progressWidth = CGFloat(percentage) * progressBackground.size.width
-        let progressHeight: CGFloat = 10
-        progress.size = CGSize(width: progressWidth, height: progressHeight)
-        let progressX = progressBackground.position.x - progressBackground.size.width/2 + progress.size.width/2
-        progress.position = CGPoint(x: progressX, y: progressBackground.position.y)
-        progress.alpha = 0
-        progress.zPosition = (Follie.zPos.loseMenu.rawValue + 1)
-        self.addChild(progress)
-        progress.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        let snowflakeProgressTexture = SKTexture(imageNamed: "Snowflakes - Pause&End")
+        let newH = FollieMainMenu.screenSize.height * 30/396
+        let ratio = newH / snowflakeProgressTexture.size().height
+        let newW = ratio * snowflakeProgressTexture.size().width
+        let snowflakeProgress = SKSpriteNode(texture: snowflakeProgressTexture)
+        snowflakeProgress.size = CGSize(width: newW, height: newH)
+        let newX = progressBackground.position.x - progressBackground.size.width/2 + (CGFloat(percentage) * progressBackground.size.width)
+        snowflakeProgress.position = CGPoint(x: newX, y: progressBackground.position.y)
+        snowflakeProgress.zPosition = (Follie.zPos.inGameMenu.rawValue + 1)
+        snowflakeProgress.alpha = 0
+        self.addChild(snowflakeProgress)
+        snowflakeProgress.run(SKAction.fadeAlpha(to: 0.7, duration: 0.5))
         
-        let retryTexture = SKTexture(imageNamed: "retry")
+        let retryTexture = SKTexture(imageNamed: "Retry Button")
         let retry = SKSpriteNode(texture: retryTexture)
-        let retryWidth: CGFloat = 35
-        let retryHeight = retry.size.height * (retryWidth / retry.size.width)
-        retry.size = CGSize(width: retryWidth, height: retryHeight)
+        //        let retryWidth: CGFloat = 35
+        //        let retryHeight = retry.size.height * (retryWidth / retry.size.width)
+        //        retry.size = CGSize(width: retryWidth, height: retryHeight)
         let retryX = progressBackground.position.x + progressBackground.size.width/2 - retry.size.width/2
         retry.position = CGPoint(x: retryX, y: screenH/4)
         retry.alpha = 0
-        retry.zPosition = Follie.zPos.loseMenu.rawValue
+        retry.zPosition = Follie.zPos.inGameMenu.rawValue
         self.addChild(retry)
         retry.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         retry.name = "retry"
         
-        let menuTexture = SKTexture(imageNamed: "mainMenuButton")
+        let menuTexture = SKTexture(imageNamed: "Back To Main Menu")
         let menu = SKSpriteNode(texture: menuTexture)
-        let menuWidth: CGFloat = 35
-        let menuHeight = menu.size.height * (menuWidth / menu.size.width)
-        menu.size = CGSize(width: menuWidth, height: menuHeight)
+        //        let menuWidth: CGFloat = 35
+        //        let menuHeight = menu.size.height * (menuWidth / menu.size.width)
+        //        menu.size = CGSize(width: menuWidth, height: menuHeight)
         let menuX = progressBackground.position.x - progressBackground.size.width/2 + menu.size.width/2
         menu.position = CGPoint(x: menuX, y: screenH/4)
         menu.alpha = 0
-        menu.zPosition = Follie.zPos.loseMenu.rawValue
+        menu.zPosition = Follie.zPos.inGameMenu.rawValue
         self.addChild(menu)
         menu.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         menu.name = "menu"
@@ -913,7 +929,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let distance = self.fairyNode.size.width/2 + self.screenW - self.fairyNode.position.x
         let time = Double(distance) / (Follie.xSpeed*2)
         self.fairyNode.run(SKAction.wait(forDuration: 2)) {
-            self.screenCover.run(SKAction.fadeAlpha(to: 1, duration: time))
+            self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: time))
             
             self.fairyCurrPosition = self.fairyNode.position
             self.auroraTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.auroraFollowFairy), userInfo: nil, repeats: true)
@@ -931,15 +947,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 }
                 
                 self.removeAllActions()
-                
-                FollieMainMenu.showFollieTitle = false
-                
-                let newScene = MainMenu(size: self.size)
-                newScene.scaleMode = self.scaleMode
-                let animation = SKTransition.fade(withDuration: 1.0)
-                self.view?.presentScene(newScene, transition: animation)
+                self.showWinMenu()
             }
         }
+    }
+    
+    func showWinMenu() {
+        let winText = SKLabelNode(fontNamed: "dearJoeII")
+        winText.text = "Completed!"
+        winText.fontSize = 100
+        winText.fontColor = UIColor.white
+        winText.position = CGPoint(x: self.screenW/2, y: self.screenH/2 + winText.frame.height/2)
+        winText.alpha = 0
+        winText.zPosition = Follie.zPos.inGameMenu.rawValue
+        self.addChild(winText)
+        winText.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        
+        let tapText = SKLabelNode(fontNamed: ".SFUIText")
+        tapText.text = "Tap to continue"
+        tapText.fontSize = 20
+        tapText.fontColor = UIColor.white
+        tapText.position = CGPoint(x: self.screenW/2, y: self.screenH/2 - tapText.frame.height/2)
+        tapText.alpha = 0
+        tapText.zPosition = Follie.zPos.inGameMenu.rawValue
+        self.addChild(tapText)
+        
+        let action: [SKAction] = [
+            SKAction.fadeAlpha(to: 1, duration: 0.5),
+            SKAction.fadeAlpha(to: 0, duration: 0.5)
+        ]
+        
+        tapText.run(SKAction.repeatForever(SKAction.sequence(action)))
+        
+        self.isWin = true
     }
     
     func correct() {
@@ -964,6 +1004,46 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         else {
             self.lifeArray[Int(self.currLife)-1].run(SKAction.fadeAlpha(by: 0.5, duration: 0.5))
 
+        }
+    }
+    
+    func showPauseMenu(finished: @escaping () -> Void) {
+        self.pauseText = SKLabelNode(fontNamed: "dearJoeII")
+        self.pauseText.text = "Paused"
+        self.pauseText.fontSize = 40
+        self.pauseText.fontColor = UIColor.white
+        self.pauseText.position = CGPoint(x: self.screenW/2, y: self.screenH*2/3)
+        self.pauseText.alpha = 0
+        self.pauseText.zPosition = Follie.zPos.inGameMenu.rawValue
+        self.addChild(self.pauseText)
+        self.pauseText.run(SKAction.fadeAlpha(to: 1, duration: 0.1))
+        
+        let resumeTexture = SKTexture(imageNamed: "Resume Button")
+        self.resumeButton = SKSpriteNode(texture: resumeTexture)
+        //        let retryWidth: CGFloat = 35
+        //        let retryHeight = retry.size.height * (retryWidth / retry.size.width)
+        //        retry.size = CGSize(width: retryWidth, height: retryHeight)
+        self.resumeButton.position = CGPoint(x: self.screenW*2/3, y: self.screenH/2)
+        self.resumeButton.alpha = 0
+        self.resumeButton.zPosition = Follie.zPos.inGameMenu.rawValue
+        self.addChild(self.resumeButton)
+        self.resumeButton.run(SKAction.fadeAlpha(to: 1, duration: 0.1))
+        self.resumeButton.name = "resume"
+        
+        let menuTexture = SKTexture(imageNamed: "Back To Main Menu")
+        self.backToMainMenuButton = SKSpriteNode(texture: menuTexture)
+        //        let menuWidth: CGFloat = 35
+        //        let menuHeight = menu.size.height * (menuWidth / menu.size.width)
+        //        menu.size = CGSize(width: menuWidth, height: menuHeight)
+        self.backToMainMenuButton.position = CGPoint(x: self.screenW/3, y: self.screenH/2)
+        self.backToMainMenuButton.alpha = 0
+        self.backToMainMenuButton.zPosition = Follie.zPos.inGameMenu.rawValue
+        self.addChild(self.backToMainMenuButton)
+        self.backToMainMenuButton.run(SKAction.fadeAlpha(to: 1, duration: 0.1))
+        self.backToMainMenuButton.name = "menu"
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            finished()
         }
     }
     
@@ -1139,41 +1219,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         }
     }
     
+    func backToMainMenu() {
+        self.isDismiss = true
+        
+        self.removeAllActions()
+        self.scene?.speed = 1
+        
+        FollieMainMenu.showFollieTitle = false
+        
+        let fadeOutNode = SKShapeNode(rectOf: CGSize(width: screenW, height: screenH))
+        fadeOutNode.position = CGPoint(x: screenW/2, y: screenH/2)
+        fadeOutNode.alpha = 0
+        fadeOutNode.fillColor = SKColor.black
+        fadeOutNode.lineWidth = 0
+        fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
+        self.addChild(fadeOutNode)
+        
+        fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
+            let newScene = MainMenu(size: self.size)
+            newScene.scaleMode = self.scaleMode
+            let animation = SKTransition.fade(withDuration: 1.0)
+            self.view?.presentScene(newScene, transition: animation)
+        }
+        return
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch: UITouch = touches.first! as UITouch
+        let positionInScene = touch.location(in: self.scene!)
+        let touchedNodes = self.scene!.nodes(at: positionInScene)
+        
         if (self.isLose) {
             
             if (self.isDismiss) {
                 return
             }
             
-            let touch: UITouch = touches.first! as UITouch
-            let positionInScene = touch.location(in: self.scene!)
-            let touchedNodes = self.scene!.nodes(at: positionInScene)
-            
             for node in touchedNodes {
                 if (node.name != nil && node.name == "menu") {
-                    self.isDismiss = true
-
-                    self.removeAllActions()
-                    self.scene?.speed = 1
-
-                    FollieMainMenu.showFollieTitle = false
-                    
-                    let fadeOutNode = SKShapeNode(rectOf: CGSize(width: screenW, height: screenH))
-                    fadeOutNode.position = CGPoint(x: screenW/2, y: screenH/2)
-                    fadeOutNode.alpha = 0
-                    fadeOutNode.fillColor = SKColor.black
-                    fadeOutNode.lineWidth = 0
-                    fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
-                    self.addChild(fadeOutNode)
-                    
-                    fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
-                        let newScene = MainMenu(size: self.size)
-                        newScene.scaleMode = self.scaleMode
-                        let animation = SKTransition.fade(withDuration: 1.0)
-                        self.view?.presentScene(newScene, transition: animation)
-                    }
-                    return
+                    self.backToMainMenu()
                 }
                 else if (node.name != nil && node.name == "retry") {
                     self.isDismiss = true
@@ -1210,8 +1294,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
+        if (self.isWin) {
+            self.backToMainMenu()
+        }
+        
 //        self.blockTimer?.invalidate()
 //        self.blockTimer = nil
+        
+        for node in touchedNodes {
+            if (node.name != nil && node.name == "pause") {
+                if (self.isCurrentlyPaused == false) {
+                    self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 0.1)) {
+                        self.showPauseMenu {
+                            self.scene?.isPaused = true
+                            self.isCurrentlyPaused = true
+                            self.player.pause()
+                        }
+                    }
+                }
+                
+                return
+            }
+            else if (node.name != nil && node.name == "menu") {
+                self.scene?.isPaused = false
+                self.backToMainMenu()
+            }
+            else if (node.name != nil && node.name == "resume") {
+                self.isCurrentlyPaused = false
+                self.scene?.isPaused = false
+                self.player.play()
+                let goneAction = SKAction.fadeAlpha(to: 0, duration: 0.1)
+                self.pauseText.run(goneAction)
+                self.backToMainMenuButton.run(goneAction)
+                self.resumeButton.run(goneAction)
+                self.screenCover.run(goneAction)
+                
+                return
+            }
+        }
         
         guard let point = touches.first?.location(in: self) else { return }
         
@@ -1376,6 +1496,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         }
         
         if (onTuto == true && self.limitMovement == true) {
+            return
+        }
+        
+        if ((self.scene?.isPaused)!) {
             return
         }
         

@@ -15,7 +15,7 @@ class Follie {
     
     enum zPos: CGFloat {
         case fadeOutNode = 13
-        case loseMenu = 11
+        case inGameMenu = 11
         case screenCover = 10
         case fairy = 5
         case fairyGlow = -1

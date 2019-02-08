@@ -144,7 +144,7 @@ class MainMenuBackground {
     }
     
     private var chapterNumber: SKLabelNode {
-        let chapterNumber = SKLabelNode(fontNamed: "Roboto-Regular")
+        let chapterNumber = SKLabelNode(fontNamed: ".SFUIText")
         chapterNumber.fontSize = 20
         chapterNumber.alpha = 0
         
