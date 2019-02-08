@@ -339,6 +339,27 @@ class MainMenu: SKScene {
                             })
                         }
                     }
+                } else {
+                    let unavailableNode = SKLabelNode(text: "This chapter is not unlocked yet")
+                    unavailableNode.fontColor = UIColor.white
+                    unavailableNode.fontName = ".SFUIText"
+                    unavailableNode.fontSize = 14
+                    unavailableNode.preferredMaxLayoutWidth = 50
+                    unavailableNode.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: self.ground.size.height * 2.5)
+                    unavailableNode.alpha = 0
+                    
+                    let action: [SKAction] = [
+                        SKAction.fadeAlpha(to: 1, duration: 0.5),
+                        SKAction.wait(forDuration: 0.5),
+                        SKAction.fadeAlpha(to: 0, duration: 0.5)
+                    ]
+                    
+                    unavailableNode.run(SKAction.sequence(action)) {
+                        unavailableNode.removeFromParent()
+                    }
+                    self.addChild(unavailableNode)
+                    
+                    
                 }
             }
         }

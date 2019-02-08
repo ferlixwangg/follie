@@ -16,6 +16,7 @@
 		8505DD6121E5E2FF001D66A6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8505DD5F21E5E2FF001D66A6 /* LaunchScreen.storyboard */; };
 		851A8FF8220D9249004EA137 /* DYATHON - Blooming Romance.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */; };
 		851A8FF9220D9249004EA137 /* DYATHON - Your Eyes.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FF7220D9249004EA137 /* DYATHON - Your Eyes.mp3 */; };
+		851A8FFB220D9906004EA137 /* Button Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FFA220D9906004EA137 /* Button Click.wav */; };
 		85286BA02206FF83006BFF9A /* Baby.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 85286B9F2206FF83006BFF9A /* Baby.atlas */; };
 		85AAC5FA21E72F9C00E0E46B /* DYATHON - Goodbye.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */; };
 		85BD970E21F989EC004099DB /* Follie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD970D21F989EC004099DB /* Follie.swift */; };
@@ -51,6 +52,7 @@
 		8505DD6221E5E2FF001D66A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Blooming Romance.mp3"; sourceTree = "<group>"; };
 		851A8FF7220D9249004EA137 /* DYATHON - Your Eyes.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Your Eyes.mp3"; sourceTree = "<group>"; };
+		851A8FFA220D9906004EA137 /* Button Click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Button Click.wav"; sourceTree = "<group>"; };
 		85286B9F2206FF83006BFF9A /* Baby.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Baby.atlas; sourceTree = "<group>"; };
 		85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Goodbye.mp3"; sourceTree = "<group>"; };
 		85BD970D21F989EC004099DB /* Follie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follie.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 		85BD970821F97A7F004099DB /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				851A8FFA220D9906004EA137 /* Button Click.wav */,
 				BA5313D4220826090044BDFD /* Play Chapter.wav */,
 				BA5313D5220826090044BDFD /* Rising Chapter.wav */,
 				851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */,
@@ -275,6 +278,7 @@
 				8505DD5E21E5E2FF001D66A6 /* Assets.xcassets in Resources */,
 				BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */,
 				851A8FF8220D9249004EA137 /* DYATHON - Blooming Romance.mp3 in Resources */,
+				851A8FFB220D9906004EA137 /* Button Click.wav in Resources */,
 				BA5313D6220826090044BDFD /* Play Chapter.wav in Resources */,
 				BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */,
 				8505DD6121E5E2FF001D66A6 /* LaunchScreen.storyboard in Resources */,

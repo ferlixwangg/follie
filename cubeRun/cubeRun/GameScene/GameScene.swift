@@ -1331,9 +1331,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             for node in touchedNodes {
                 if (node.name != nil && node.name == "menu") {
+                    self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
                     self.backToMainMenu()
                 }
                 else if (node.name != nil && node.name == "retry") {
+                    self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
                     self.isDismiss = true
                     
                     self.removeAllActions()
@@ -1393,10 +1395,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
             else if (node.name != nil && node.name == "menu") {
                 self.scene?.isPaused = false
+                self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
                 self.backToMainMenu()
             }
             else if (node.name != nil && node.name == "resume") {
-                self.isCurrentlyPaused = false
+                self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
                 self.scene?.isPaused = false
                 let goneAction = SKAction.fadeAlpha(to: 0, duration: 0.1)
                 self.pauseText.run(goneAction)
@@ -1729,6 +1732,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.currSec = Date().timeIntervalSince1970 * 1000.0
             self.blockProjectiles()
             
+            self.isCurrentlyPaused = false
             
             self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
         }

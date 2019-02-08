@@ -26,8 +26,8 @@ class Chapter {
     ]
     
     private let chapterBackground: [Int:Background] = [
-        1: Background(skyName: "Sky", backgroundName: "Ground", bg1Name: "Background1", bg2Name: "Background2"),
-        2: Background(skyName: "Sky", backgroundName: "Ground", bg1Name: "Background1", bg2Name: "Background2")
+        1: Background(skyName: "1-Sky", backgroundName: "1-Ground", bg1Name: "1-Background1", bg2Name: "1-Background2"),
+        2: Background(skyName: "2-Sky", backgroundName: "2-Ground", bg1Name: "2-Background1", bg2Name: "2-Background2")
     ]
     
     func getMusic() -> Music {
