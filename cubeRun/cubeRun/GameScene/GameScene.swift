@@ -36,11 +36,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var music: Music!
     var totalMusicDuration: Double!
     var currMusicDuration: Double = 0
-    var musicTimer: Timer? = nil
-    var musicTimerDuration: Double = 1
     var blockTexture: SKTexture!
     var blockTimer: Timer? = nil
     var player: AVAudioPlayer!
+    
+    // Timer
+    var onTrackTimer: Timer? = nil
+    var currTimerVal: Double = 0
+    var currSec: Double!
+    var diffSec: Double!
     
     // Pause Menu
     var pauseText: SKLabelNode!
@@ -473,6 +477,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     func startGameplay() {
         self.player.play()
+        self.currSec = Date().timeIntervalSince1970 * 1000.0
         
         self.setupLife()
         self.animateProgress()
@@ -482,11 +487,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
         
-        self.musicTimer = Timer.scheduledTimer(timeInterval: self.musicTimerDuration, target: self, selector: #selector(countMusicDuration), userInfo: nil, repeats: true)
-    }
-    
-    @objc func countMusicDuration() {
-        self.currMusicDuration += self.musicTimerDuration
+//        self.onTrackTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(onTrack), userInfo: nil, repeats: true)
     }
     
     @objc func blockProjectiles() {
@@ -614,6 +615,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.nextCountdown = Int.random(in: 0 ... self.maxInterval) + Int(n)
     }
+    
+//    @objc func onTrack() {
+//        self.currTimerVal += 0.01
+//
+//        if (self.currTimerVal >= self.music.secPerBeat) {
+//            self.currTimerVal = self.currTimerVal - self.music.secPerBeat
+//        }
+//    }
     
     func animateProgress() {
         let progressLineTexture = SKTexture(imageNamed: "progressLine")
@@ -822,9 +831,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.blockTimer?.invalidate()
         self.blockTimer = nil
         
-        self.musicTimer?.invalidate()
-        self.musicTimer = nil
-        
         self.progressNode.removeAllActions()
     }
     
@@ -868,8 +874,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.addChild(progressBackground)
         progressBackground.run(SKAction.fadeAlpha(to: 0.7, duration: 0.5))
         
-        let totalMusicDuration: Double = self.player.duration
-        let percentage: Double = self.currMusicDuration / totalMusicDuration
         
         let snowflakeProgressTexture = SKTexture(imageNamed: "Snowflakes - Pause&End")
         let newH = FollieMainMenu.screenSize.height * 30/396
@@ -877,7 +881,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let newW = ratio * snowflakeProgressTexture.size().width
         let snowflakeProgress = SKSpriteNode(texture: snowflakeProgressTexture)
         snowflakeProgress.size = CGSize(width: newW, height: newH)
+        
+        let percentage = (self.progressNode.position.x - (screenW/2 - self.progressDistance/2)) / self.progressDistance
+        
         let newX = progressBackground.position.x - progressBackground.size.width/2 + (CGFloat(percentage) * progressBackground.size.width)
+        
+        
         snowflakeProgress.position = CGPoint(x: newX, y: progressBackground.position.y)
         snowflakeProgress.zPosition = (Follie.zPos.inGameMenu.rawValue + 1)
         snowflakeProgress.alpha = 0
@@ -957,8 +966,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.auroraTimer?.invalidate()
                 self.auroraTimer = nil
 
-                self.musicTimer?.invalidate()
-                self.musicTimer = nil
                 // go back to menu
                 let availableLevel = UserDefaults.standard.integer(forKey: "AvailableChapter")
                 if (self.chapterNo == availableLevel && availableLevel != 12) {
@@ -1284,8 +1291,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             for node in touchedNodes {
                 if (node.name != nil && node.name == "menu") {
-                    self.musicTimer?.invalidate()
-                    self.musicTimer = nil
                     self.backToMainMenu()
                 }
                 else if (node.name != nil && node.name == "retry") {
@@ -1338,6 +1343,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         self.showPauseMenu {
                             self.scene?.isPaused = true
                             self.player.pause()
+                            
+                            self.pauseTimer()
                         }
                     }
                 }
@@ -1346,19 +1353,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
             else if (node.name != nil && node.name == "menu") {
                 self.scene?.isPaused = false
-                self.musicTimer?.invalidate()
-                self.musicTimer = nil
                 self.backToMainMenu()
             }
             else if (node.name != nil && node.name == "resume") {
                 self.isCurrentlyPaused = false
                 self.scene?.isPaused = false
-                self.player.play()
                 let goneAction = SKAction.fadeAlpha(to: 0, duration: 0.1)
                 self.pauseText.run(goneAction)
                 self.backToMainMenuButton.run(goneAction)
                 self.resumeButton.run(goneAction)
                 self.screenCover.run(goneAction)
+                self.player.play()
+                
+                self.resumeTimer()
                 
                 return
             }
@@ -1612,6 +1619,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.aurora.particlePosition.y = self.aurora.particlePosition.y + (newPositionY - self.fairyNode.position.y)
                 self.fairyNode.position.y = newPositionY
             }
+        }
+    }
+    
+    func pauseTimer() {
+        self.blockTimer?.invalidate()
+        self.blockTimer = nil
+        
+        self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
+        self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.music.secPerBeat)
+        self.diffSec = self.music.secPerBeat - self.diffSec
+//        self.onTrackTimer?.invalidate()
+//        self.onTrackTimer = nil
+    }
+    
+    func resumeTimer() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.diffSec) {
+            self.currSec = Date().timeIntervalSince1970 * 1000.0
+            self.blockProjectiles()
+            
+            
+            self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
+            
+//            self.onTrackTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(self.onTrack), userInfo: nil, repeats: true)
         }
     }
 }
