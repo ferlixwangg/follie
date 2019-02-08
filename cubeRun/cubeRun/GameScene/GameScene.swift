@@ -137,7 +137,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func setupTutorialLabel() {
-        self.tutorialText = SKLabelNode(fontNamed: "Roboto-Regular")
+        self.tutorialText = SKLabelNode(fontNamed: ".SFUIText")
         self.tutorialText.alpha = 0.0
         self.tutorialText.fontSize = 20
         self.tutorialText.fontColor = UIColor.white
@@ -149,7 +149,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     func startTutorial() {
         self.setupTutorialLabel()
-        self.tutorialText.text = "Use the left screen to move the penguin up and down"
+        self.tutorialText.text = "Use your left thumb to move the penguin up and down"
         self.addChild(self.tutorialText)
         
         DispatchQueue.main.asyncAfter(deadline: .now()+2, execute: {
@@ -164,34 +164,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.helpingFingerDown = SKSpriteNode(texture: texture)
             
             self.helpingFingerUp.setScale(0.7)
-            self.helpingFingerUp.position = CGPoint(x: Follie.screenSize.width/6, y: Follie.screenSize.height/3)
+            self.helpingFingerUp.position = CGPoint(x: self.helpingFingerUp.size.width/3*2, y: Follie.screenSize.height/5*2.5)
             self.helpingFingerUp.alpha = 0
             
             self.helpingFingerDown.setScale(0.7)
-            self.helpingFingerDown.position = CGPoint(x: Follie.screenSize.width/6, y: Follie.screenSize.height/3*2)
+            self.helpingFingerDown.position = CGPoint(x: self.helpingFingerDown.size.width/3*2, y: Follie.screenSize.height/5*3.5)
             self.helpingFingerDown.alpha = 0
             
             let fingerDownAction: [SKAction] = [
                 SKAction.fadeAlpha(to: 1.0, duration: 0.3),
-                SKAction.moveTo(y: Follie.screenSize.height/3, duration: 0.7),
+                SKAction.moveTo(y: Follie.screenSize.height/5*2.5, duration: 0.7),
                 SKAction.fadeAlpha(to: 0, duration: 0.3),
-                SKAction.moveTo(y: Follie.screenSize.height/3*2, duration: 0),
+                SKAction.moveTo(y: Follie.screenSize.height/5*3.5, duration: 0),
                 SKAction.wait(forDuration: 1.5)
             ]
             
             self.helpingFingerDown.run(SKAction.repeatForever((SKAction.sequence(fingerDownAction))))
-            self.helpingFingerDown.position.y = Follie.screenSize.height/3*2
+            self.helpingFingerDown.position.y = Follie.screenSize.height/5*3.5
             
             let fingerUpAction: [SKAction] = [
                 SKAction.wait(forDuration: 1.5),
                 SKAction.fadeAlpha(to: 1.0, duration: 0.3),
-                SKAction.moveTo(y: Follie.screenSize.height/3*2, duration: 0.7),
+                SKAction.moveTo(y: Follie.screenSize.height/5*3.5, duration: 0.7),
                 SKAction.fadeAlpha(to: 0, duration: 0.3),
-                SKAction.moveTo(y: Follie.screenSize.height/3, duration: 0)
+                SKAction.moveTo(y: Follie.screenSize.height/5*2.5, duration: 0)
             ]
             
             self.helpingFingerUp.run(SKAction.repeatForever((SKAction.sequence(fingerUpAction))))
-            self.helpingFingerUp.position.y = Follie.screenSize.height/3
+            self.helpingFingerUp.position.y = Follie.screenSize.height/5*2.5
             
             self.addChild(self.helpingFingerDown)
             self.addChild(self.helpingFingerUp)
@@ -363,14 +363,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         self.scene?.speed = 0.3
                         
                         if (self.textHasBeenDisplayed == false) {
-                            self.tutorialText.text = "Move the penguin to the front of the star and tap on the right screen"
+                            self.tutorialText.text = "Position the penguin to align with the beat (star) and tap it using your right thumb"
                             self.addChild(self.tutorialText)
                             self.textHasBeenDisplayed = true
                             
                             let texture = SKTexture(imageNamed: "Tap")
                             self.helpingFingerTap = SKSpriteNode(texture: texture)
                             self.helpingFingerTap.setScale(0.7)
-                            self.helpingFingerTap.position = CGPoint(x: Follie.screenSize.width/3*2, y: Follie.screenSize.height/3)
+                            self.helpingFingerTap.position = CGPoint(x: Follie.screenSize.width - self.helpingFingerTap.size.width/3, y: Follie.screenSize.height/2)
                             self.helpingFingerTap.alpha = 0
                             
                             let fingerTapAction: [SKAction] = [
@@ -399,7 +399,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                             let texture = SKTexture(imageNamed: "Hold")
                             self.helpingFingerHold = SKSpriteNode(texture: texture)
                             self.helpingFingerHold.setScale(0.7)
-                            self.helpingFingerHold.position = CGPoint(x: Follie.screenSize.width/3*2, y: Follie.screenSize.height/3)
+                            self.helpingFingerHold.position = CGPoint(x: Follie.screenSize.width-self.helpingFingerHold.size.width/3, y: Follie.screenSize.height/2)
                             self.helpingFingerHold.alpha = 0
                             
                             let fingerHoldAction: [SKAction] = [
@@ -469,13 +469,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         // chapter title
         self.chapterTitle = chapter.getTitle()
-        
-        // Pause Button
-        let pauseTexture = SKTexture(imageNamed: "Pause Button")
-        let pauseButton = SKSpriteNode(texture: pauseTexture)
-        pauseButton.name = "pause"
-        pauseButton.position = CGPoint(x: self.screenW/10*9, y: self.screenH/10*9)
-        self.addChild(pauseButton)
     }
     
     func startGameplay() {
@@ -483,6 +476,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.setupLife()
         self.animateProgress()
+        self.setupPause()
         
         self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
         
@@ -631,8 +625,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         progressLine.size = CGSize(width: newWidth, height: newHeight)
         progressLine.position = CGPoint(x: screenW/2, y: screenH/10*9)
         progressLine.zPosition = Follie.zPos.visibleBlock.rawValue
+        progressLine.alpha = 0
+        progressLine.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        progressLine.name = "Progress Line inGame"
         self.addChild(progressLine)
-        
         
         let progressNodeTexture = SKTexture(imageNamed: "gameSnowflake")
         self.progressNode = SKSpriteNode(texture: progressNodeTexture)
@@ -644,6 +640,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let newX = progressLine.position.x - progressLine.size.width/2
         self.progressNode.position = CGPoint(x: newX, y: progressLine.position.y)
         self.progressNode.zPosition = Follie.zPos.visibleBlock.rawValue
+        self.progressNode.alpha = 0
+        self.progressNode.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         self.addChild(self.progressNode)
         
         self.progressDistance = progressLine.size.width
@@ -665,12 +663,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             let radAngle = CGFloat(72 * -i) * .pi / 180
             lifeNode.run(SKAction.rotate(toAngle: radAngle, duration: 0))
+            lifeNode.alpha = 0
+            lifeNode.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
             
             self.addChild(lifeNode)
             self.lifeArray.append(lifeNode)
             
         }
         self.lifeArray.reverse()
+    }
+    
+    func setupPause() {
+        // Pause Button
+        let pauseTexture = SKTexture(imageNamed: "Pause Button")
+        let pauseButton = SKSpriteNode(texture: pauseTexture)
+        pauseButton.name = "pause"
+        pauseButton.position = CGPoint(x: self.screenW/10*9, y: self.screenH/10*9)
+        pauseButton.alpha = 0
+        pauseButton.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+        self.addChild(pauseButton)
     }
     
     func setScreenSize() {
@@ -818,6 +829,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func showLoseMenu() {
+        let progressLine = self.childNode(withName: "Progress Line inGame")
+        progressLine?.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
+        
+        self.progressNode.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
+        
+        let pauseButton = self.childNode(withName: "pause")
+        pauseButton?.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
+        
         let chapterTitle = SKLabelNode(fontNamed: "dearJoeII")
         chapterTitle.text = self.chapterTitle
         chapterTitle.fontSize = 100
@@ -1144,7 +1163,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.contactingLines.first!.run(SKAction.sequence(actions))
                     self.contactingLines.remove(at: 0)
                     
-                    self.missed()
+                    if (onTuto == false) {
+                        self.missed()
+                    }
                 }
                 
                 block.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat.pi, duration: 1)))
@@ -1186,7 +1207,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     // safe
                     return
                 }
-                self.missed()
+                
+                if (onTuto == false) {
+                    self.missed()
+                } else {
+                    self.hideAurora()
+                }
+                
                 self.contactingLines.first!.strokeColor = SKColor.red
                 
                 let actions: [SKAction] = [
@@ -1257,6 +1284,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             for node in touchedNodes {
                 if (node.name != nil && node.name == "menu") {
+                    self.musicTimer?.invalidate()
+                    self.musicTimer = nil
                     self.backToMainMenu()
                 }
                 else if (node.name != nil && node.name == "retry") {
@@ -1304,10 +1333,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         for node in touchedNodes {
             if (node.name != nil && node.name == "pause") {
                 if (self.isCurrentlyPaused == false) {
+                    self.isCurrentlyPaused = true
                     self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 0.1)) {
                         self.showPauseMenu {
                             self.scene?.isPaused = true
-                            self.isCurrentlyPaused = true
                             self.player.pause()
                         }
                     }
@@ -1317,6 +1346,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
             else if (node.name != nil && node.name == "menu") {
                 self.scene?.isPaused = false
+                self.musicTimer?.invalidate()
+                self.musicTimer = nil
                 self.backToMainMenu()
             }
             else if (node.name != nil && node.name == "resume") {
@@ -1358,7 +1389,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         self.helpingFingerTap.removeFromParent()
                         self.textHasBeenDisplayed = false
                         
-                        self.tutorialText.text = "Hold and keep the penguin on the line, release the hold at the star at the end of the line"
+                        self.tutorialText.text = "Try to keep the penguin on the line.\nHold and release at the end of the line"
                         self.thirdTuto = true
                         self.startTutorial3()
                         self.successfulHit()
@@ -1396,26 +1427,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.tutorialText.removeFromParent()
                     self.helpingFingerHold.removeFromParent()
                     
-                    self.tutorialText.text = "Let's start the game! Focus on the music's beat to complete the game easily"
-                    
                     let action: [SKAction] = [
-                        SKAction.wait(forDuration: 3),
+                        SKAction.wait(forDuration: 2),
                         SKAction.fadeAlpha(to: 1, duration: 0.5),
                         SKAction.wait(forDuration: 2.5),
                         SKAction.fadeAlpha(to: 0, duration: 0.5)
                     ]
                     
+                    self.tutorialText.text = "Okay, you're all set!"
                     self.tutorialText.run(SKAction.sequence(action))
                     self.addChild(self.tutorialText)
                     
-                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 6) {
-                        self.tutorialText.removeFromParent()
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 6) {
-                        UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-                        self.onTuto = false
-                        self.startGameplay()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        self.tutorialText.text = "You have 5 lives. Try not to miss the beat"
+                        self.tutorialText.run(SKAction.sequence(action))
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                            self.tutorialText.text = "Every 2 successful hits will regain 1 of your live"
+                            self.tutorialText.run(SKAction.sequence(action))
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+                                self.tutorialText.text = "Let's catch the beat with follie!"
+                                self.tutorialText.run(SKAction.sequence(action))
+                                
+                                DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
+                                    self.tutorialText.removeFromParent()
+                                }
+                                
+                                DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
+                                    UserDefaults.standard.set(true, forKey: "TutorialCompleted")
+                                    self.onTuto = false
+                                    self.startGameplay()
+                                }
+                            })
+                        }
                     }
                 }
                 
@@ -1458,14 +1503,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 
                 self.helpingFingerHold.removeFromParent()
                 self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
-                self.tutorialText.text = "Oops! You've missed the star. Let's try again"
+                self.tutorialText.text = "Oops! You've missed the beat. Let's try again"
                 self.tutorialText.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
                 DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2) {
                     self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
                     
                     DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1, execute: {
                         self.textHasBeenDisplayed = false
-                        self.tutorialText.text = "Hold and keep the penguin on the line, release the hold at the star at the end of the line"
+                        self.tutorialText.text = "Try to keep the penguin on the line.\nHold and release at the end of the line"
                         self.tutorialText.removeFromParent()
                         self.tutorialText.alpha = 1.0
                         
