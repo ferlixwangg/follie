@@ -1394,8 +1394,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 return
             }
             else if (node.name != nil && node.name == "menu") {
-                self.scene?.isPaused = false
                 self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
+                self.scene?.isPaused = false
                 self.backToMainMenu()
             }
             else if (node.name != nil && node.name == "resume") {

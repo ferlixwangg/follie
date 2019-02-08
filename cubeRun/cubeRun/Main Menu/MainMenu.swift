@@ -45,10 +45,14 @@ class MainMenu: SKScene {
     var groundFinalY: CGFloat!
     
     // DispatchWorkTask for ChapterTitle Animation
-    var task: DispatchWorkItem!
+    var task: DispatchWorkItem? = nil
     
     // To disable the chances of tapping chapter multiple times
     var chapterChosen: Bool!
+    
+    deinit {
+        print("main menu deinit")
+    }
     
     override func didMove(to view: SKView) {
         let showFollieTitle = FollieMainMenu.showFollieTitle
@@ -105,7 +109,7 @@ class MainMenu: SKScene {
             chapterNumber.run(SKAction.moveTo(y: chapterNumber.position.y + 10, duration: 0.5))
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + durationStartDispatch, execute: self.task)
+        DispatchQueue.main.asyncAfter(deadline: .now() + durationStartDispatch, execute: self.task!)
     }
     
     func setActiveChapter(duration: Double) {
@@ -260,7 +264,7 @@ class MainMenu: SKScene {
             self.gameTitle.removeAllActions()
             self.ground.removeAllActions()
             self.sky.removeAllActions()
-            self.task.cancel()
+            self.task?.cancel()
             self.moveChapterTitleAndNumber(durationStartDispatch: 0.5)
             self.beginMoveByAnimation(goUpDuration: 1)
             self.cameraDownOnGoing = false
@@ -330,6 +334,9 @@ class MainMenu: SKScene {
                             // Move to next scene
                             SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
                                 DispatchQueue.main.sync {
+                                    self.removeAllActions()
+                                    self.removeAllChildren()
+                                    self.task = nil
                                     let transition = SKTransition.fade(withDuration: 1)
                                     if let scene = SKScene(fileNamed: "GameScene") {
                                         scene.scaleMode = .aspectFill
