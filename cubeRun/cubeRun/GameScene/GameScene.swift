@@ -486,8 +486,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
         
         self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
-        
-//        self.onTrackTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(onTrack), userInfo: nil, repeats: true)
     }
     
     @objc func blockProjectiles() {
@@ -615,14 +613,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.nextCountdown = Int.random(in: 0 ... self.maxInterval) + Int(n)
     }
-    
-//    @objc func onTrack() {
-//        self.currTimerVal += 0.01
-//
-//        if (self.currTimerVal >= self.music.secPerBeat) {
-//            self.currTimerVal = self.currTimerVal - self.music.secPerBeat
-//        }
-//    }
     
     func animateProgress() {
         let progressLineTexture = SKTexture(imageNamed: "progressLine")
@@ -968,7 +958,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
 
                 // go back to menu
                 let availableLevel = UserDefaults.standard.integer(forKey: "AvailableChapter")
-                if (self.chapterNo == availableLevel && availableLevel != 12) {
+                if (self.chapterNo == availableLevel && availableLevel != 2) {
                     UserDefaults.standard.set(availableLevel+1, forKey: "AvailableChapter")
                 }
                 
@@ -1629,8 +1619,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
         self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.music.secPerBeat)
         self.diffSec = self.music.secPerBeat - self.diffSec
-//        self.onTrackTimer?.invalidate()
-//        self.onTrackTimer = nil
     }
     
     func resumeTimer() {
@@ -1640,8 +1628,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             
             self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
-            
-//            self.onTrackTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(self.onTrack), userInfo: nil, repeats: true)
         }
     }
 }

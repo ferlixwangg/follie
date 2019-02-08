@@ -17,6 +17,7 @@ class Chapter {
     
     private let chapterMusic: [Int:Music] = [
         1: Music(name: "DYATHON - Goodbye", secPerBeat: 1)
+//        2: Music(name: <#T##String#>, secPerBeat: <#T##Double#>)
     ]
     
     private let chapterTitle: [Int:String] = [
@@ -26,6 +27,7 @@ class Chapter {
     
     private let chapterBackground: [Int:Background] = [
         1: Background(skyName: "Sky", backgroundName: "Ground", bg1Name: "Background1", bg2Name: "Background2")
+//        2: Background(
     ]
     
     func getMusic() -> Music {
