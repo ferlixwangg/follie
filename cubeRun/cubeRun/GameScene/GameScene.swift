@@ -39,6 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var blockTexture: SKTexture!
     var blockTimer: Timer? = nil
     var player: AVAudioPlayer!
+    let buttonClickedSfx = SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false)
     
     // Timer
     var onTrackTimer: Timer? = nil
@@ -1329,40 +1330,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             for node in touchedNodes {
                 if (node.name != nil && node.name == "menu") {
-                    self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
-                    self.backToMainMenu()
+                    self.run(self.buttonClickedSfx)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.backToMainMenu()
+                    }
                 }
                 else if (node.name != nil && node.name == "retry") {
-                    self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
+                    self.run(self.buttonClickedSfx)
                     self.isDismiss = true
                     
-                    self.removeAllActions()
-                    self.scene?.speed = 1
-                    
-                    let fadeOutNode = SKShapeNode(rectOf: CGSize(width: screenW, height: screenH))
-                    fadeOutNode.position = CGPoint(x: screenW/2, y: screenH/2)
-                    fadeOutNode.alpha = 0
-                    fadeOutNode.fillColor = SKColor.black
-                    fadeOutNode.lineWidth = 0
-                    fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
-                    self.addChild(fadeOutNode)
-                    
-                    fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
-                        // Preload animation
-                        var preAtlas = [SKTextureAtlas]()
-                        preAtlas.append(SKTextureAtlas(named: "Baby"))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.removeAllActions()
+                        self.scene?.speed = 1
                         
-                        // Move to next scene
-                        SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
-                            DispatchQueue.main.sync {
-                                let newScene = GameScene(size: self.size)
-                                newScene.scaleMode = self.scaleMode
-                                let animation = SKTransition.fade(withDuration: 2.0)
-                                self.view?.presentScene(newScene, transition: animation)
-                            }
-                        })
+                        let fadeOutNode = SKShapeNode(rectOf: CGSize(width: self.screenW, height: self.screenH))
+                        fadeOutNode.position = CGPoint(x: self.screenW/2, y: self.screenH/2)
+                        fadeOutNode.alpha = 0
+                        fadeOutNode.fillColor = SKColor.black
+                        fadeOutNode.lineWidth = 0
+                        fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
+                        self.addChild(fadeOutNode)
+                        
+                        fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
+                            // Preload animation
+                            var preAtlas = [SKTextureAtlas]()
+                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+                            
+                            // Move to next scene
+                            SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
+                                DispatchQueue.main.sync {
+                                    let newScene = GameScene(size: self.size)
+                                    newScene.scaleMode = self.scaleMode
+                                    let animation = SKTransition.fade(withDuration: 2.0)
+                                    self.view?.presentScene(newScene, transition: animation)
+                                }
+                            })
+                        }
+                        return
                     }
-                    return
                 }
             }
             return
@@ -1392,12 +1398,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 return
             }
             else if (node.name != nil && node.name == "menu") {
-                self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
+                self.run(self.buttonClickedSfx)
                 self.scene?.isPaused = false
-                self.backToMainMenu()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.backToMainMenu()
+                }
             }
             else if (node.name != nil && node.name == "resume") {
-                self.run(SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false))
+                self.run(self.buttonClickedSfx)
                 self.scene?.isPaused = false
                 let goneAction = SKAction.fadeAlpha(to: 0, duration: 0.1)
                 self.pauseText.run(goneAction)

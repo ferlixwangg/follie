@@ -283,6 +283,8 @@ class MainMenu: SKScene {
                 // Check whether the selected chapter is already unlocked
                 if (index! <= self.availableChapter) {
                     
+                    self.chapterChosen = true
+                    
                     // Check whether the selected chapter is active or not
                     if (node.name != self.activeChapterName) {
                         
@@ -299,7 +301,9 @@ class MainMenu: SKScene {
                         // Snowflakes go up
                         let chapterSnowflake = node.children[0] as! SKSpriteNode
                         node.run(SKAction.wait(forDuration: 0.2))
-                        node.run(SKAction.moveBy(x: 0, y: CGFloat(FollieMainMenu.chapterRiseRatio) * FollieMainMenu.screenSize.height, duration: 0.5))
+                        node.run(SKAction.moveBy(x: 0, y: CGFloat(FollieMainMenu.chapterRiseRatio) * FollieMainMenu.screenSize.height, duration: 0.5)) {
+                            self.chapterChosen = false
+                        }
                         chapterSnowflake.run(SKAction.repeatForever(SKAction.rotate(byAngle: -0.5, duration: 1)), withKey: "repeatForeverActionKey")
                         
                         // Play Sound Effect
@@ -365,8 +369,6 @@ class MainMenu: SKScene {
                         unavailableNode.removeFromParent()
                     }
                     self.addChild(unavailableNode)
-                    
-                    
                 }
             }
         }
