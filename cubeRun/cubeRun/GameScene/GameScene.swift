@@ -925,23 +925,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.hideAurora()
         
-        self.currLife -= self.missVal
-        
-        if !(self.currLife < 0) {
-            if (floor(self.currLife) != self.currLife) {
-                // currLife is not an integer, thus containing .5 (eg. 3.5)
-                self.lifeArray[Int(ceil(self.currLife))].run(SKAction.fadeOut(withDuration: 0.5))
-                self.lifeArray[Int(self.currLife)].run(SKAction.fadeAlpha(to: 0.5, duration: 0.5))
+        if (onTuto == false) {
+            self.currLife -= self.missVal
+            
+            if !(self.currLife < 0) {
+                if (floor(self.currLife) != self.currLife) {
+                    // currLife is not an integer, thus containing .5 (eg. 3.5)
+                    self.lifeArray[Int(ceil(self.currLife))].run(SKAction.fadeOut(withDuration: 0.5))
+                    self.lifeArray[Int(self.currLife)].run(SKAction.fadeAlpha(to: 0.5, duration: 0.5))
+                }
+                else {
+                    self.lifeArray[Int(self.currLife)].run(SKAction.fadeOut(withDuration: 0.5))
+                }
             }
-            else {
-                self.lifeArray[Int(self.currLife)].run(SKAction.fadeOut(withDuration: 0.5))
+            
+            if (self.currLife <= 0) {
+                // lose
+                self.lifeArray[0].run(SKAction.fadeOut(withDuration: 0.5))
+                self.lose()
             }
-        }
-        
-        if (self.currLife <= 0) {
-            // lose
-            self.lifeArray[0].run(SKAction.fadeOut(withDuration: 0.5))
-            self.lose()
         }
     }
     
@@ -1176,9 +1178,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
             else if (!self.isHit) {
                 // miss single block
-                if (onTuto == false){
-                    self.missed()
-                }
+                self.missed()
                 self.isAtLine = false
                 
                 if (self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
@@ -1530,13 +1530,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.correct()
                 }
                 else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
-                    if (onTuto == false) {
-                        self.missed()
-                    } else {
-                        self.hideAurora()
-                        let generator = UIImpactFeedbackGenerator(style: .light)
-                        generator.impactOccurred()
-                    }
+                    self.missed()
                     self.contactingLines.first!.strokeColor = SKColor.red
                     
                     let actions: [SKAction] = [
