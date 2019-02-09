@@ -1094,7 +1094,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             self.currBlock = block
             self.isBlockContact = true
-            self.isClickable = true
             
             if (self.contactingLines.first?.name == block.name) {
                 self.contactingLines.remove(at: 0)
@@ -1102,6 +1101,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             if (block.name == "\(self.currBlockNameFlag)") {
                 self.currBlockNameFlag += 1
+                self.isClickable = true
             }
             
             if (self.upcomingLines.first?.name == "\(self.currBlockNameFlag)") {
@@ -1138,8 +1138,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 // bodyB is block
                 block = (contact.bodyB.node as! SKSpriteNode)
             }
-            
-            self.isClickable = true
             
             if (self.contactingLines.first?.name == block.name) {
                 self.contactingLines.remove(at: 0)
