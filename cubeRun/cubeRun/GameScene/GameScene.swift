@@ -1473,7 +1473,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         if (point.x > screenW/2) {
             // touch right part of the screen ends
             if (self.onTuto) {
-                if (self.isAtLine && self.isBlockContact && (self.currBlock.name == self.contactingLines.first?.name)) {
+                if (self.isAtLine && self.isBlockContact && self.contactingLines.isEmpty) {
                     
                     // Passed Tutorial 3
                     if (self.thirdTuto2 == true && self.isAtLine == true && self.isBlockContact == true){
