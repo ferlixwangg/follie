@@ -12,11 +12,10 @@ class MainMenuBackground {
     init() {}
     
     // Constants
-    private let mainMenuAtlas = SKTextureAtlas(named: "Main Menu")
     private let availableChapter: Int = UserDefaults.standard.integer(forKey: "AvailableChapter")
     
     private var sky: SKSpriteNode {
-        let skyTexture = self.mainMenuAtlas.textureNamed("Sky - Main Menu")
+        let skyTexture = SKTexture(imageNamed: "Sky - Main Menu")
         let skyNode = SKSpriteNode(texture: skyTexture)
         
         let scaleRatio: Double = Double(FollieMainMenu.screenSize.height * 2 / skyNode.size.height)
@@ -30,7 +29,7 @@ class MainMenuBackground {
     } // Sky background
     
     private var gameTitle: SKSpriteNode {
-        let gameTitleTexture = self.mainMenuAtlas.textureNamed("Follie")
+        let gameTitleTexture = SKTexture(imageNamed: "Follie")
         let gameTitleNode = SKSpriteNode(texture: gameTitleTexture)
         gameTitleNode.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
         
@@ -38,7 +37,7 @@ class MainMenuBackground {
     } // Game Title Follie
     
     private var ground: SKSpriteNode {
-        let groundTexture = self.mainMenuAtlas.textureNamed("Ground - Main Menu")
+        let groundTexture = SKTexture(imageNamed: "Ground - Main Menu")
         let groundNode = SKSpriteNode(texture: groundTexture)
         groundNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundNode.size.width = CGFloat(Double(groundNode.size.width) * FollieMainMenu.groundRatio)
@@ -52,8 +51,8 @@ class MainMenuBackground {
     
     private var chapters: [SKSpriteNode] {
         var chapterNodes: [SKSpriteNode] = []
-        let snowTexture = self.mainMenuAtlas.textureNamed("Snowflakes")
-        let snowFrozenTexture = self.mainMenuAtlas.textureNamed("Snowflakes Frozen")
+        let snowTexture = SKTexture(imageNamed: "Snowflakes")
+        let snowFrozenTexture = SKTexture(imageNamed: "Snowflakes Frozen")
         let newH = FollieMainMenu.screenSize.height * CGFloat(FollieMainMenu.chapterNodeRatio)
         let ratio = newH / snowFrozenTexture.size().height
         let newW = ratio * snowFrozenTexture.size().width
@@ -98,7 +97,7 @@ class MainMenuBackground {
     } // Dash line
     
     private var groundExtension1: SKSpriteNode {
-        let groundTexture = self.mainMenuAtlas.textureNamed("Ground - Main Menu")
+        let groundTexture = SKTexture(imageNamed: "Ground - Main Menu")
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
         groundExtensionNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundExtensionNode.size.width = CGFloat(Double(groundExtensionNode.size.width) * FollieMainMenu.groundRatio)
@@ -109,7 +108,7 @@ class MainMenuBackground {
     } // Ground Extension 1
     
     private var groundExtension2: SKSpriteNode {
-        let groundTexture = self.mainMenuAtlas.textureNamed("Ground - Main Menu")
+        let groundTexture = SKTexture(imageNamed: "Ground - Main Menu")
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
         groundExtensionNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundExtensionNode.size.width = CGFloat(Double(groundExtensionNode.size.width) * FollieMainMenu.groundRatio)
@@ -120,7 +119,7 @@ class MainMenuBackground {
     } // Ground Extension 2
     
     private var mountain: SKSpriteNode {
-        let mountainTexture = self.mainMenuAtlas.textureNamed("Mountain")
+        let mountainTexture = SKTexture(imageNamed: "Mountain")
         let mountainNode = SKSpriteNode(texture: mountainTexture)
         mountainNode.name = "Mountain"
         mountainNode.setScale(0.7)

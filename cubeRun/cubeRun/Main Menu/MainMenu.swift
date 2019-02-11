@@ -10,9 +10,6 @@ import SpriteKit
 
 class MainMenu: SKScene {
     
-    // Main Menu Assets Atlas
-    private let mainMenuAtlas = SKTextureAtlas(named: "Main Menu")
-    
     /// UserDefault value of the unlocked chapters
     let availableChapter: Int = UserDefaults.standard.integer(forKey: "AvailableChapter")
     
@@ -133,7 +130,8 @@ class MainMenu: SKScene {
         chapterSnowflake.run(SKAction.repeatForever(SKAction.rotate(byAngle: -0.5, duration: 1)), withKey: "repeatForeverActionKey")
         
         // Apply glowing effect on the snowflake
-        let glow = SKSpriteNode(texture: mainMenuAtlas.textureNamed("Fairy Glow"))
+        let glowTexture = SKTexture(imageNamed: "Fairy Glow")
+        let glow = SKSpriteNode(texture: glowTexture)
         let glowSize = chapterSnowflake.size.width+15
         glow.size = CGSize(width: glowSize, height: glowSize)
         glow.name = "Fairy Glow"
@@ -310,7 +308,8 @@ class MainMenu: SKScene {
                         self.run(self.clickedChapterSfx)
                         
                         // Apply glowing effect on the snowflake
-                        let glow = SKSpriteNode(texture: mainMenuAtlas.textureNamed("Fairy Glow"))
+                        let glowTexture = SKTexture(imageNamed: "Fairy Glow")
+                        let glow = SKSpriteNode(texture: glowTexture)
                         let glowSize = chapterSnowflake.size.width+15
                         glow.size = CGSize(width: glowSize, height: glowSize)
                         glow.name = "Fairy Glow"
