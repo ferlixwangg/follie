@@ -1309,7 +1309,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.blockTimer = nil
         
         fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
-            let newScene = MainMenu(size: self.size)
+            let newScene = MainMenu(size: FollieMainMenu.screenSize)
             newScene.scaleMode = self.scaleMode
             let animation = SKTransition.fade(withDuration: 1.0)
             self.view?.presentScene(newScene, transition: animation)
@@ -1360,7 +1360,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                             // Move to next scene
                             SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
                                 DispatchQueue.main.sync {
-                                    let newScene = GameScene(size: self.size)
+                                    let newScene = GameScene(size: Follie.screenSize)
                                     newScene.scaleMode = self.scaleMode
                                     let animation = SKTransition.fade(withDuration: 2.0)
                                     self.view?.presentScene(newScene, transition: animation)
@@ -1424,6 +1424,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         guard let point = touches.first?.location(in: self) else { return }
         
         if (point.x > screenW/2) {
+            print("right")
             // touch right part of the screen start
             if (self.isBlockContact && !self.isHit) {
                 

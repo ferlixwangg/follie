@@ -343,6 +343,7 @@ class MainMenu: SKScene {
                                     let transition = SKTransition.fade(withDuration: 1)
                                     if let scene = SKScene(fileNamed: "GameScene") {
                                         scene.scaleMode = .aspectFill
+                                        scene.size = Follie.screenSize
                                         self.view?.presentScene(scene, transition: transition)
                                     }
                                 }

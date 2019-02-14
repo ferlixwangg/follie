@@ -27,7 +27,7 @@ class GameViewController: UIViewController {
                 
                 // Set the scale mode to scale to fit the window
                 scene.scaleMode = .aspectFill
-                
+                scene.size = FollieMainMenu.screenSize
                 // Present the scene
                 view.presentScene(scene)
             }
