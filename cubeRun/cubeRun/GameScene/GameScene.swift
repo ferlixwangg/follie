@@ -1424,7 +1424,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         guard let point = touches.first?.location(in: self) else { return }
         
         if (point.x > screenW/2) {
-            print("right")
             // touch right part of the screen start
             if (self.isBlockContact && !self.isHit) {
                 
