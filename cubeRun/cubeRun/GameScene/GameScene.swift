@@ -1500,11 +1500,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         self.addChild(self.tutorialText)
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                            self.tutorialText.text = "You have 5 lives. Try not to miss the beat"
+                            self.tutorialText.text = "You have 5 lifes. Try not to miss the beat"
                             self.tutorialText.run(SKAction.sequence(action))
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                                self.tutorialText.text = "Every 2 successful hits will regain 1 of your live"
+                                self.tutorialText.text = "Every 2 successful hits will regain 1 of your life"
                                 self.tutorialText.run(SKAction.sequence(action))
                                 
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
