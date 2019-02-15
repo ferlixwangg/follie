@@ -38,7 +38,7 @@ class Fairy {
     } // the specified line/path the fairy is allowed to move around in
     
     private var fairyAnimationTextures: [SKTexture] {
-        let fairyAtlas = SKTextureAtlas(named: "Baby")
+        let fairyAtlas = SKTextureAtlas(named: "newBaby")
         var fairyFrames: [SKTexture] = []
         
         let numImages = fairyAtlas.textureNames.count

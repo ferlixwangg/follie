@@ -332,7 +332,8 @@ class MainMenu: SKScene {
                         self.run(SKAction.fadeOut(withDuration: 2.0)) {
                             // Preload animation
                             var preAtlas = [SKTextureAtlas]()
-                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+//                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+                            preAtlas.append(SKTextureAtlas(named: "newBaby"))
                             
                             // Move to next scene
                             SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
