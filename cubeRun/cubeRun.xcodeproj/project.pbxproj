@@ -14,6 +14,7 @@
 		8505DD5C21E5E2FE001D66A6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8505DD5A21E5E2FE001D66A6 /* Main.storyboard */; };
 		8505DD5E21E5E2FF001D66A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8505DD5D21E5E2FF001D66A6 /* Assets.xcassets */; };
 		8505DD6121E5E2FF001D66A6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8505DD5F21E5E2FF001D66A6 /* LaunchScreen.storyboard */; };
+		850E9E1D221BB91100A5E4C7 /* Difficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850E9E1C221BB91100A5E4C7 /* Difficulty.swift */; };
 		851A8FF8220D9249004EA137 /* DYATHON - Blooming Romance.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */; };
 		851A8FF9220D9249004EA137 /* DYATHON - Your Eyes.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FF7220D9249004EA137 /* DYATHON - Your Eyes.mp3 */; };
 		851A8FFB220D9906004EA137 /* Button Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FFA220D9906004EA137 /* Button Click.wav */; };
@@ -52,6 +53,7 @@
 		8505DD5D21E5E2FF001D66A6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8505DD6021E5E2FF001D66A6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8505DD6221E5E2FF001D66A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		850E9E1C221BB91100A5E4C7 /* Difficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difficulty.swift; sourceTree = "<group>"; };
 		851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Blooming Romance.mp3"; sourceTree = "<group>"; };
 		851A8FF7220D9249004EA137 /* DYATHON - Your Eyes.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Your Eyes.mp3"; sourceTree = "<group>"; };
 		851A8FFA220D9906004EA137 /* Button Click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Button Click.wav"; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 				85C932C721FB764C00CB47BC /* Block.swift */,
 				85C932C921FB82EB00CB47BC /* Chapter.swift */,
 				BA5467D2220365BD0078924A /* MainMenuBackground.swift */,
+				850E9E1C221BB91100A5E4C7 /* Difficulty.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -315,6 +318,7 @@
 			files = (
 				BA5313CF220742B10044BDFD /* FollieMainMenu.swift in Sources */,
 				BA5467C4220362390078924A /* MainMenu.swift in Sources */,
+				850E9E1D221BB91100A5E4C7 /* Difficulty.swift in Sources */,
 				85BD971121F992AF004099DB /* Fairy.swift in Sources */,
 				85C932CA21FB82EB00CB47BC /* Chapter.swift in Sources */,
 				8505DD5721E5E2FE001D66A6 /* GameScene.swift in Sources */,

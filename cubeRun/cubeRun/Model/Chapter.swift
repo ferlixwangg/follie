@@ -30,6 +30,11 @@ class Chapter {
         2: Background(skyName: "2-Sky", backgroundName: "2-Ground", bg1Name: "2-Background1", bg2Name: "2-Background2")
     ]
     
+    private let chapterDifficulty: [Int:Difficulty] = [
+        1: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
+        2: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10)
+    ]
+    
     func getMusic() -> Music {
         return self.chapterMusic[self.chapterNo]!
     }
@@ -40,5 +45,9 @@ class Chapter {
     
     func getBackgroundNodes() -> [SKSpriteNode] {
         return self.chapterBackground[self.chapterNo]!.getAllBackgroundNodes()
+    }
+    
+    func getDifficulty() -> Difficulty {
+        return self.chapterDifficulty[self.chapterNo]!
     }
 }

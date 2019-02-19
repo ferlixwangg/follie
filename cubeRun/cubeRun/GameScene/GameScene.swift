@@ -73,11 +73,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     // Gameplay logic
     var nextCountdown: Int = 0 // new block will appear when countdown reaches 0
     var blockNameFlag: Int = 0 // incremental flag to give each block a unique name identifier
-    let maxInterval: Int = 1 // max beat interval between blocks
-    let maxHoldNum: Int = 1 // max number of connected blocks (hold gesture)
-    let maxHoldBeat: Int = 2 // max number of beats in one hold gesture between 2 blocks
-    let holdChance: Double = 4/10 // percentage of connecting blocks appearing
+    var maxInterval: Int! // max beat interval between blocks
+    var maxHoldNum: Int! // max number of connecting lines between blocks (hold gesture)
+    var maxHoldBeat: Int! // max number of beats in one hold gesture between 2 blocks
+    var holdChance: Double! // percentage of connecting blocks appearing
     var currBlockNameFlag: Int = 0 // name flag of closest block to reach the fairy
+    
     var isChangedBlock: Bool = false
     var isClickable: Bool = false
     
@@ -478,6 +479,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         // chapter title
         self.chapterTitle = chapter.getTitle()
+        
+        // chapter difficulty
+        let tempDifficulty = chapter.getDifficulty()
+        self.maxInterval = tempDifficulty.maxInterval
+        self.maxHoldNum = tempDifficulty.maxHoldNum
+        self.maxHoldBeat = tempDifficulty.maxHoldBeat
+        self.holdChance = tempDifficulty.holdChance
     }
     
     func startGameplay() {
@@ -539,7 +547,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         // chance of connecting beats (hold)
         var prevNodePos = newBlock.position
         var n: Double = 0 // nth beat after newBlock
-        var holdCountFlag = self.maxHoldNum
+        var holdCountFlag: Int = self.maxHoldNum
         while (Double.random(in: 0 ... 1) <= self.holdChance) {
             if (holdCountFlag == 0) {
                 break
