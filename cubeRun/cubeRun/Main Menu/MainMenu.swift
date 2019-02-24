@@ -120,7 +120,7 @@ class MainMenu: SKScene {
         self.chapterTitle.text = FollieMainMenu.getChapter(chapterNo: index).getTitle()
         let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
         chapterNumber.text = "Chapter \(index)"
-        chapterNumber.position = CGPoint(x: 0, y: -self.chapterTitle.frame.height/2 - 20)
+        chapterNumber.position = CGPoint(x: 0, y: self.chapterTitle.frame.height/2 + 10)
         
         moveChapterTitleAndNumber(durationStartDispatch: duration)
         
@@ -132,7 +132,7 @@ class MainMenu: SKScene {
         // Apply glowing effect on the snowflake
         let glowTexture = SKTexture(imageNamed: "Fairy Glow")
         let glow = SKSpriteNode(texture: glowTexture)
-        let glowSize = chapterSnowflake.size.width+15
+        let glowSize = chapterSnowflake.size.width + 35
         glow.size = CGSize(width: glowSize, height: glowSize)
         glow.name = "Fairy Glow"
         
@@ -248,15 +248,9 @@ class MainMenu: SKScene {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         if (self.chapterChosen) {
             return
         }
-        
-        // Obtain the node that is touched
-        let touch: UITouch = touches.first! as UITouch
-        let positionInScene = touch.location(in: self.ground)
-        let touchedNodes = self.ground.nodes(at: positionInScene)
         
         if (self.cameraDownOnGoing == true) {
             self.gameTitle.removeAllActions()
@@ -267,6 +261,17 @@ class MainMenu: SKScene {
             self.beginMoveByAnimation(goUpDuration: 1)
             self.cameraDownOnGoing = false
         }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if (self.chapterChosen) {
+            return
+        }
+        
+        // Obtain the node that is touched
+        let touch: UITouch = touches.first! as UITouch
+        let positionInScene = touch.location(in: self.ground)
+        let touchedNodes = self.ground.nodes(at: positionInScene)
         
         for node in touchedNodes {
             // Check if the selected node is the chapter node
@@ -310,7 +315,7 @@ class MainMenu: SKScene {
                         // Apply glowing effect on the snowflake
                         let glowTexture = SKTexture(imageNamed: "Fairy Glow")
                         let glow = SKSpriteNode(texture: glowTexture)
-                        let glowSize = chapterSnowflake.size.width+15
+                        let glowSize = chapterSnowflake.size.width + 35
                         glow.size = CGSize(width: glowSize, height: glowSize)
                         glow.name = "Fairy Glow"
                         
@@ -332,7 +337,7 @@ class MainMenu: SKScene {
                         self.run(SKAction.fadeOut(withDuration: 2.0)) {
                             // Preload animation
                             var preAtlas = [SKTextureAtlas]()
-//                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+                            //                            preAtlas.append(SKTextureAtlas(named: "Baby"))
                             preAtlas.append(SKTextureAtlas(named: "newBaby"))
                             
                             // Move to next scene
@@ -352,10 +357,13 @@ class MainMenu: SKScene {
                         }
                     }
                 } else {
+                    let generator = UIImpactFeedbackGenerator(style: .light)
+                    generator.impactOccurred()
+                    
                     let unavailableNode = SKLabelNode(text: "This chapter is not unlocked yet")
                     unavailableNode.fontColor = UIColor.white
                     unavailableNode.fontName = ".SFUIText"
-                    unavailableNode.fontSize = 14
+                    unavailableNode.fontSize = CGFloat(14 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
                     unavailableNode.preferredMaxLayoutWidth = 50
                     unavailableNode.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: self.ground.size.height * 2.5)
                     unavailableNode.alpha = 0

@@ -12,6 +12,11 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
+    // Game Node & Pause Node layer
+    let gameNode = SKNode()
+    let pauseNode = SKNode()
+    static var sharedInstance: GameScene?
+    
     // Current chapter
     var chapterNo: Int = 0
     var chapterTitle: String!
@@ -37,9 +42,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var totalMusicDuration: Double!
     var currMusicDuration: Double = 0
     var blockTexture: SKTexture!
+    var blockHeight : Double!
+    var blockWidth : Double!
     var blockTimer: Timer? = nil
     var player: AVAudioPlayer!
     let buttonClickedSfx = SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false)
+    let resumeCountdownSfx = SKAction.playSoundFileNamed("Countdown Tick.mp3", waitForCompletion: false)
     
     // Timer
     var onTrackTimer: Timer? = nil
@@ -50,6 +58,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var pauseText: SKLabelNode!
     var resumeButton: SKSpriteNode!
     var backToMainMenuButton: SKSpriteNode!
+    var countownNode: SKLabelNode!
+    var resumeCountdown : Int = 3
+    var pauseToPlayTimer: Timer!
     
     // Tutorial
     var onTuto: Bool = !(UserDefaults.standard.bool(forKey: "TutorialCompleted"))
@@ -110,6 +121,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var isLose: Bool = false // whether the player has lost or not
     var isWin: Bool = false // whether the player has win or not
     var isCurrentlyPaused: Bool = false // whether the scene is paused
+    var gameNodeIsPaused: Bool = false // whether the game node is paused
     var auroraTimer: Timer? = nil // aurora following fairy when game ends
     var fairyCurrPosition: CGPoint! // fairy position when game ends, created this var to allow aurora to follow fairy
     
@@ -126,6 +138,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     override func didMove(to view: SKView) {
+        self.addChild(self.gameNode)
+        self.addChild(self.pauseNode)
+        GameScene.sharedInstance = self
+        
         self.chapterNo = Follie.selectedChapter
         
         self.initialSetup()
@@ -148,18 +164,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func setupTutorialLabel() {
         self.tutorialText = SKLabelNode(fontNamed: ".SFUIText")
         self.tutorialText.alpha = 0.0
-        self.tutorialText.fontSize = 20
+        self.tutorialText.fontSize = 20 * (Follie.screenSize.height / 396)
         self.tutorialText.fontColor = UIColor.white
         self.tutorialText.position = CGPoint(x: Follie.screenSize.width*3/4, y: Follie.screenSize.height/2)
         self.tutorialText.lineBreakMode = .byWordWrapping
         self.tutorialText.numberOfLines = 0
-        self.tutorialText.preferredMaxLayoutWidth = 200
+        self.tutorialText.preferredMaxLayoutWidth = 200 * (Follie.screenSize.height / 396)
     }
     
     func startTutorial() {
         self.setupTutorialLabel()
         self.tutorialText.text = "Use your left thumb to move the penguin up and down"
-        self.addChild(self.tutorialText)
+        self.gameNode.addChild(self.tutorialText)
         
         DispatchQueue.main.asyncAfter(deadline: .now()+2, execute: {
             self.limitMovement = false
@@ -202,8 +218,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.helpingFingerUp.run(SKAction.repeatForever((SKAction.sequence(fingerUpAction))))
             self.helpingFingerUp.position.y = Follie.screenSize.height/5*2.5
             
-            self.addChild(self.helpingFingerDown)
-            self.addChild(self.helpingFingerUp)
+            self.gameNode.addChild(self.helpingFingerDown)
+            self.gameNode.addChild(self.helpingFingerUp)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.firstTuto = true
@@ -214,7 +230,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func startTutorial2() {
         DispatchQueue.main.asyncAfter(deadline: .now()+1, execute: {
             let newBlock = SKSpriteNode(texture: self.blockTexture)
-            newBlock.size = CGSize(width: 15, height: 15)
+            newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
             newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
             
             newBlock.name = "\(self.blockNameFlag)"
@@ -244,7 +260,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 SKAction.removeFromParent()
             ]
             newBlock.run(SKAction.sequence(actions))
-            self.addChild(newBlock)
+            self.gameNode.addChild(newBlock)
             self.upcomingBlocks.append(newBlock)
             self.blockNameFlag += 1
         })
@@ -253,7 +269,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func startTutorial3() {
         // new block
         let newBlock = SKSpriteNode(texture: self.blockTexture)
-        newBlock.size = CGSize(width: 15, height: 15)
+        newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
         newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
         
         newBlock.name = "\(self.blockNameFlag)"
@@ -284,7 +300,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             SKAction.removeFromParent()
         ]
         newBlock.run(SKAction.sequence(actions))
-        self.addChild(newBlock)
+        self.gameNode.addChild(newBlock)
         self.upcomingBlocks.append(newBlock)
         self.blockNameFlag += 1
         
@@ -293,7 +309,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         var n: Double = 0 // nth beat after newBlock
         
         let connectingBlock = SKSpriteNode(texture: self.blockTexture)
-        connectingBlock.size = CGSize(width: 15, height: 15)
+        connectingBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
         connectingBlock.zPosition = Follie.zPos.visibleBlock.rawValue
         
         connectingBlock.name = "\(self.blockNameFlag)"
@@ -318,7 +334,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             SKAction.removeFromParent()
         ]
         connectingBlock.run(SKAction.sequence(connectingActions))
-        self.addChild(connectingBlock)
+        self.gameNode.addChild(connectingBlock)
         self.upcomingBlocks.append(connectingBlock)
         
         // Define start & end point for line
@@ -335,7 +351,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         let dashedLine = SKShapeNode(path: dashPath)
         dashedLine.zPosition = Follie.zPos.visibleBlock.rawValue
-        dashedLine.lineWidth = 1.5
+        dashedLine.lineWidth = Follie.screenSize.height * CGFloat(Follie.dashedLineRatio)
         dashedLine.strokeColor = SKColor.white
         
         dashedLine.name = "\(self.blockNameFlag)"
@@ -354,7 +370,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             SKAction.removeFromParent()
         ]
         dashedLine.run(SKAction.sequence(lineActions))
-        self.addChild(dashedLine)
+        self.gameNode.addChild(dashedLine)
         self.upcomingLines.append(dashedLine)
         
         self.blockNameFlag += 1
@@ -362,8 +378,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        if gameNodeIsPaused == true {
+            self.gameNode.isPaused = true
+        }
+        
         if self.onTuto == true {
-            self.enumerateChildNodes(withName: "*") {
+            self.gameNode.enumerateChildNodes(withName: "*") {
                 node , stop in
                 
                 // Check if the star for first tutorial is getting closer
@@ -373,7 +393,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         
                         if (self.textHasBeenDisplayed == false) {
                             self.tutorialText.text = "Position the penguin to align with the beat (star) and tap it using your right thumb"
-                            self.addChild(self.tutorialText)
+                            self.gameNode.addChild(self.tutorialText)
                             self.textHasBeenDisplayed = true
                             
                             let texture = SKTexture(imageNamed: "Tap")
@@ -387,7 +407,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                                 SKAction.fadeAlpha(to: 0.3, duration: 0.1)
                             ]
                             self.helpingFingerTap.run(SKAction.repeatForever((SKAction.sequence(fingerTapAction))))
-                            self.addChild(self.helpingFingerTap)
+                            self.gameNode.addChild(self.helpingFingerTap)
                         }
                     } else if (node.position.x - self.fairyNode.position.x < 15 && self.secondTuto == true) {
                         self.secondTutoFlag = true
@@ -402,7 +422,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         self.scene?.speed = 0.3
                         
                         if (self.textHasBeenDisplayed == false) {
-                            self.addChild(self.tutorialText)
+                            self.gameNode.addChild(self.tutorialText)
                             self.textHasBeenDisplayed = true
                             
                             let texture = SKTexture(imageNamed: "Hold")
@@ -416,7 +436,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                                 SKAction.fadeAlpha(to: 0.3, duration: 0.1)
                             ]
                             self.helpingFingerHold.run(SKAction.repeatForever((SKAction.sequence(fingerHoldAction))))
-                            self.addChild(self.helpingFingerHold)
+                            self.gameNode.addChild(self.helpingFingerHold)
                         }
                     } else if (node.position.x - self.fairyNode.position.x < 15 && self.thirdTuto == true) {
                         self.thirdTutoFlag = true
@@ -448,6 +468,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     func setBlock() {
         let block = Follie.getBlock()
+        self.blockHeight = Double(Follie.screenSize.height) * Follie.blockRatio
+        self.blockWidth = (self.blockHeight / 15) * 15
         self.blockTexture = block.blockTexture
     }
     
@@ -474,7 +496,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let tempNodes = chapter.getBackgroundNodes()
         
         for node in tempNodes {
-            self.addChild(node)
+            self.gameNode.addChild(node)
         }
         
         // chapter title
@@ -509,7 +531,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         // new block
         let newBlock = SKSpriteNode(texture: self.blockTexture)
-        newBlock.size = CGSize(width: 15, height: 15)
+        newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
         newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
         
         newBlock.name = "\(self.blockNameFlag)"
@@ -540,7 +562,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             SKAction.removeFromParent()
         ]
         newBlock.run(SKAction.sequence(actions))
-        self.addChild(newBlock)
+        self.gameNode.addChild(newBlock)
         self.upcomingBlocks.append(newBlock)
         self.blockNameFlag += 1
         
@@ -555,7 +577,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             holdCountFlag -= 1
             
             let connectingBlock = SKSpriteNode(texture: self.blockTexture)
-            connectingBlock.size = CGSize(width: 15, height: 15)
+            connectingBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
             connectingBlock.zPosition = Follie.zPos.visibleBlock.rawValue
             
             connectingBlock.name = "\(self.blockNameFlag)"
@@ -580,7 +602,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 SKAction.removeFromParent()
             ]
             connectingBlock.run(SKAction.sequence(connectingActions))
-            self.addChild(connectingBlock)
+            self.gameNode.addChild(connectingBlock)
             self.upcomingBlocks.append(connectingBlock)
 
             // Define start & end point for line
@@ -597,7 +619,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             let dashedLine = SKShapeNode(path: dashPath)
             dashedLine.zPosition = Follie.zPos.visibleBlock.rawValue
-            dashedLine.lineWidth = 1.5
+            dashedLine.lineWidth = Follie.screenSize.height * CGFloat(Follie.dashedLineRatio)
             dashedLine.strokeColor = SKColor.white
             
             dashedLine.name = "\(self.blockNameFlag)"
@@ -617,7 +639,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 SKAction.removeFromParent()
             ]
             dashedLine.run(SKAction.sequence(lineActions))
-            self.addChild(dashedLine)
+            self.gameNode.addChild(dashedLine)
             self.upcomingLines.append(dashedLine)
             
             self.blockNameFlag += 1
@@ -632,7 +654,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let progressLine = SKSpriteNode(texture: progressLineTexture)
         
         let newWidth = screenW * 0.7
-        let newHeight: CGFloat = 3
+        let newHeight: CGFloat = 3/396 * Follie.screenSize.height
         
         progressLine.size = CGSize(width: newWidth, height: newHeight)
         progressLine.position = CGPoint(x: screenW/2, y: screenH/10*9)
@@ -640,21 +662,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         progressLine.alpha = 0
         progressLine.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         progressLine.name = "Progress Line inGame"
-        self.addChild(progressLine)
+        self.gameNode.addChild(progressLine)
         
         let progressNodeTexture = SKTexture(imageNamed: "gameSnowflake")
         self.progressNode = SKSpriteNode(texture: progressNodeTexture)
         
-        let newH: CGFloat = 20
+        let newH: CGFloat = 20/396 * Follie.screenSize.height
         let newW = self.progressNode.size.width * (newH / self.progressNode.size.height)
         self.progressNode.size = CGSize(width: newW, height: newH)
         
         let newX = progressLine.position.x - progressLine.size.width/2
+        progressLine.position.y -= progressNode.size.height/2
+        self.progressNode.position = CGPoint(x: newX, y: progressLine.position.y + progressNode.size.height/2)
         self.progressNode.position = CGPoint(x: newX, y: progressLine.position.y)
         self.progressNode.zPosition = Follie.zPos.visibleBlock.rawValue
         self.progressNode.alpha = 0
         self.progressNode.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-        self.addChild(self.progressNode)
+        self.gameNode.addChild(self.progressNode)
         
         self.progressDistance = progressLine.size.width
     }
@@ -666,7 +690,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             let lifeNode = SKSpriteNode(texture: lifeTexture)
             lifeNode.anchorPoint = CGPoint(x: 0.5, y: -0.1)
             
-            let newH: CGFloat = 15
+            let newH: CGFloat = 15/396 * Follie.screenSize.height
             let newW = lifeNode.size.width * (newH / lifeNode.size.height)
             lifeNode.size = CGSize(width: newW, height: newH)
             
@@ -678,7 +702,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             lifeNode.alpha = 0
             lifeNode.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
             
-            self.addChild(lifeNode)
+            self.gameNode.addChild(lifeNode)
             self.lifeArray.append(lifeNode)
             
         }
@@ -690,10 +714,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let pauseTexture = SKTexture(imageNamed: "Pause Button")
         let pauseButton = SKSpriteNode(texture: pauseTexture)
         pauseButton.name = "pause"
+        let pauseH = pauseButton.size.height / 396 * Follie.screenSize.height
+        let pauseW = pauseButton.size.width * (pauseH / pauseButton.size.height)
+        pauseButton.size = CGSize(width: pauseW, height: pauseH)
         pauseButton.position = CGPoint(x: self.screenW/10*9, y: self.screenH/10*9)
         pauseButton.alpha = 0
         pauseButton.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-        self.addChild(pauseButton)
+        self.gameNode.addChild(pauseButton)
+        
+        let invisiblePauseBox = SKSpriteNode(color: .clear, size: CGSize(width: pauseW*3, height: pauseH*3))
+        invisiblePauseBox.position = CGPoint(x: pauseButton.position.x, y: pauseButton.position.y)
+        invisiblePauseBox.name = "pause"
+        self.gameNode.addChild(invisiblePauseBox)
     }
     
     func setScreenSize() {
@@ -708,14 +740,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.screenCover.zPosition = Follie.zPos.screenCover.rawValue
         self.screenCover.lineWidth = 0
         self.screenCover.fillColor = SKColor.black
-        self.addChild(self.screenCover)
+        self.gameNode.addChild(self.screenCover)
     }
     
     func setAurora() {
         self.aurora = Follie.getEmitters().getAurora()
         self.aurora.position = CGPoint(x: (self.fairyNode.position.x - self.fairyNode.size.width/2), y: self.fairyNode.position.y)
         self.aurora.zPosition = self.fairyNode.zPosition
-        self.aurora.particleSize = CGSize(width: 50, height: 100)
+        let auroraH = 100 / 396 * Follie.screenSize.height
+        let auroraW = 50 * (auroraH / 100)
+        self.aurora.particleSize = CGSize(width: auroraW, height: auroraH)
         self.aurora.particleColorSequence = nil
         self.aurora.particleColorBlendFactorSequence = nil
         
@@ -723,7 +757,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.aurora.particleColor = Follie.auroraColorRotation()
         
         self.hideAurora()
-        self.addChild(aurora)
+        self.gameNode.addChild(aurora)
     }
     
     func setFairy() {
@@ -736,9 +770,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.fairyNode = fairy.fairyNode
         self.fairyGlow = fairy.fairyGlow
         
-        self.addChild(self.fairyLine)
-        self.addChild(self.fairyNode)
-        self.fairyNode.addChild(self.fairyGlow)
+        self.fairyGlow.position = self.fairyNode.position
+        
+        self.gameNode.addChild(self.fairyLine)
+        self.gameNode.addChild(self.fairyNode)
+        self.gameNode.addChild(self.fairyGlow)
         
         self.fairyNode.name = "fairyNode"
         self.fairyNode.physicsBody = SKPhysicsBody(rectangleOf: self.fairyNode.size)
@@ -839,43 +875,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func showLoseMenu() {
-        let progressLine = self.childNode(withName: "Progress Line inGame")
+        let progressLine = self.gameNode.childNode(withName: "Progress Line inGame")
         progressLine?.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
         
         self.progressNode.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
         
-        let pauseButton = self.childNode(withName: "pause")
+        let pauseButton = self.gameNode.childNode(withName: "pause")
         pauseButton?.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
         
         let chapterTitle = SKLabelNode(fontNamed: "dearJoeII")
         chapterTitle.text = self.chapterTitle
-        chapterTitle.fontSize = 100
+        chapterTitle.fontSize = 100/396 * Follie.screenSize.height
         chapterTitle.fontColor = UIColor.white
         chapterTitle.position = CGPoint(x: self.screenW/2, y: self.screenH/4*3)
         chapterTitle.alpha = 0
         chapterTitle.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(chapterTitle)
+        self.gameNode.addChild(chapterTitle)
         chapterTitle.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         
         let chapterNumber = SKLabelNode(fontNamed: ".SFUIText")
         chapterNumber.text = "Chapter \(self.chapterNo)"
-        chapterNumber.fontSize = 20
+        chapterNumber.fontSize = 20/396 * Follie.screenSize.height
         chapterNumber.fontColor = UIColor.white
         chapterNumber.alpha = 0
         chapterNumber.position = CGPoint(x: chapterTitle.position.x, y: chapterTitle.position.y - chapterTitle.frame.height/2 - 10)
         chapterNumber.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(chapterNumber)
+        self.gameNode.addChild(chapterNumber)
         chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         
         let progressBackgroundTexture = SKTexture(imageNamed: "Progress Bar - Pause&End")
         let progressBackground = SKSpriteNode(texture: progressBackgroundTexture)
         let newWidth = self.screenW * 0.7
-        let newHeight: CGFloat = 2
+        let newHeight: CGFloat = 2/396 * Follie.screenSize.height
         progressBackground.size = CGSize(width: newWidth, height: newHeight)
         progressBackground.position = CGPoint(x: screenW/2, y: screenH/2)
         progressBackground.alpha = 0
         progressBackground.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(progressBackground)
+        self.gameNode.addChild(progressBackground)
         progressBackground.run(SKAction.fadeAlpha(to: 0.7, duration: 0.5))
         
         
@@ -890,36 +926,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         let newX = progressBackground.position.x - progressBackground.size.width/2 + (CGFloat(percentage) * progressBackground.size.width)
         
-        
-        snowflakeProgress.position = CGPoint(x: newX, y: progressBackground.position.y)
+        progressBackground.position.y -= snowflakeProgress.size.height/2
+        snowflakeProgress.position = CGPoint(x: newX, y: progressBackground.position.y + snowflakeProgress.size.height/2)
         snowflakeProgress.zPosition = (Follie.zPos.inGameMenu.rawValue + 1)
         snowflakeProgress.alpha = 0
-        self.addChild(snowflakeProgress)
+        self.gameNode.addChild(snowflakeProgress)
         snowflakeProgress.run(SKAction.fadeAlpha(to: 0.7, duration: 0.5))
         
         let retryTexture = SKTexture(imageNamed: "Retry Button")
         let retry = SKSpriteNode(texture: retryTexture)
-        //        let retryWidth: CGFloat = 35
-        //        let retryHeight = retry.size.height * (retryWidth / retry.size.width)
-        //        retry.size = CGSize(width: retryWidth, height: retryHeight)
+        let retryHeight = retry.size.height/396 * Follie.screenSize.height
+        let retryWidth: CGFloat = retry.size.width * (retryHeight / retry.size.height)
+        retry.size = CGSize(width: retryWidth, height: retryHeight)
         let retryX = progressBackground.position.x + progressBackground.size.width/2 - retry.size.width/2
         retry.position = CGPoint(x: retryX, y: screenH/4)
         retry.alpha = 0
         retry.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(retry)
+        self.gameNode.addChild(retry)
         retry.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         retry.name = "retry"
         
         let menuTexture = SKTexture(imageNamed: "Back To Main Menu")
         let menu = SKSpriteNode(texture: menuTexture)
-        //        let menuWidth: CGFloat = 35
-        //        let menuHeight = menu.size.height * (menuWidth / menu.size.width)
-        //        menu.size = CGSize(width: menuWidth, height: menuHeight)
+        let menuHeight = menu.size.height/396 * Follie.screenSize.height
+        let menuWidth = menu.size.width * (menuHeight / menu.size.height)
+        menu.size = CGSize(width: menuWidth, height: menuHeight)
         let menuX = progressBackground.position.x - progressBackground.size.width/2 + menu.size.width/2
         menu.position = CGPoint(x: menuX, y: screenH/4)
         menu.alpha = 0
         menu.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(menu)
+        self.gameNode.addChild(menu)
         menu.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         menu.name = "menu"
     }
@@ -929,7 +965,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
-        let generator = UIImpactFeedbackGenerator(style: .light)
+        self.player.setVolume(0.2, fadeDuration: 0)
+        
+        self.run(SKAction.wait(forDuration: 1)) {
+            self.player.setVolume(1, fadeDuration: 0)
+        }
+        
+        let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
         
         self.hideAurora()
@@ -985,22 +1027,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func showWinMenu() {
         let winText = SKLabelNode(fontNamed: "dearJoeII")
         winText.text = "Completed!"
-        winText.fontSize = 100
+        winText.fontSize = 100 / 396 * Follie.screenSize.height
         winText.fontColor = UIColor.white
         winText.position = CGPoint(x: self.screenW/2, y: self.screenH/2 + winText.frame.height/2)
         winText.alpha = 0
         winText.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(winText)
+        self.gameNode.addChild(winText)
         winText.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         
         let tapText = SKLabelNode(fontNamed: ".SFUIText")
         tapText.text = "Tap to continue"
-        tapText.fontSize = 20
+        tapText.fontSize = 20 / 396 * Follie.screenSize.height
         tapText.fontColor = UIColor.white
         tapText.position = CGPoint(x: self.screenW/2, y: self.screenH/2 - tapText.frame.height/2)
         tapText.alpha = 0
         tapText.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(tapText)
+        self.gameNode.addChild(tapText)
         
         let action: [SKAction] = [
             SKAction.fadeAlpha(to: 1, duration: 0.5),
@@ -1037,38 +1079,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         }
     }
     
+    func starDispersedEmitter() {
+        let starDispersedEmitter = Follie.getEmitters().getStarDispersed()
+        starDispersedEmitter.position = self.fairyNode.position
+        addChild(starDispersedEmitter)
+        
+        self.run(SKAction.wait(forDuration: 0.2)) {
+            starDispersedEmitter.particleBirthRate = 0
+            self.run(SKAction.wait(forDuration: 2.5)) {
+                starDispersedEmitter.removeFromParent()
+            }
+        }
+    }
+    
     func showPauseMenu(finished: @escaping () -> Void) {
         self.pauseText = SKLabelNode(fontNamed: "dearJoeII")
         self.pauseText.text = "Paused"
-        self.pauseText.fontSize = 40
+        self.pauseText.fontSize = 40 / 396 * Follie.screenSize.height
         self.pauseText.fontColor = UIColor.white
         self.pauseText.position = CGPoint(x: self.screenW/2, y: self.screenH*2/3)
         self.pauseText.alpha = 0
         self.pauseText.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(self.pauseText)
+        self.pauseNode.addChild(self.pauseText)
         self.pauseText.run(SKAction.fadeAlpha(to: 1, duration: 0.1))
         
         let resumeTexture = SKTexture(imageNamed: "Resume Button")
         self.resumeButton = SKSpriteNode(texture: resumeTexture)
-        //        let retryWidth: CGFloat = 35
-        //        let retryHeight = retry.size.height * (retryWidth / retry.size.width)
-        //        retry.size = CGSize(width: retryWidth, height: retryHeight)
+        let resumeHeight = resumeButton.size.height / 396 * Follie.screenSize.height
+        let resumeWidth = resumeButton.size.width * (resumeHeight / resumeButton.size.height)
+        self.resumeButton.size = CGSize(width: resumeWidth, height: resumeHeight)
         self.resumeButton.position = CGPoint(x: self.screenW*2/3, y: self.screenH/2)
         self.resumeButton.alpha = 0
         self.resumeButton.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(self.resumeButton)
+        self.pauseNode.addChild(self.resumeButton)
         self.resumeButton.run(SKAction.fadeAlpha(to: 1, duration: 0.1))
         self.resumeButton.name = "resume"
         
         let menuTexture = SKTexture(imageNamed: "Back To Main Menu")
         self.backToMainMenuButton = SKSpriteNode(texture: menuTexture)
-        //        let menuWidth: CGFloat = 35
-        //        let menuHeight = menu.size.height * (menuWidth / menu.size.width)
-        //        menu.size = CGSize(width: menuWidth, height: menuHeight)
+        let menuHeight = backToMainMenuButton.size.height / 396 * Follie.screenSize.height
+        let menuWidth = backToMainMenuButton.size.width * (menuHeight / backToMainMenuButton.size.height)
+        self.backToMainMenuButton.size = CGSize(width: menuWidth, height: menuHeight)
         self.backToMainMenuButton.position = CGPoint(x: self.screenW/3, y: self.screenH/2)
         self.backToMainMenuButton.alpha = 0
         self.backToMainMenuButton.zPosition = Follie.zPos.inGameMenu.rawValue
-        self.addChild(self.backToMainMenuButton)
+        self.pauseNode.addChild(self.backToMainMenuButton)
         self.backToMainMenuButton.run(SKAction.fadeAlpha(to: 1, duration: 0.1))
         self.backToMainMenuButton.name = "menu"
         
@@ -1129,8 +1184,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         SKAction.fadeIn(withDuration: 0.2),
                         SKAction.fadeOut(withDuration: 0.2)
                     ]
-                    self.fairyGlow.run(SKAction.sequence(actions))
+//                    self.fairyGlow.run(SKAction.sequence(actions))
                     
+                    self.starDispersedEmitter()
                     self.correct()
                 }
             }
@@ -1286,8 +1342,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             SKAction.fadeIn(withDuration: 0.2),
             SKAction.fadeOut(withDuration: 0.2)
         ]
-        self.fairyGlow.run(SKAction.sequence(actions))
+//        self.fairyGlow.run(SKAction.sequence(actions))
         
+        self.starDispersedEmitter()
         self.correct()
         
         if (self.contactingLines.count > 0) {
@@ -1311,7 +1368,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         fadeOutNode.fillColor = SKColor.black
         fadeOutNode.lineWidth = 0
         fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
-        self.addChild(fadeOutNode)
+        self.gameNode.addChild(fadeOutNode)
         
         self.blockTimer?.invalidate()
         self.blockTimer = nil
@@ -1325,17 +1382,59 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         return
     }
     
+    func startResumeTimer() {
+        countownNode = SKLabelNode(fontNamed: "dearJoeII")
+        countownNode.text = String(self.resumeCountdown)
+        countownNode.fontSize = 60 / 396 * Follie.screenSize.height
+        countownNode.fontColor = UIColor.white
+        countownNode.position = CGPoint(x: self.screenW/2, y: self.screenH/2)
+        countownNode.alpha = 0
+        countownNode.zPosition = Follie.zPos.inGameMenu.rawValue
+        self.pauseNode.addChild(countownNode)
+        
+        self.pauseToPlayTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.startToPlayCounting), userInfo: nil, repeats: true)
+    }
+    
+    @objc func startToPlayCounting() {
+        
+        self.run(self.resumeCountdownSfx)
+        let action : [SKAction] = [
+            SKAction.fadeAlpha(to: 1, duration: 0.2),
+            SKAction.wait(forDuration: 0.2)
+        ]
+        
+        countownNode.run(SKAction.sequence(action))
+        
+        if resumeCountdown == 1 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                self.gameNodeIsPaused = false
+                self.gameNode.isPaused = false
+                self.countownNode.run(SKAction.fadeAlpha(to: 0, duration: 0.1))
+                self.screenCover.run(SKAction.fadeAlpha(to: 0, duration: 0.1))
+                self.player.play()
+                self.resumeTimer()
+                self.pauseToPlayTimer.invalidate()
+                self.resumeCountdown = 3
+                self.isDismiss = false
+            }
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                self.resumeCountdown -= 1
+                self.countownNode.text = String(self.resumeCountdown)
+            }
+        }
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch: UITouch = touches.first! as UITouch
         let positionInScene = touch.location(in: self.scene!)
         let touchedNodes = self.scene!.nodes(at: positionInScene)
         
+        if (self.isDismiss) {
+            return
+        }
+        
         if (self.isLose) {
-            
-            if (self.isDismiss) {
-                return
-            }
-            
             for node in touchedNodes {
                 if (node.name != nil && node.name == "menu") {
                     self.run(self.buttonClickedSfx)
@@ -1358,7 +1457,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         fadeOutNode.fillColor = SKColor.black
                         fadeOutNode.lineWidth = 0
                         fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
-                        self.addChild(fadeOutNode)
+                        self.gameNode.addChild(fadeOutNode)
                         
                         fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
                             // Preload animation
@@ -1395,9 +1494,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.isCurrentlyPaused = true
                     self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 0.1)) {
                         self.showPauseMenu {
-                            self.scene?.isPaused = true
+                            self.gameNodeIsPaused = true
+                            self.gameNode.isPaused = true
                             self.player.pause()
-                            
                             self.pauseTimer()
                         }
                     }
@@ -1407,24 +1506,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
             else if (node.name != nil && node.name == "menu") {
                 self.run(self.buttonClickedSfx)
-                self.scene?.isPaused = false
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.gameNodeIsPaused = true
+                    self.gameNode.isPaused = true
                     self.backToMainMenu()
                 }
             }
             else if (node.name != nil && node.name == "resume") {
+                self.isDismiss = true
                 self.run(self.buttonClickedSfx)
-                self.scene?.isPaused = false
                 let goneAction = SKAction.fadeAlpha(to: 0, duration: 0.1)
                 self.pauseText.run(goneAction)
                 self.backToMainMenuButton.run(goneAction)
                 self.resumeButton.run(goneAction)
-                self.screenCover.run(goneAction)
-                self.player.play()
                 
-                self.resumeTimer()
-                
+                // self.screnCover, self.player, self.resumeTimer pindah ke function startToPlayCounting()
+                self.startResumeTimer()
                 return
             }
         }
@@ -1505,10 +1603,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         
                         self.tutorialText.text = "Okay, you're all set!"
                         self.tutorialText.run(SKAction.sequence(action))
-                        self.addChild(self.tutorialText)
+                        self.gameNode.addChild(self.tutorialText)
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                            self.tutorialText.text = "You have 5 lifes. Try not to miss the beat"
+                            self.tutorialText.text = "You have 5 lives. Try not to miss the beat"
                             self.tutorialText.run(SKAction.sequence(action))
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
@@ -1516,7 +1614,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                                 self.tutorialText.run(SKAction.sequence(action))
                                 
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-                                    self.tutorialText.text = "Let's catch the beat with follie!"
+                                    self.tutorialText.text = "Let's catch the beat with Follie!"
                                     self.tutorialText.run(SKAction.sequence(action))
                                     
                                     DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
@@ -1540,8 +1638,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         SKAction.fadeIn(withDuration: 0.2),
                         SKAction.fadeOut(withDuration: 0.2)
                     ]
-                    self.fairyGlow.run(SKAction.sequence(actions))
+//                    self.fairyGlow.run(SKAction.sequence(actions))
                     
+                    self.starDispersedEmitter()
                     self.correct()
                 }
                 else if (self.isAtLine && self.contactingLines.first?.name == "\(self.currBlockNameFlag)") {
@@ -1598,8 +1697,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         SKAction.fadeIn(withDuration: 0.2),
                         SKAction.fadeOut(withDuration: 0.2)
                     ]
-                    self.fairyGlow.run(SKAction.sequence(actions))
+//                    self.fairyGlow.run(SKAction.sequence(actions))
                     
+                    self.starDispersedEmitter()
                     self.correct()
                     
                     if (self.contactingLines.count > 0) {
@@ -1656,7 +1756,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
-        if ((self.scene?.isPaused)!) {
+        if (self.gameNode.isPaused) {
             return
         }
         
@@ -1723,6 +1823,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 
                 self.aurora.particlePosition.y = self.aurora.particlePosition.y + (newPositionY - self.fairyNode.position.y)
                 self.fairyNode.position.y = newPositionY
+                self.fairyGlow.position.y = newPositionY
             }
         }
     }

@@ -18,7 +18,11 @@ class Fairy {
     
     private let fairyLinePositionXRatio: Double = Follie.hiddenSkyX // fairy line x-position ratio to the screen width
     
-    private let fairyHeight: CGFloat = 50 // fairy size height
+    private let fairyNodeRatio : Double = 50/396 // Fairy size ratio
+    
+    private var fairyHeight: CGFloat {
+        return Follie.screenSize.height * CGFloat(fairyNodeRatio)
+    }
     
     var fairyLine: SKSpriteNode {
         let fairyLineTexture = SKTexture(imageNamed: "fairyLine")

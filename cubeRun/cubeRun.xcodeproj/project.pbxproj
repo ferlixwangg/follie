@@ -18,8 +18,7 @@
 		851A8FF8220D9249004EA137 /* DYATHON - Blooming Romance.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */; };
 		851A8FF9220D9249004EA137 /* DYATHON - Your Eyes.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FF7220D9249004EA137 /* DYATHON - Your Eyes.mp3 */; };
 		851A8FFB220D9906004EA137 /* Button Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FFA220D9906004EA137 /* Button Click.wav */; };
-		85286BA02206FF83006BFF9A /* Baby.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 85286B9F2206FF83006BFF9A /* Baby.atlas */; };
-		85A7DC092216CB8700CA9019 /* newBaby.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 85A7DC082216CB8600CA9019 /* newBaby.atlas */; };
+		85A7DC092216CB8700CA9019 /* Baby.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 85A7DC082216CB8600CA9019 /* Baby.atlas */; };
 		85AAC5FA21E72F9C00E0E46B /* DYATHON - Goodbye.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */; };
 		85BD970E21F989EC004099DB /* Follie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD970D21F989EC004099DB /* Follie.swift */; };
 		85BD971121F992AF004099DB /* Fairy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD971021F992AF004099DB /* Fairy.swift */; };
@@ -41,6 +40,8 @@
 		BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA5467CE2203630F0078924A /* Roboto-Regular.ttf */; };
 		BA5467D12203630F0078924A /* DEARJI__.TTF in Resources */ = {isa = PBXBuildFile; fileRef = BA5467CF2203630F0078924A /* DEARJI__.TTF */; };
 		BA5467D3220365BD0078924A /* MainMenuBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5467D2220365BD0078924A /* MainMenuBackground.swift */; };
+		BA98C9622222A48000873AB8 /* Countdown Tick.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */; };
+		BA98C9642222A4A500873AB8 /* Star Disperse.sks in Resources */ = {isa = PBXBuildFile; fileRef = BA98C9632222A4A500873AB8 /* Star Disperse.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,8 +58,7 @@
 		851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Blooming Romance.mp3"; sourceTree = "<group>"; };
 		851A8FF7220D9249004EA137 /* DYATHON - Your Eyes.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Your Eyes.mp3"; sourceTree = "<group>"; };
 		851A8FFA220D9906004EA137 /* Button Click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Button Click.wav"; sourceTree = "<group>"; };
-		85286B9F2206FF83006BFF9A /* Baby.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Baby.atlas; sourceTree = "<group>"; };
-		85A7DC082216CB8600CA9019 /* newBaby.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = newBaby.atlas; sourceTree = "<group>"; };
+		85A7DC082216CB8600CA9019 /* Baby.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Baby.atlas; sourceTree = "<group>"; };
 		85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Goodbye.mp3"; sourceTree = "<group>"; };
 		85BD970D21F989EC004099DB /* Follie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follie.swift; sourceTree = "<group>"; };
 		85BD971021F992AF004099DB /* Fairy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fairy.swift; sourceTree = "<group>"; };
@@ -80,6 +80,8 @@
 		BA5467CE2203630F0078924A /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		BA5467CF2203630F0078924A /* DEARJI__.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = DEARJI__.TTF; sourceTree = "<group>"; };
 		BA5467D2220365BD0078924A /* MainMenuBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuBackground.swift; sourceTree = "<group>"; };
+		BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Countdown Tick.mp3"; sourceTree = "<group>"; };
+		BA98C9632222A4A500873AB8 /* Star Disperse.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = "Star Disperse.sks"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 		85BD970821F97A7F004099DB /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */,
 				851A8FFA220D9906004EA137 /* Button Click.wav */,
 				BA5313D4220826090044BDFD /* Play Chapter.wav */,
 				BA5313D5220826090044BDFD /* Rising Chapter.wav */,
@@ -158,9 +161,8 @@
 		85BD970921F97ACD004099DB /* Animations */ = {
 			isa = PBXGroup;
 			children = (
-				85A7DC082216CB8600CA9019 /* newBaby.atlas */,
+				85A7DC082216CB8600CA9019 /* Baby.atlas */,
 				BA531426220B00500044BDFD /* Vignette.atlas */,
-				85286B9F2206FF83006BFF9A /* Baby.atlas */,
 			);
 			path = Animations;
 			sourceTree = "<group>";
@@ -192,6 +194,7 @@
 		85BD971821F9CE99004099DB /* Emitters */ = {
 			isa = PBXGroup;
 			children = (
+				BA98C9632222A4A500873AB8 /* Star Disperse.sks */,
 				BA5467CB220362C90078924A /* Snow.sks */,
 				85BD971621F9CE86004099DB /* Aurora.sks */,
 			);
@@ -292,9 +295,10 @@
 				BA5313D7220826090044BDFD /* Rising Chapter.wav in Resources */,
 				BA531427220B00500044BDFD /* Vignette.atlas in Resources */,
 				8505DD5C21E5E2FE001D66A6 /* Main.storyboard in Resources */,
+				BA98C9642222A4A500873AB8 /* Star Disperse.sks in Resources */,
 				BA5467C8220362660078924A /* MainMenu.sks in Resources */,
+				BA98C9622222A48000873AB8 /* Countdown Tick.mp3 in Resources */,
 				8505DD5321E5E2FE001D66A6 /* GameScene.sks in Resources */,
-				85286BA02206FF83006BFF9A /* Baby.atlas in Resources */,
 				85BD971721F9CE86004099DB /* Aurora.sks in Resources */,
 				85AAC5FA21E72F9C00E0E46B /* DYATHON - Goodbye.mp3 in Resources */,
 				BA5467D12203630F0078924A /* DEARJI__.TTF in Resources */,
@@ -302,7 +306,7 @@
 				BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */,
 				851A8FF8220D9249004EA137 /* DYATHON - Blooming Romance.mp3 in Resources */,
 				851A8FFB220D9906004EA137 /* Button Click.wav in Resources */,
-				85A7DC092216CB8700CA9019 /* newBaby.atlas in Resources */,
+				85A7DC092216CB8700CA9019 /* Baby.atlas in Resources */,
 				BA5313D6220826090044BDFD /* Play Chapter.wav in Resources */,
 				BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */,
 				8505DD6121E5E2FF001D66A6 /* LaunchScreen.storyboard in Resources */,
@@ -476,7 +480,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 98R673PJSG;
+				DEVELOPMENT_TEAM = W7GMLURGAQ;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -495,7 +499,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 98R673PJSG;
+				DEVELOPMENT_TEAM = W7GMLURGAQ;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (

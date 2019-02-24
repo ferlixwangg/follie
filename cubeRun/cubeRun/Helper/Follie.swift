@@ -59,6 +59,10 @@ class Follie {
     
     static let screenMovementSec: Double = 25.0 // the time (seconds) it takes for a node to move a distance (screen width * 2)
     
+    static let blockRatio: Double = 15/396 // music block ratio
+    
+    static let dashedLineRatio: Double = 1.5/396 // dashed line ratio
+    
     static let hiddenSkyX: Double = 1/3 // hidden sky to hide blocks that have passed the fairy line
     
     static var xSpeed: Double {

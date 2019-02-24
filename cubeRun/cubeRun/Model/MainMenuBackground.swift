@@ -31,6 +31,10 @@ class MainMenuBackground {
     private var gameTitle: SKSpriteNode {
         let gameTitleTexture = SKTexture(imageNamed: "Follie")
         let gameTitleNode = SKSpriteNode(texture: gameTitleTexture)
+        
+        let newH = FollieMainMenu.screenSize.height * CGFloat(FollieMainMenu.gameTitleRatio)
+        let newW = gameTitleNode.size.width * (CGFloat(newH) / gameTitleNode.size.height)
+        gameTitleNode.size = CGSize(width: newW, height: newH)
         gameTitleNode.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
         
         return gameTitleNode
@@ -39,13 +43,14 @@ class MainMenuBackground {
     private var ground: SKSpriteNode {
         let groundTexture = SKTexture(imageNamed: "Ground - Main Menu")
         let groundNode = SKSpriteNode(texture: groundTexture)
-        groundNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
-        groundNode.size.width = CGFloat(Double(groundNode.size.width) * FollieMainMenu.groundRatio)
+        
+        let newHeight = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
+        groundNode.size.width = groundNode.size.width * (newHeight / groundNode.size.height)
+        groundNode.size.height = newHeight
         groundNode.zPosition = FollieMainMenu.zPos.mainMenuGround.rawValue
         
         let newY: CGFloat = -(groundNode.size.height/2) - self.gameTitle.size.height
         groundNode.position = CGPoint(x: Double(groundNode.size.width / 2.0), y: Double(newY))
-        
         return groundNode
     } // Ground
     
@@ -72,7 +77,7 @@ class MainMenuBackground {
                 chapterNode.texture = snowFrozenTexture
             }
             
-            let xPosition = Double(-self.ground.size.width/2) + Double(FollieMainMenu.screenSize.width/6) - Double(invisibleParentForChapter.size.width/2) + Double((invisibleParentForChapter.size.width * CGFloat(2 * (i-1))))
+            let xPosition = Double(-self.ground.size.width/2) + Double(FollieMainMenu.screenSize.width/4) - Double(invisibleParentForChapter.size.width/2) + Double((invisibleParentForChapter.size.width * CGFloat(2 * (i-1))))
             let yPosition = Double(self.ground.size.height/2) + Double(invisibleParentForChapter.size.height/2)
             invisibleParentForChapter.position = CGPoint(x: xPosition, y: yPosition)
             
@@ -90,7 +95,7 @@ class MainMenuBackground {
         let pattern: [CGFloat] = [6.0, 6.0]
         let dashLineNode = SKShapeNode(path: linePath.cgPath.copy(dashingWithPhase: 6, lengths: pattern))
         dashLineNode.strokeColor = UIColor.white
-        dashLineNode.lineWidth = 3
+        dashLineNode.lineWidth = FollieMainMenu.screenSize.height * CGFloat(FollieMainMenu.dashedLineRatio)
         dashLineNode.name = "Dashline"
         
         return dashLineNode
@@ -99,8 +104,9 @@ class MainMenuBackground {
     private var groundExtension1: SKSpriteNode {
         let groundTexture = SKTexture(imageNamed: "Ground - Main Menu")
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
-        groundExtensionNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
-        groundExtensionNode.size.width = CGFloat(Double(groundExtensionNode.size.width) * FollieMainMenu.groundRatio)
+        let newHeight = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
+        groundExtensionNode.size.width = groundExtensionNode.size.width * (newHeight / groundExtensionNode.size.height)
+        groundExtensionNode.size.height = newHeight
         groundExtensionNode.zPosition = FollieMainMenu.zPos.mainMenuGround.rawValue
         groundExtensionNode.position = CGPoint(x: groundExtensionNode.size.width, y: 0)
         
@@ -110,8 +116,9 @@ class MainMenuBackground {
     private var groundExtension2: SKSpriteNode {
         let groundTexture = SKTexture(imageNamed: "Ground - Main Menu")
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
-        groundExtensionNode.size.height = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
-        groundExtensionNode.size.width = CGFloat(Double(groundExtensionNode.size.width) * FollieMainMenu.groundRatio)
+        let newHeight = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
+        groundExtensionNode.size.width = groundExtensionNode.size.width * (newHeight / groundExtensionNode.size.height)
+        groundExtensionNode.size.height = newHeight
         groundExtensionNode.zPosition = FollieMainMenu.zPos.mainMenuGround.rawValue
         groundExtensionNode.position = CGPoint(x: groundExtensionNode.size.width * 2, y: 0)
         
@@ -123,8 +130,18 @@ class MainMenuBackground {
         let mountainNode = SKSpriteNode(texture: mountainTexture)
         mountainNode.name = "Mountain"
         mountainNode.setScale(0.7)
+        let mountainH = FollieMainMenu.screenSize.height * CGFloat(FollieMainMenu.mountainRatio)
+        let mountainW = mountainNode.size.width * (mountainH / mountainNode.size.height)
         
-        let mountainX = (-self.ground.size.width/2) + (2*self.ground.size.width) - (mountainNode.size.width/2)
+        mountainNode.size = CGSize(width: mountainW, height: mountainH)
+        
+        let snowFrozenTexture = SKTexture(imageNamed: "Snowflakes Frozen")
+        let newH = FollieMainMenu.screenSize.height * CGFloat(FollieMainMenu.chapterNodeRatio)
+        let newW = snowFrozenTexture.size().width * (newH / snowFrozenTexture.size().height)
+        
+        let lastChapterXPositionWithNextSpace = Double(-self.ground.size.width/2) + Double(FollieMainMenu.screenSize.width/4) + Double((newW * CGFloat(2 * 13)))
+        
+        let mountainX = CGFloat(lastChapterXPositionWithNextSpace) - mountainNode.size.width/2
         let mountainY = self.ground.size.height/2 + mountainNode.size.height/2
         mountainNode.position = CGPoint(x: mountainX, y: mountainY)
         
@@ -133,8 +150,8 @@ class MainMenuBackground {
     
     private var chapterTitle: SKLabelNode {
         let chapterTitle = SKLabelNode(fontNamed: "dearJoeII")
-        chapterTitle.fontSize = 100
-        chapterTitle.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/3*2)
+        chapterTitle.fontSize = CGFloat(100 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
+        chapterTitle.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/50*31)
         chapterTitle.alpha = 0
         chapterTitle.addChild(self.chapterNumber)
         chapterTitle.zPosition = 10
@@ -144,7 +161,7 @@ class MainMenuBackground {
     
     private var chapterNumber: SKLabelNode {
         let chapterNumber = SKLabelNode(fontNamed: ".SFUIText")
-        chapterNumber.fontSize = 20
+        chapterNumber.fontSize = CGFloat(20 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
         chapterNumber.alpha = 0
         
         return chapterNumber

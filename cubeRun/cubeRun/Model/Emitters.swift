@@ -20,4 +20,7 @@ class Emitters {
         return SKEmitterNode(fileNamed: "Snow")!
     } // Returns snow emitter node
     
+    func getStarDispersed() -> SKEmitterNode {
+        return SKEmitterNode(fileNamed: "Star Disperse")!
+    } // Returns star dispersed emitter node
 }

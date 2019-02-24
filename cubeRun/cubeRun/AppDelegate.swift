@@ -17,7 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        UserDefaults.standard.set(false, forKey: "TutorialCompleted")
         let launchedBefore: Bool = UserDefaults.standard.bool(forKey: "LaunchedBefore")
         
         if (launchedBefore == false) {
@@ -32,6 +31,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+        
+        if (GameScene.sharedInstance != nil && GameScene.sharedInstance?.onTuto == false && GameScene.sharedInstance!.isCurrentlyPaused == false) {
+            print("masuk")
+            GameScene.sharedInstance!.isCurrentlyPaused = true
+            GameScene.sharedInstance!.screenCover.alpha = 0.65
+            GameScene.sharedInstance!.showPauseMenu {
+                GameScene.sharedInstance!.gameNodeIsPaused = true
+                GameScene.sharedInstance!.gameNode.isPaused = true
+                GameScene.sharedInstance!.player.pause()
+                GameScene.sharedInstance!.pauseTimer()
+            }
+        }
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {

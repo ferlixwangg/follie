@@ -36,9 +36,17 @@ class FollieMainMenu {
     
     static let groundRatio: Double = 1/6 // ground height ratio to the screen height
     
+    static let gameTitleRatio: Double = 234/396 // ratio for game title
+    
     static let chapterNodeRatio: Double = 66/396 // ratio for chapter nodes' size in main menu
     
     static let chapterRiseRatio: Double = 63/396 // ratio for chapter go up animation when clicked
+    
+    static let fontSizeRatio : Double = 1/396 // ratio for font size
+    
+    static let dashedLineRatio : Double = 3/396 // dashed line under selected chapter ratio
+    
+    static let mountainRatio : Double = 168/396 // ratio for the mountain size
     
     static var showFollieTitle: Bool = true // whether to show the title during the loading process or not
     
