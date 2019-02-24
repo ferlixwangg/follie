@@ -36,10 +36,11 @@ class MainMenu: SKScene {
     var activeChapterName = String()
     
     // Camera Down Animation elements
-    var cameraDownOnGoing: Bool!
+    var cameraDownOnGoing: Bool = false
     var skyFinalY: CGFloat!
     var gameTitalFinalY: CGFloat!
     var groundFinalY: CGFloat!
+    var isDismiss: Bool!
     
     // DispatchWorkTask for ChapterTitle Animation
     var task: DispatchWorkItem? = nil
@@ -53,24 +54,33 @@ class MainMenu: SKScene {
     
     override func didMove(to view: SKView) {
         let showFollieTitle = FollieMainMenu.showFollieTitle
+        self.isDismiss = true
         
         if (showFollieTitle == true) {
-            self.initialVignette()
-        }
-        
-        self.setNodes()
-        self.snowEmitter()
-        self.startBackgroundMusic()
-        
-        if (showFollieTitle == true) {
-            self.cameraDownOnGoing = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                if (self.cameraDownOnGoing == true) {
-                    self.cameraDownAnimation()
-                }
+            self.run(SKAction.wait(forDuration: 1)) {
+                self.splashScreen()
             }
-            self.setActiveChapter(duration: 5.5)
+            
+            self.run(SKAction.wait(forDuration: 10)){
+                self.initialVignette()
+                self.setNodes()
+                self.snowEmitter()
+                self.startBackgroundMusic()
+                
+                self.cameraDownOnGoing = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    if (self.cameraDownOnGoing == true) {
+                        self.isDismiss = false
+                        self.cameraDownAnimation()
+                    }
+                }
+                self.setActiveChapter(duration: 5.5)
+            }
         } else {
+            self.setNodes()
+            self.snowEmitter()
+            self.startBackgroundMusic()
+            
             self.cameraDownOnGoing = false
             let goUpDuration = 0.0
             self.beginMoveByAnimation(goUpDuration: goUpDuration)
@@ -88,6 +98,62 @@ class MainMenu: SKScene {
     
     func stopBackgroundMusic() {
         self.backgroundMusic.removeFromParent()
+    }
+    
+    func splashScreen() {
+        let teamFollieText = SKLabelNode(fontNamed: "dearJoeII")
+        teamFollieText.text = "Team Follie"
+        teamFollieText.fontSize = CGFloat(100 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
+        teamFollieText.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
+        teamFollieText.alpha = 0
+        
+        let splashAction : [SKAction] = [
+            SKAction.fadeIn(withDuration: 2),
+            SKAction.fadeOut(withDuration: 2),
+            SKAction.removeFromParent()
+        ]
+        
+        teamFollieText.run(SKAction.sequence(splashAction))
+        
+        self.addChild(teamFollieText)
+        
+        let headphoneTexture = SKTexture(imageNamed: "Headphone")
+        let headphoneIcon = SKSpriteNode(texture: headphoneTexture)
+        headphoneIcon.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/10*7)
+        headphoneIcon.alpha = 0
+        let headphoneH = 80/396 * FollieMainMenu.screenSize.height
+        let headphoneW = headphoneIcon.size.width * (headphoneH / headphoneIcon.size.height)
+        headphoneIcon.size = CGSize(width: headphoneW, height: headphoneH)
+        
+        let useHeadphoneText = SKLabelNode(fontNamed: ".SFUIText")
+        useHeadphoneText.text = "Use headphones for best experience"
+        useHeadphoneText.fontSize = CGFloat(20 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
+        useHeadphoneText.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
+        useHeadphoneText.alpha = 0
+        
+        let musicByText = SKLabelNode(fontNamed: ".SFUIText")
+        musicByText.text = "music by"
+        musicByText.fontSize = CGFloat(20 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
+        musicByText.position = CGPoint(x: FollieMainMenu.screenSize.width/2 - (100/396 * FollieMainMenu.screenSize.height), y: FollieMainMenu.screenSize.height/10*4)
+        musicByText.alpha = 0
+        
+        let dyathonText = SKLabelNode(fontNamed: "dearJoeII")
+        dyathonText.text = "D y a t h o n"
+        dyathonText.fontSize = CGFloat(40 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
+        dyathonText.position = CGPoint(x: FollieMainMenu.screenSize.width/2 + (40/396 * FollieMainMenu.screenSize.height) , y: FollieMainMenu.screenSize.height/10*4)
+        dyathonText.alpha = 0
+        
+        headphoneIcon.run(SKAction.sequence(splashAction))
+        useHeadphoneText.run(SKAction.sequence(splashAction))
+        musicByText.run(SKAction.sequence(splashAction))
+        dyathonText.run(SKAction.sequence(splashAction))
+        
+        self.run(SKAction.wait(forDuration: 5.0)) {
+            self.addChild(headphoneIcon)
+            self.addChild(useHeadphoneText)
+            self.addChild(musicByText)
+            self.addChild(dyathonText)
+        }
     }
     
     func initialVignette() {
@@ -120,7 +186,7 @@ class MainMenu: SKScene {
         self.chapterTitle.text = FollieMainMenu.getChapter(chapterNo: index).getTitle()
         let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
         chapterNumber.text = "Chapter \(index)"
-        chapterNumber.position = CGPoint(x: 0, y: self.chapterTitle.frame.height/2 + 10)
+        chapterNumber.position = CGPoint(x: 0, y: self.chapterTitle.frame.height/2 + (10/396 * FollieMainMenu.screenSize.height))
         
         moveChapterTitleAndNumber(durationStartDispatch: duration)
         
@@ -248,7 +314,7 @@ class MainMenu: SKScene {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if (self.chapterChosen) {
+        if (self.chapterChosen || self.isDismiss) {
             return
         }
         
@@ -264,7 +330,7 @@ class MainMenu: SKScene {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if (self.chapterChosen) {
+        if (self.chapterChosen || self.isDismiss) {
             return
         }
         
@@ -384,6 +450,10 @@ class MainMenu: SKScene {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if (self.chapterChosen || self.isDismiss) {
+            return
+        }
+        
         for touch in touches{
             let point = touch.location(in: self)
             
