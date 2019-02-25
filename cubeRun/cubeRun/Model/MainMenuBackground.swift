@@ -129,7 +129,6 @@ class MainMenuBackground {
         let mountainTexture = SKTexture(imageNamed: "Mountain")
         let mountainNode = SKSpriteNode(texture: mountainTexture)
         mountainNode.name = "Mountain"
-        mountainNode.setScale(0.7)
         let mountainH = FollieMainMenu.screenSize.height * CGFloat(FollieMainMenu.mountainRatio)
         let mountainW = mountainNode.size.width * (mountainH / mountainNode.size.height)
         
@@ -165,6 +164,21 @@ class MainMenuBackground {
         chapterNumber.alpha = 0
         
         return chapterNumber
+    }
+    
+    private var settingsButton: SKSpriteNode {
+        let settingsTexture = SKTexture(imageNamed: "Settings")
+        let settingsNode = SKSpriteNode(texture: settingsTexture)
+        let settingsNodeHeight = 20/396 * FollieMainMenu.screenSize.height
+        let settingsNodeWidth = settingsNode.size.width * (settingsNodeHeight / settingsNode.size.height)
+        settingsNode.size = CGSize(width: settingsNodeWidth, height: settingsNodeHeight)
+        settingsNode.position.x = FollieMainMenu.screenSize.width/11
+        settingsNode.position.y = FollieMainMenu.screenSize.height/10 * 8.5
+        settingsNode.zPosition = FollieMainMenu.zPos.mainMenuSettings.rawValue
+        settingsNode.name = "Settings"
+        settingsNode.alpha = 0
+        
+        return settingsNode
     }
     
     private var vignetteAnimationTextures: [SKTexture] {
@@ -220,7 +234,7 @@ class MainMenuBackground {
         
         tempNodes.append(contentsOf: self.chapters)
         tempNodes.append(self.groundExtension1)
-        tempNodes.append(self.groundExtension2)
+//        tempNodes.append(self.groundExtension2)
         tempNodes.append(self.mountain)
         
         return tempNodes
@@ -232,5 +246,9 @@ class MainMenuBackground {
     
     func getDashedLines() -> SKShapeNode {
         return self.dashLine
+    }
+    
+    func getSettingsButton() -> SKSpriteNode {
+        return self.settingsButton
     }
 }

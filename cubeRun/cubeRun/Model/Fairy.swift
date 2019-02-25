@@ -42,7 +42,7 @@ class Fairy {
     } // the specified line/path the fairy is allowed to move around in
     
     private var fairyAnimationTextures: [SKTexture] {
-        let fairyAtlas = SKTextureAtlas(named: "newBaby")
+        let fairyAtlas = SKTextureAtlas(named: "Baby")
         var fairyFrames: [SKTexture] = []
         
         let numImages = fairyAtlas.textureNames.count
@@ -73,18 +73,6 @@ class Fairy {
         
         return fairy
     } // fairy node + its animation
-    
-    var fairyGlow: SKSpriteNode {
-        let fairyGlowTexture = SKTexture(imageNamed: "fairyGlow")
-        let fairyGlow = SKSpriteNode(texture: fairyGlowTexture)
-        
-        fairyGlow.size = CGSize(width: self.fairyNode.size.width * 1.5, height: self.fairyNode.size.height * 1.5)
-        fairyGlow.zPosition = Follie.zPos.fairyGlow.rawValue
-        
-        fairyGlow.alpha = 0
-        
-        return fairyGlow
-    } // glow effect around fairy
     
     var maxY: CGFloat {
         return self.fairyLine.position.y + self.fairyLine.size.height/2 - self.fairyNode.size.height/2

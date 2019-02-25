@@ -17,6 +17,7 @@ class FollieMainMenu {
         case mainMenuGround = 5
         case mainMenuSnow = 2
         case mainMenuChapterNode = -3
+        case mainMenuSettings = 3
     } // z-position for nodes
     
     static var screenSize: CGSize {

@@ -10,6 +10,10 @@ import SpriteKit
 
 class MainMenu: SKScene {
     
+    // Layer nodes
+    let mainMenuNode = SKNode()
+    let settingsNode = SKNode()
+    
     /// UserDefault value of the unlocked chapters
     let availableChapter: Int = UserDefaults.standard.integer(forKey: "AvailableChapter")
     
@@ -30,6 +34,7 @@ class MainMenu: SKScene {
     var ground: SKSpriteNode!
     var chapterTitle: SKLabelNode!
     var mountain: SKSpriteNode!
+    var settingsButton: SKSpriteNode!
     
     // Variables for flag to detect selected chapter
     var activeChapter = SKSpriteNode()
@@ -54,6 +59,8 @@ class MainMenu: SKScene {
     
     override func didMove(to view: SKView) {
         let showFollieTitle = FollieMainMenu.showFollieTitle
+//        let showFollieTitle = false
+        
         self.isDismiss = true
         
         if (showFollieTitle == true) {
@@ -77,9 +84,11 @@ class MainMenu: SKScene {
                 self.setActiveChapter(duration: 5.5)
             }
         } else {
+            self.isDismiss = false
             self.setNodes()
             self.snowEmitter()
             self.startBackgroundMusic()
+            self.settingsButton.alpha = 1.0
             
             self.cameraDownOnGoing = false
             let goUpDuration = 0.0
@@ -121,7 +130,7 @@ class MainMenu: SKScene {
         let headphoneIcon = SKSpriteNode(texture: headphoneTexture)
         headphoneIcon.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/10*7)
         headphoneIcon.alpha = 0
-        let headphoneH = 80/396 * FollieMainMenu.screenSize.height
+        let headphoneH = 60/396 * FollieMainMenu.screenSize.height
         let headphoneW = headphoneIcon.size.width * (headphoneH / headphoneIcon.size.height)
         headphoneIcon.size = CGSize(width: headphoneW, height: headphoneH)
         
@@ -170,6 +179,8 @@ class MainMenu: SKScene {
             let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
             chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
             chapterNumber.run(SKAction.moveTo(y: chapterNumber.position.y + 10, duration: 0.5))
+            
+            self.settingsButton.run(SKAction.fadeIn(withDuration: 0.5))
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + durationStartDispatch, execute: self.task!)
@@ -226,6 +237,9 @@ class MainMenu: SKScene {
         
         self.chapterTitle = tempBackground.getChapterTitle()
         self.addChild(self.chapterTitle)
+        
+        self.settingsButton = tempBackground.getSettingsButton()
+        self.addChild(self.settingsButton)
         
         let groundChildren = tempBackground.getGroundChildNodes()
         for child in groundChildren {
@@ -336,10 +350,18 @@ class MainMenu: SKScene {
         
         // Obtain the node that is touched
         let touch: UITouch = touches.first! as UITouch
-        let positionInScene = touch.location(in: self.ground)
-        let touchedNodes = self.ground.nodes(at: positionInScene)
+        let positionInGroundScene = touch.location(in: self.ground)
+        let positionInScene = touch.location(in: self.scene!)
+        let touchedGroundNodes = self.ground.nodes(at: positionInGroundScene)
+        let touchedNodes = self.nodes(at: positionInScene)
         
         for node in touchedNodes {
+            if (node.name != nil && node.name!.contains("Settings")) {
+                
+            }
+        }
+        
+        for node in touchedGroundNodes {
             // Check if the selected node is the chapter node
             if (node.name != nil && node.name!.contains("Chapter")) {
                 
@@ -403,8 +425,7 @@ class MainMenu: SKScene {
                         self.run(SKAction.fadeOut(withDuration: 2.0)) {
                             // Preload animation
                             var preAtlas = [SKTextureAtlas]()
-                            //                            preAtlas.append(SKTextureAtlas(named: "Baby"))
-                            preAtlas.append(SKTextureAtlas(named: "newBaby"))
+                            preAtlas.append(SKTextureAtlas(named: "Baby"))
                             
                             // Move to next scene
                             SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
@@ -461,8 +482,8 @@ class MainMenu: SKScene {
             let xMovement = point.x - prevPoint.x
             let newPositionX = self.ground.position.x + xMovement
             
-            if (newPositionX < -(self.ground.size.width/2)) {
-                self.ground.position.x = -(self.ground.size.width/2)
+            if (newPositionX < -(self.mountain.position.x + self.mountain.size.width/2 - FollieMainMenu.screenSize.width)) {
+                self.ground.position.x = -(self.mountain.position.x + self.mountain.size.width/2 - FollieMainMenu.screenSize.width)
             } else if (newPositionX > self.ground.size.width/2) {
                 self.ground.position.x = self.ground.size.width/2
             } else {

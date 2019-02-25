@@ -28,7 +28,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     // Fairy objects and attributes
     var fairyLine: SKSpriteNode!
     var fairyNode: SKSpriteNode!
-    var fairyGlow: SKSpriteNode!
     var fairyMaxY: CGFloat!
     var fairyMinY: CGFloat!
     var fairyUp: Bool = false
@@ -674,7 +673,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let newX = progressLine.position.x - progressLine.size.width/2
         progressLine.position.y -= progressNode.size.height/2
         self.progressNode.position = CGPoint(x: newX, y: progressLine.position.y + progressNode.size.height/2)
-        self.progressNode.position = CGPoint(x: newX, y: progressLine.position.y)
         self.progressNode.zPosition = Follie.zPos.visibleBlock.rawValue
         self.progressNode.alpha = 0
         self.progressNode.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
@@ -768,13 +766,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.fairyLine = fairy.fairyLine
         self.fairyNode = fairy.fairyNode
-        self.fairyGlow = fairy.fairyGlow
         
-        self.fairyGlow.position = self.fairyNode.position
         
         self.gameNode.addChild(self.fairyLine)
         self.gameNode.addChild(self.fairyNode)
-        self.gameNode.addChild(self.fairyGlow)
         
         self.fairyNode.name = "fairyNode"
         self.fairyNode.physicsBody = SKPhysicsBody(rectangleOf: self.fairyNode.size)
@@ -866,7 +861,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
         }
         
-        self.player.setVolume(0, fadeDuration: 6)
+        self.run(SKAction.wait(forDuration: 1.1)){
+            self.player.setVolume(0, fadeDuration: 6)
+        }
         
         self.blockTimer?.invalidate()
         self.blockTimer = nil
@@ -1180,12 +1177,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.contactingLines.first?.zPosition = Follie.zPos.hiddenSky.rawValue
                     self.upcomingBlocks.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
                     
-                    let actions: [SKAction] = [
-                        SKAction.fadeIn(withDuration: 0.2),
-                        SKAction.fadeOut(withDuration: 0.2)
-                    ]
-//                    self.fairyGlow.run(SKAction.sequence(actions))
-                    
                     self.starDispersedEmitter()
                     self.correct()
                 }
@@ -1315,14 +1306,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     print("miss long")
                     self.missed()
                     
-                    self.contactingLines.first!.strokeColor = SKColor.red
-                    
-                    let actions: [SKAction] = [
-                        SKAction.fadeOut(withDuration: 0.3),
-                        SKAction.removeFromParent()
-                    ]
-                    self.contactingLines.first!.run(SKAction.sequence(actions))
-                    self.contactingLines.remove(at: 0)
                     self.isAtLine = false
                     self.isHit = false
                 }
@@ -1337,12 +1320,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
         }
         self.upcomingBlocks.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
-        
-        let actions: [SKAction] = [
-            SKAction.fadeIn(withDuration: 0.2),
-            SKAction.fadeOut(withDuration: 0.2)
-        ]
-//        self.fairyGlow.run(SKAction.sequence(actions))
         
         self.starDispersedEmitter()
         self.correct()
@@ -1634,12 +1611,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
                     self.isHit = true
                     
-                    let actions: [SKAction] = [
-                        SKAction.fadeIn(withDuration: 0.2),
-                        SKAction.fadeOut(withDuration: 0.2)
-                    ]
-//                    self.fairyGlow.run(SKAction.sequence(actions))
-                    
                     self.starDispersedEmitter()
                     self.correct()
                 }
@@ -1692,12 +1663,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.isChangedBlock = false
                     
                     self.upcomingBlocks.first?.zPosition = Follie.zPos.hiddenBlockArea.rawValue
-                    
-                    let actions: [SKAction] = [
-                        SKAction.fadeIn(withDuration: 0.2),
-                        SKAction.fadeOut(withDuration: 0.2)
-                    ]
-//                    self.fairyGlow.run(SKAction.sequence(actions))
                     
                     self.starDispersedEmitter()
                     self.correct()
@@ -1823,7 +1788,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 
                 self.aurora.particlePosition.y = self.aurora.particlePosition.y + (newPositionY - self.fairyNode.position.y)
                 self.fairyNode.position.y = newPositionY
-                self.fairyGlow.position.y = newPositionY
             }
         }
     }
