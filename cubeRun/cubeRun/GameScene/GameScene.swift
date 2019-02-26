@@ -131,6 +131,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     var lifeArray: [SKSpriteNode] = []
     
+    // new var ------------------------------------------------------
+    var blockX: CGFloat!
+    var toFairyTime: Double!
+    var totalTime: Double!
+    var totalDistance: Double!
+    var tempBeats: [Beat]!
+    var isFirstBeat: Bool = true
+    var linesY: [Int:CGFloat] = [:]
+    var xPerBeat: Double!
+    
+    var currBeat: Double = 0
+    // new var ------------------------------------------------------
+    
     deinit {
         print("game scene deinit")
         // check if scene is dismissed after presenting another scene
@@ -510,16 +523,138 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func startGameplay() {
-        self.player.play()
         self.currSec = Date().timeIntervalSince1970 * 1000.0
         
         self.setupLife()
         self.animateProgress()
         self.setupPause()
         
-        self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
+        if (self.chapterNo > 2) {
+            self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
+            self.player.play()
+            self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
+        }
+        else {
+            // melody
+            self.setupGameplay()
+            self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(melodyProjectiles), userInfo: nil, repeats: true)
+        }
+    }
+    
+    func setupGameplay() {
+        let tempsize = CGSize(width: 15, height: 15)
         
-        self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
+        // get min distance from fairy to newBlock, get min multiplier for how many beats for block to reach fairy
+        // get distance from min beats
+        let minDistance = self.screenW - self.fairyNode.position.x + tempsize.width/2
+        self.xPerBeat = Follie.xSpeed * self.music.secPerBeat * Follie.blockToGroundSpeed
+        let minMultiplier: Double = ceil(Double(minDistance) / self.xPerBeat)
+        let distance = self.xPerBeat * minMultiplier
+        
+        self.blockX = self.fairyNode.position.x + CGFloat(distance)
+        
+        self.totalDistance = Double(self.blockX + tempsize.width/2)
+        self.toFairyTime = minMultiplier * self.music.secPerBeat
+        self.totalTime = self.toFairyTime * (self.totalDistance / distance)
+        
+        let allowedYDistance = self.fairyMaxY - self.fairyMinY
+        let yInterval: Double = Double(allowedYDistance) / 4
+        
+        for i in (0...4) {
+            self.linesY[i+1] = self.fairyMinY + CGFloat(Double(i) * yInterval)
+        }
+        
+        self.tempBeats = self.music.beats
+    }
+    
+    @objc func melodyProjectiles() {
+        if (self.isFirstBeat) {
+            self.isFirstBeat = false
+            
+            self.run(SKAction.wait(forDuration: self.toFairyTime)) {
+                self.player.play()
+                self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
+            }
+        }
+        else {
+            self.currBeat += 1/4
+            
+            if !(self.currBeat == self.tempBeats.first?.nextBeatIn) {
+                return
+            }
+            else {
+                self.currBeat = 0
+                self.tempBeats.remove(at: 0)
+                
+                if (self.tempBeats.isEmpty) {
+                    return
+                }
+            }
+        }
+        
+        // new block
+        let newBlock = SKSpriteNode(texture: self.blockTexture)
+        newBlock.size = CGSize(width: 15, height: 15)
+        newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
+        
+        newBlock.name = "\(self.blockNameFlag)"
+        newBlock.physicsBody = SKPhysicsBody(rectangleOf: newBlock.size)
+        newBlock.physicsBody?.isDynamic = true
+        newBlock.physicsBody?.categoryBitMask = Follie.categories.blockCategory.rawValue
+        newBlock.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+        newBlock.physicsBody?.collisionBitMask = 0
+        
+        let blockY = self.linesY[(self.tempBeats.first?.nthLine)!]
+        newBlock.position = CGPoint(x: self.blockX, y: blockY!)
+        
+        let actions: [SKAction] = [
+            SKAction.moveBy(x: CGFloat(-self.totalDistance), y: 0, duration: self.totalTime),
+            SKAction.removeFromParent()
+        ]
+        newBlock.run(SKAction.sequence(actions))
+        self.gameNode.addChild(newBlock)
+        
+        self.upcomingBlocks.append(newBlock)
+        self.blockNameFlag += 1
+        
+        if ((self.tempBeats.first?.connectToNext)!) {
+            let additionalX: Double = self.tempBeats.first!.nextBeatIn * self.xPerBeat
+            
+            let newX = self.blockX + CGFloat(additionalX)
+            let newY = self.linesY[self.tempBeats[1].nthLine]
+            
+            let path = UIBezierPath()
+            path.move(to: CGPoint(x: blockX, y: blockY!))
+            path.addLine(to: CGPoint(x: newX, y: newY!))
+            
+            let pattern : [CGFloat] = [5.0, 5.0]
+            let dashPath = path.cgPath.copy(dashingWithPhase: 1, lengths: pattern)
+            
+            let dashedLine = SKShapeNode(path: dashPath)
+            dashedLine.zPosition = Follie.zPos.visibleBlock.rawValue
+            dashedLine.lineWidth = 1.5
+            dashedLine.strokeColor = SKColor.white
+            
+            dashedLine.name = "\(self.blockNameFlag)"
+            dashedLine.physicsBody = SKPhysicsBody(edgeChainFrom: path.cgPath)
+            dashedLine.physicsBody?.isDynamic = true
+            dashedLine.physicsBody?.categoryBitMask = Follie.categories.holdLineCategory.rawValue
+            dashedLine.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+            dashedLine.physicsBody?.collisionBitMask = 0
+            
+            //            let lineX = newX + CGFloat(additionalX/2)
+            let blockSpeed: Double = self.totalDistance / self.totalTime
+            let lineDistance = CGFloat(self.totalDistance) + dashedLine.frame.width
+            let lineTime: Double = Double(lineDistance / CGFloat(blockSpeed))
+            
+            let lineActions: [SKAction] = [
+                SKAction.moveBy(x: -lineDistance, y: 0, duration: lineTime),
+                SKAction.removeFromParent()
+            ]
+            dashedLine.run(SKAction.sequence(lineActions))
+            self.gameNode.addChild(dashedLine)
+            self.upcomingLines.append(dashedLine)
+        }
     }
     
     @objc func blockProjectiles() {
@@ -540,24 +675,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         newBlock.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
         newBlock.physicsBody?.collisionBitMask = 0
         
-        // get min distance from fairy to newBlock, get min multiplier for how many beats for block to reach fairy
-        // get distance from min beats
-        let minDistance = self.screenW - self.fairyNode.position.x + newBlock.size.width/2
-        let xPerBeat = Follie.xSpeed * self.music.secPerBeat * Follie.blockToGroundSpeed
-        let minMultiplier: Double = ceil(Double(minDistance) / xPerBeat)
-        let distance = xPerBeat * minMultiplier
-        
-        let blockX = self.fairyNode.position.x + CGFloat(distance)
         let blockY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
-        newBlock.position = CGPoint(x: blockX, y: blockY)
-        
-        let totalDistance: Double = Double(blockX + newBlock.size.width/2)
-        let toFairyTime: Double = minMultiplier * self.music.secPerBeat
-        let totalTime: Double = toFairyTime * (totalDistance / distance)
-        let blockSpeed: Double = totalDistance / totalTime
+        newBlock.position = CGPoint(x: self.blockX, y: blockY)
+
+        let blockSpeed: Double = self.totalDistance / self.totalTime
         
         let actions: [SKAction] = [
-            SKAction.moveBy(x: CGFloat(-totalDistance), y: 0, duration: totalTime),
+            SKAction.moveBy(x: CGFloat(-self.totalDistance), y: 0, duration: self.totalTime),
             SKAction.removeFromParent()
         ]
         newBlock.run(SKAction.sequence(actions))
@@ -589,10 +713,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             let holdBeatNum: Int = Int.random(in: 1 ... self.maxHoldBeat)
             n += Double(holdBeatNum)
             
-            let connectingX = blockX + CGFloat(xPerBeat * n)
+            let connectingX = self.blockX + CGFloat(self.xPerBeat * n)
             let connectingY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
-            let connectingDistance = totalDistance + (xPerBeat * n)
-            let connectingTime = totalTime + (self.music.secPerBeat * n)
+            let connectingDistance = self.totalDistance + (self.xPerBeat * n)
+            let connectingTime = self.totalTime + (self.music.secPerBeat * n)
             
             connectingBlock.position = CGPoint(x: connectingX, y: connectingY)
             
@@ -630,7 +754,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             let lineX = prevNodePos.x + (connectingX - prevNodePos.x)/2
             //            let lineY = prevNodePos.y + (connectingY - prevNodePos.y)/2
-            let lineDistance = CGFloat(totalDistance) + (lineX - blockX) + dashedLine.frame.width/2
+            let lineDistance = CGFloat(self.totalDistance) + (lineX - self.blockX) + dashedLine.frame.width/2
             let lineTime: Double = Double(lineDistance / CGFloat(blockSpeed))
             
             let lineActions: [SKAction] = [
@@ -1796,19 +1920,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.blockTimer?.invalidate()
         self.blockTimer = nil
         
-        self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
-        self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.music.secPerBeat)
-        self.diffSec = self.music.secPerBeat - self.diffSec
+        if (self.chapterNo > 2) {
+            self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
+            self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.music.secPerBeat)
+            self.diffSec = self.music.secPerBeat - self.diffSec
+        }
+        else {
+            self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
+            self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.music.secPerBeat/4)
+            self.diffSec = self.music.secPerBeat/4 - self.diffSec
+        }
     }
     
     func resumeTimer() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.diffSec) {
-            self.currSec = Date().timeIntervalSince1970 * 1000.0
-            self.blockProjectiles()
-            
-            self.isCurrentlyPaused = false
-            
-            self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
+        if (self.chapterNo > 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.diffSec) {
+                self.currSec = Date().timeIntervalSince1970 * 1000.0
+                self.blockProjectiles()
+                
+                self.isCurrentlyPaused = false
+                
+                self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
+            }
+        }
+        else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.diffSec) {
+                self.currSec = Date().timeIntervalSince1970 * 1000.0
+                self.blockProjectiles()
+                
+                self.isCurrentlyPaused = false
+                
+                self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
+            }
         }
     }
 }

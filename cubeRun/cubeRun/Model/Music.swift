@@ -12,9 +12,11 @@ import SpriteKit
 class Music {
     var name: String // music filename
     var secPerBeat: Double // the time (seconds) it takes between beats
+    var beats: [Beat]
     
-    init(name: String, secPerBeat: Double) {
+    init(name: String, secPerBeat: Double, beats: [Beat]) {
         self.name = name
         self.secPerBeat = secPerBeat
+        self.beats = beats
     }
 }

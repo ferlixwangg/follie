@@ -10,14 +10,14 @@ import SpriteKit
 
 class Chapter {
     init(chapterNo: Int) {
-       self.chapterNo = chapterNo
+        self.chapterNo = chapterNo
     }
     
     var chapterNo: Int
     
     private let chapterMusic: [Int:Music] = [
-        1: Music(name: "DYATHON - Your Eyes", secPerBeat: (Double(60)/Double(78))),
-        2: Music(name: "DYATHON - Blooming Romance", secPerBeat: (Double(60)/Double(89)))
+        1: Music(name: "DYATHON - Your Eyes", secPerBeat: (Double(60)/Double(78)), beats: chapter1().beats),
+        2: Music(name: "DYATHON - Blooming Romance", secPerBeat: (Double(60)/Double(89)), beats: chapter2().beats)
     ]
     
     private let chapterTitle: [Int:String] = [
