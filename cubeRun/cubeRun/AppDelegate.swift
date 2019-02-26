@@ -23,6 +23,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UserDefaults.standard.set(1, forKey: "AvailableChapter")
             UserDefaults.standard.set(false, forKey: "TutorialCompleted")
             UserDefaults.standard.set(true, forKey: "LaunchedBefore")
+            UserDefaults.standard.set(false, forKey: "Tutorial1Completed")
+            UserDefaults.standard.set(false, forKey: "Tutorial2Completed")
+            UserDefaults.standard.set(true, forKey: "EnglishLanguage")
+        }
+        else{
+            UserDefaults.standard.bool(forKey: "EnglishLanguage")
         }
         
         return true

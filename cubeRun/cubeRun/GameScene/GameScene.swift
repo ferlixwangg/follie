@@ -62,6 +62,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Tutorial
     var onTuto: Bool = !(UserDefaults.standard.bool(forKey: "TutorialCompleted"))
+    var onTutoChap1: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial1Completed"))
+    var onTutoChap2: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial2Completed"))
     var limitMovement: Bool = false // so that player cannot move before the first tutorial start
     var firstTuto: Bool = false // indicator whether the first tutorial is done or not
     var firstTutoDistance: CGFloat = 0 // how much movement should be done before the first tutorial is finished
@@ -71,13 +73,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var thirdTuto2: Bool = false // indicator whether the third tutorial (the second star) is done or not
     var thirdTutoFlag: Bool = false // // indicator when players can start tapping on the screen during the third tutorial
     var thirdTutoFlag2: Bool = false
-    var thirdTutoCount: Int = 1 // To detect the number of the first star on the third tutorial
+    var thirdTutoCount: Int = 0 // To detect the number of the first star on the third tutorial
     var tutorialText: SKLabelNode! // Text node
     var helpingFingerUp: SKSpriteNode! // finger animation
     var helpingFingerDown: SKSpriteNode!
     var helpingFingerTap: SKSpriteNode!
     var helpingFingerHold: SKSpriteNode!
     var textHasBeenDisplayed: Bool = false // a flag so that the same text won't be displayed multiple times
+    var textBox: SKShapeNode!
+    var engLangSelection: Bool = UserDefaults.standard.bool(forKey: "EnglishLanguage")
+    var allTutorialText: Dictionary <String, String> = [
+        "tuto1Eng":"Use your left thumb to move Follie up and down.",
+        "tuto1Indo":"Gunakan jempol kanan kamu untuk menggerakan Follie naik dan turun.",
+        "tuto2Eng":"Position Follie to align with the star and tap it using your right thumb.",
+        "tuto2Indo":"Posisikan Follie sejajar dengan bintang dan tekan layar menggunakan jempol kanan kamu.",
+        "tuto3Eng":"Try to keep Follie on the line. Hold and release at the end of the line.",
+        "tuto3Indo":"Pastikan Follie selalu berada di garis. Tahan dan lepaskan pada akhir garis.",
+        "tuto3FailEng":"Oops! You've missed the star. Let's try again.",
+        "tuto3FailIndo":"Ups! Kamu gagal untuk menekan bintang tepat waktu. Mari coba lagi.",
+        "passed1TutoEng":"Okay, that's all for now.",
+        "passed1TutoIndo":"Ok, itu saja untuk saat ini.",
+        "passed2TutoEng":"You have 5 lifes. Try not to miss the star.",
+        "passed2TutoIndo":"Kamu memiliki 5 nyawa. Cobalah untuk menekan bintang tepat waktu.",
+        "passed3TutoEng":"Every 2 successful hits will regain 1 of your life.",
+        "passed3TutoIndo":"Kamu akan mendapatkan kembali 1 nyawa setiap 2 bintang yang ditekan tepat waktu.",
+        "passed4TutoEng":"Let's catch the star with Follie!",
+        "passed4TutoIndo":"Mari mulai menangkap bintang dengan Follie!",
+        "passed5TutoEng":"Okay, you're all set!",
+        "passed5TutoIndo":"Ok, kamu sudah siap!"
+    ]
+    var tempText: String = ""
     
     // Gameplay logic
     var nextCountdown: Int = 0 // new block will appear when countdown reaches 0
@@ -130,6 +155,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     var lifeArray: [SKSpriteNode] = []
     
+    var lifeBar: SKSpriteNode!
+    
     // new var ------------------------------------------------------
     var blockX: CGFloat!
     var toFairyTime: Double!
@@ -158,10 +185,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.initialSetup()
         
-        if (onTuto == true) {
+        if (self.onTutoChap1 == true && self.chapterNo == 1){
+            self.onTuto = true
+            UserDefaults.standard.set(false, forKey: "TutorialCompleted")
+            
             self.limitMovement = true
             self.startTutorial()
-        } else {
+        }
+        else if (self.onTutoChap2 == true && self.chapterNo == 2){
+            self.onTuto = true
+            UserDefaults.standard.set(false, forKey: "TutorialCompleted")
+            
+            self.thirdTuto = true
+            self.startTutorial3()
+        }
+        else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 self.startGameplay()
             }
@@ -176,7 +214,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func setupTutorialLabel() {
         self.tutorialText = SKLabelNode(fontNamed: ".SFUIText")
         self.tutorialText.alpha = 0.0
-        self.tutorialText.fontSize = 20 * (Follie.screenSize.height / 396)
+        self.tutorialText.fontSize = 15 * (Follie.screenSize.height / 396)
         self.tutorialText.fontColor = UIColor.white
         self.tutorialText.position = CGPoint(x: Follie.screenSize.width*3/4, y: Follie.screenSize.height/2)
         self.tutorialText.lineBreakMode = .byWordWrapping
@@ -186,7 +224,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     func startTutorial() {
         self.setupTutorialLabel()
-        self.tutorialText.text = "Use your left thumb to move the penguin up and down"
+        if self.engLangSelection == true{
+            self.tempText = "\(self.allTutorialText["tuto1Eng"]!)"
+        }
+        else{
+            self.tempText = "\(self.allTutorialText["tuto1Indo"]!)"
+        }
+        self.tutorialText.text = self.tempText
+        self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+        self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+        self.textBox.fillColor = .black
+        self.textBox.alpha = 0.5
+        self.tutorialText.position = CGPoint(x: Follie.screenSize.width / 2, y: Follie.screenSize.height * 1 / 4)
+        self.tutorialText.addChild(self.textBox)
         self.gameNode.addChild(self.tutorialText)
         
         DispatchQueue.main.asyncAfter(deadline: .now()+2, execute: {
@@ -201,11 +251,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.helpingFingerDown = SKSpriteNode(texture: texture)
             
             self.helpingFingerUp.setScale(0.7)
-            self.helpingFingerUp.position = CGPoint(x: self.helpingFingerUp.size.width/3*2, y: Follie.screenSize.height/5*2.5)
+            if UIDevice.current.hasNotch {
+                self.helpingFingerUp.position = CGPoint(x: self.helpingFingerUp.size.width/3*2, y: Follie.screenSize.height/5*2.5)
+            }
+            else{
+                self.helpingFingerUp.position = CGPoint(x: self.helpingFingerUp.size.width/3, y: Follie.screenSize.height/5*2.5)
+            }
             self.helpingFingerUp.alpha = 0
             
             self.helpingFingerDown.setScale(0.7)
-            self.helpingFingerDown.position = CGPoint(x: self.helpingFingerDown.size.width/3*2, y: Follie.screenSize.height/5*3.5)
+            if UIDevice.current.hasNotch {
+                self.helpingFingerDown.position = CGPoint(x: self.helpingFingerDown.size.width/3*2, y: Follie.screenSize.height/5*3.5)
+            }
+            else{
+                self.helpingFingerDown.position = CGPoint(x: self.helpingFingerDown.size.width/3, y: Follie.screenSize.height/5*3.5)
+            }
             self.helpingFingerDown.alpha = 0
             
             let fingerDownAction: [SKAction] = [
@@ -242,7 +302,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func startTutorial2() {
         DispatchQueue.main.asyncAfter(deadline: .now()+1, execute: {
             let newBlock = SKSpriteNode(texture: self.blockTexture)
-            newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
+            newBlock.size = CGSize(width: 15, height: 15)
             newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
             
             newBlock.name = "\(self.blockNameFlag)"
@@ -260,7 +320,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             let distance = xPerBeat * minMultiplier
             
             let blockX = self.fairyNode.position.x + CGFloat(distance)
-            let blockY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
+            let blockY = (Follie.getFairy().maxY + Follie.getFairy().minY) / 2
             newBlock.position = CGPoint(x: blockX, y: blockY)
             
             let totalDistance: Double = Double(blockX + newBlock.size.width/2)
@@ -279,9 +339,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func startTutorial3() {
+        // setup tuto label
+        self.setupTutorialLabel()
         // new block
         let newBlock = SKSpriteNode(texture: self.blockTexture)
-        newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
+        newBlock.size = CGSize(width: 15, height: 15)
         newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
         
         newBlock.name = "\(self.blockNameFlag)"
@@ -299,7 +361,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let distance = xPerBeat * minMultiplier
         
         let blockX = self.fairyNode.position.x + CGFloat(distance)
-        let blockY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
+        let blockY = (Follie.getFairy().maxY + Follie.getFairy().minY) / 2
         newBlock.position = CGPoint(x: blockX, y: blockY)
         
         let totalDistance: Double = Double(blockX + newBlock.size.width/2)
@@ -321,7 +383,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         var n: Double = 0 // nth beat after newBlock
         
         let connectingBlock = SKSpriteNode(texture: self.blockTexture)
-        connectingBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
+        connectingBlock.size = CGSize(width: 15, height: 15)
         connectingBlock.zPosition = Follie.zPos.visibleBlock.rawValue
         
         connectingBlock.name = "\(self.blockNameFlag)"
@@ -331,11 +393,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         connectingBlock.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
         connectingBlock.physicsBody?.collisionBitMask = 0
         
-        let holdBeatNum: Int = Int.random(in: 1 ... self.maxHoldBeat)
+        let holdBeatNum: Int = 1
         n += Double(holdBeatNum)
         
         let connectingX = blockX + CGFloat(xPerBeat * n)
-        let connectingY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
+        let connectingY = blockY
         let connectingDistance = totalDistance + (xPerBeat * n)
         let connectingTime = totalTime + (self.music.secPerBeat * n)
         
@@ -363,7 +425,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         let dashedLine = SKShapeNode(path: dashPath)
         dashedLine.zPosition = Follie.zPos.visibleBlock.rawValue
-        dashedLine.lineWidth = Follie.screenSize.height * CGFloat(Follie.dashedLineRatio)
+        dashedLine.lineWidth = 1.5
         dashedLine.strokeColor = SKColor.white
         
         dashedLine.name = "\(self.blockNameFlag)"
@@ -394,67 +456,104 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.gameNode.isPaused = true
         }
         
-        if self.onTuto == true {
+        if (self.onTuto == true) {
+            
             self.gameNode.enumerateChildNodes(withName: "*") {
                 node , stop in
-                
-                // Check if the star for first tutorial is getting closer
-                if (node is SKSpriteNode && node.name == "0") {
-                    if (node.position.x - self.fairyNode.position.x < 50 && node.position.x - self.fairyNode.position.x >= 15 && self.secondTuto == true) {
-                        self.scene?.speed = 0.3
-                        
-                        if (self.textHasBeenDisplayed == false) {
-                            self.tutorialText.text = "Position the penguin to align with the beat (star) and tap it using your right thumb"
-                            self.gameNode.addChild(self.tutorialText)
-                            self.textHasBeenDisplayed = true
-                            
-                            let texture = SKTexture(imageNamed: "Tap")
-                            self.helpingFingerTap = SKSpriteNode(texture: texture)
-                            self.helpingFingerTap.setScale(0.7)
-                            self.helpingFingerTap.position = CGPoint(x: Follie.screenSize.width - self.helpingFingerTap.size.width/3, y: Follie.screenSize.height/2)
-                            self.helpingFingerTap.alpha = 0
-                            
-                            let fingerTapAction: [SKAction] = [
-                                SKAction.fadeAlpha(to: 1.0, duration: 0.1),
-                                SKAction.fadeAlpha(to: 0.3, duration: 0.1)
-                            ]
-                            self.helpingFingerTap.run(SKAction.repeatForever((SKAction.sequence(fingerTapAction))))
-                            self.gameNode.addChild(self.helpingFingerTap)
-                        }
-                    } else if (node.position.x - self.fairyNode.position.x < 15 && self.secondTuto == true) {
-                        self.secondTutoFlag = true
-                        self.scene?.speed = 0.0
-                    } else {
-                        self.scene?.speed = 1.0
-                    }
-                } else if (node is SKSpriteNode && node.name == "\(self.thirdTutoCount)") {
+                if (self.onTutoChap1 == true && self.chapterNo == 1){
                     
-                    // Check the first star of the third tutorial
-                    if (node.position.x - self.fairyNode.position.x < 50 && node.position.x - self.fairyNode.position.x >= 15  && self.thirdTuto == true) {
-                        self.scene?.speed = 0.3
+                    // Check if the star for first tutorial is getting closer
+                    if (node is SKSpriteNode && node.name == "0") {
                         
-                        if (self.textHasBeenDisplayed == false) {
-                            self.gameNode.addChild(self.tutorialText)
-                            self.textHasBeenDisplayed = true
+                        if (node.position.x - self.fairyNode.position.x < 50 && node.position.x - self.fairyNode.position.x >= 15 && self.secondTuto == true) {
                             
-                            let texture = SKTexture(imageNamed: "Hold")
-                            self.helpingFingerHold = SKSpriteNode(texture: texture)
-                            self.helpingFingerHold.setScale(0.7)
-                            self.helpingFingerHold.position = CGPoint(x: Follie.screenSize.width-self.helpingFingerHold.size.width/3, y: Follie.screenSize.height/2)
-                            self.helpingFingerHold.alpha = 0
+                            self.scene?.speed = 0.3
                             
-                            let fingerHoldAction: [SKAction] = [
-                                SKAction.fadeAlpha(to: 1.0, duration: 0.1),
-                                SKAction.fadeAlpha(to: 0.3, duration: 0.1)
-                            ]
-                            self.helpingFingerHold.run(SKAction.repeatForever((SKAction.sequence(fingerHoldAction))))
-                            self.gameNode.addChild(self.helpingFingerHold)
+                            if (self.textHasBeenDisplayed == false) {
+                                if self.engLangSelection == true{
+                                    self.tempText = "\(self.allTutorialText["tuto2Eng"]!)"
+                                }
+                                else{
+                                    self.tempText = "\(self.allTutorialText["tuto2Indo"]!)"
+                                }
+                                self.tutorialText.text = self.tempText
+                                self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                                self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                                self.textBox.fillColor = .black
+                                self.textBox.alpha = 0.5
+                                self.tutorialText.addChild(self.textBox)
+                                self.tutorialText.position = CGPoint(x: Follie.screenSize.width / 2, y: Follie.screenSize.height * 1 / 4)
+                                self.gameNode.addChild(self.tutorialText)
+                                self.textHasBeenDisplayed = true
+                                
+                                let texture = SKTexture(imageNamed: "Tap")
+                                self.helpingFingerTap = SKSpriteNode(texture: texture)
+                                self.helpingFingerTap.setScale(0.7)
+                                self.helpingFingerTap.position = CGPoint(x: Follie.screenSize.width - self.helpingFingerTap.size.width/3, y: Follie.screenSize.height/2)
+                                self.helpingFingerTap.alpha = 0
+                                
+                                let fingerTapAction: [SKAction] = [
+                                    SKAction.fadeAlpha(to: 1.0, duration: 0.1),
+                                    SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+                                ]
+                                self.helpingFingerTap.run(SKAction.repeatForever((SKAction.sequence(fingerTapAction))))
+                                self.gameNode.addChild(self.helpingFingerTap)
+                            }
+                        } else if (node.position.x - self.fairyNode.position.x < 15 && self.secondTuto == true) {
+                            self.secondTutoFlag = true
+                            self.scene?.speed = 0.0
+                        } else {
+                            self.scene?.speed = 1.0
                         }
-                    } else if (node.position.x - self.fairyNode.position.x < 15 && self.thirdTuto == true) {
-                        self.thirdTutoFlag = true
-                        self.scene?.speed = 0.0
-                    } else {
-                        self.scene?.speed = 1.0
+                    }
+                }
+                else if (self.onTutoChap2 == true && self.chapterNo == 2) {
+                    // Check if the star for third tutorial is getting closer
+                    if (node is SKSpriteNode && node.name == "\(self.thirdTutoCount)") {
+                        
+                        // Check the first star of the third tutorial
+                        if (node.position.x - self.fairyNode.position.x < 50 && node.position.x - self.fairyNode.position.x >= 15  && self.thirdTuto == true) {
+                            self.scene?.speed = 0.3
+                            
+                            if (self.textHasBeenDisplayed == false) {
+                                if self.engLangSelection == true{
+                                    self.tempText = "\(self.allTutorialText["tuto3Eng"]!)"
+                                }
+                                else{
+                                    self.tempText = "\(self.allTutorialText["tuto3Indo"]!)"
+                                }
+                                self.tutorialText.text = self.tempText
+                                self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                                self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                                self.textBox.fillColor = .black
+                                self.textBox.alpha = 0.5
+                                self.tutorialText.position = CGPoint(x: Follie.screenSize.width / 2, y: Follie.screenSize.height * 1 / 4)
+                                self.tutorialText.alpha = 1
+                                self.tutorialText.addChild(self.textBox)
+                                self.gameNode.addChild(self.tutorialText)
+                                self.textHasBeenDisplayed = true
+                                
+                                let texture = SKTexture(imageNamed: "Hold")
+                                self.helpingFingerHold = SKSpriteNode(texture: texture)
+                                self.helpingFingerHold.setScale(0.7)
+                                self.helpingFingerHold.position = CGPoint(x: Follie.screenSize.width-self.helpingFingerHold.size.width/3, y: Follie.screenSize.height/2)
+                                self.helpingFingerHold.alpha = 0
+                                
+                                let fingerHoldAction: [SKAction] = [
+                                    SKAction.fadeAlpha(to: 1.0, duration: 0.1),
+                                    SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+                                ]
+                                self.helpingFingerHold.run(SKAction.repeatForever((SKAction.sequence(fingerHoldAction))))
+                                self.gameNode.addChild(self.helpingFingerHold)
+                            }
+                        }
+                        else if (node.position.x - self.fairyNode.position.x < 15 && self.thirdTuto == true) {
+                            self.thirdTutoFlag = true
+                            self.scene?.speed = 0.0
+                        }
+                        else {
+                            self.scene?.speed = 1.0
+                        }
                     }
                 }
             }
@@ -1653,29 +1752,141 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 }
                 
                 if (self.onTuto == true) {
-                    // Tutorial 2 baru bisa done kalo udah berhenti
-                    if (self.secondTuto == true && self.secondTutoFlag == true) {
-                        self.scene?.speed = 1.0
-                        
-                        self.secondTuto = false
-                        self.secondTutoFlag = false
-                        
-                        self.tutorialText.removeFromParent()
-                        self.helpingFingerTap.removeFromParent()
-                        self.textHasBeenDisplayed = false
-                        
-                        self.tutorialText.text = "Try to keep the penguin on the line.\nHold and release at the end of the line"
-                        self.thirdTuto = true
-                        self.startTutorial3()
-                        self.successfulHit()
+                    if (self.onTutoChap1 == true && self.chapterNo == 1){
+                        // Tutorial 2 baru bisa done kalo udah berhenti
+                        if (self.secondTuto == true && self.secondTutoFlag == true) {
+                            self.scene?.speed = 1.0
+                            
+                            self.secondTuto = false
+                            self.secondTutoFlag = false
+                            
+                            self.tutorialText.removeAllChildren()
+                            self.tutorialText.removeFromParent()
+                            self.helpingFingerTap.removeFromParent()
+                            self.textHasBeenDisplayed = false
+                            
+                            // Start Gameplay
+                            
+                            let action: [SKAction] = [
+                                SKAction.wait(forDuration: 2),
+                                SKAction.fadeAlpha(to: 1, duration: 0.5),
+                                SKAction.wait(forDuration: 2.5),
+                                SKAction.fadeAlpha(to: 0, duration: 0.5)
+                            ]
+                            let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 1.0)
+                            if self.engLangSelection == true{
+                                self.tempText = "\(self.allTutorialText["passed1TutoEng"]!)"
+                            }
+                            else{
+                                self.tempText = "\(self.allTutorialText["passed1TutoIndo"]!)"
+                            }
+                            self.tutorialText.text = self.tempText
+                            self.tutorialText.alpha = 0
+                            self.tutorialText.run(fadeIn)
+                            self.tutorialText.run(SKAction.sequence(action))
+                            self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                            self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                            self.textBox.fillColor = .black
+                            self.textBox.alpha = 0.5
+                            self.tutorialText.position = CGPoint(x: Follie.screenSize.width*3/4, y: Follie.screenSize.height/2)
+                            self.tutorialText.addChild(self.textBox)
+                            self.gameNode.addChild(self.tutorialText)
+                            
+                            self.run(SKAction.wait(forDuration: 5.5)) {
+                                self.tutorialText.removeAllChildren()
+                                if self.engLangSelection == true{
+                                    self.tempText = "\(self.allTutorialText["passed2TutoEng"]!)"
+                                }
+                                else{
+                                    self.tempText = "\(self.allTutorialText["passed2TutoIndo"]!)"
+                                }
+                                self.tutorialText.text = self.tempText
+                                self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                                self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                                self.textBox.fillColor = .black
+                                self.textBox.alpha = 0.5
+                                self.tutorialText.addChild(self.textBox)
+                                self.tutorialText.run(SKAction.sequence(action))
+                                
+                                let textureHealth = SKTexture(imageNamed: "Hp")
+                                self.lifeBar = SKSpriteNode(texture: textureHealth)
+                                let newH: CGFloat = 30
+                                let newW = self.lifeBar.size.width * (newH / self.lifeBar.size.height)
+                                self.lifeBar.size = CGSize(width: newW, height: newH)
+                                //                            self.lifeBar.position = CGPoint(x: self.screenW/10, y: self.screenH/10*9)
+                                self.lifeBar.position = CGPoint(x: Follie.screenSize.width*3/4 - self.textBox.frame.width * 3 / 4, y: self.tutorialText.position.y + self.tutorialText.frame.height / 2)
+                                self.lifeBar.zPosition = Follie.zPos.visibleBlock.rawValue
+                                self.lifeBar.alpha = 0
+                                self.gameNode.addChild(self.lifeBar)
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 1.0)
+                                    self.lifeBar.run(fadeIn)
+                                }
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                    let moveUp = SKAction.move(to: CGPoint(x: self.screenW/10, y: self.screenH/10*9), duration: 2.0)
+                                    self.lifeBar.run(moveUp)
+                                    
+                                    self.tutorialText.removeAllChildren()
+                                    if self.engLangSelection == true{
+                                        self.tempText = "\(self.allTutorialText["passed3TutoEng"]!)"
+                                    }
+                                    else{
+                                        self.tempText = "\(self.allTutorialText["passed3TutoIndo"]!)"
+                                    }
+                                    self.tutorialText.text = self.tempText
+                                    self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                                    self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                                    self.textBox.fillColor = .black
+                                    self.textBox.alpha = 0.5
+                                    self.tutorialText.addChild(self.textBox)
+                                    self.tutorialText.run(SKAction.sequence(action))
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+                                        let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: 1.0)
+                                        self.lifeBar.run(fadeOut)
+                                        self.tutorialText.removeAllChildren()
+                                        if self.engLangSelection == true{
+                                            self.tempText = "\(self.allTutorialText["passed4TutoEng"]!)"
+                                        }
+                                        else{
+                                            self.tempText = "\(self.allTutorialText["passed4TutoIndo"]!)"
+                                        }
+                                        self.tutorialText.text = self.tempText
+                                        self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                                        self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                                        self.textBox.fillColor = .black
+                                        self.textBox.alpha = 0.5
+                                        self.tutorialText.addChild(self.textBox)
+                                        self.tutorialText.run(SKAction.sequence(action))
+                                        
+                                        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
+                                            self.tutorialText.removeAllChildren()
+                                            self.tutorialText.removeFromParent()
+                                        }
+                                        
+                                        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
+                                            UserDefaults.standard.set(true, forKey: "TutorialCompleted")
+                                            UserDefaults.standard.set(true, forKey: "Tutorial1Completed")
+                                            self.onTutoChap1 = false
+                                            self.onTuto = false
+                                            self.startGameplay()
+                                        }
+                                    })
+                                }
+                            }
+                            self.successfulHit()
+                        }
                     }
-                    
-                    // Check Tuto 3 (Kalo scenenya uda berhenti baru bisa proceed)
-                    if (self.thirdTuto == true && thirdTutoFlag == true) {
-                        self.thirdTuto2 = true
-                        self.thirdTutoFlag = false
-                        self.thirdTuto = false
-                        self.successfulHit()
+                    else if (self.onTutoChap2 == true && self.chapterNo == 2) {
+                        
+                        // Check Tuto 3 (Kalo scenenya uda berhenti baru bisa proceed)
+                        if (self.thirdTuto == true && thirdTutoFlag == true) {
+                            self.thirdTuto2 = true
+                            self.thirdTutoFlag = false
+                            self.thirdTuto = false
+                            self.successfulHit()
+                        }
                     }
                 }
                 else{
@@ -1702,7 +1913,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     
                     // Passed Tutorial 3
                     if (self.thirdTuto2 == true && self.isAtLine == true && self.isBlockContact == true){
+                        
                         self.thirdTuto2 = false
+                        self.tutorialText.removeAllChildren()
                         self.tutorialText.removeFromParent()
                         self.helpingFingerHold.removeFromParent()
                         
@@ -1712,35 +1925,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                             SKAction.wait(forDuration: 2.5),
                             SKAction.fadeAlpha(to: 0, duration: 0.5)
                         ]
-                        
-                        self.tutorialText.text = "Okay, you're all set!"
+                        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 1.0)
+                        if self.engLangSelection == true{
+                            self.tempText = "\(self.allTutorialText["passed5TutoEng"]!)"
+                        }
+                        else{
+                            self.tempText = "\(self.allTutorialText["passed5TutoIndo"]!)"
+                        }
+                        self.tutorialText.text = self.tempText
+                        self.tutorialText.alpha = 0
+                        self.tutorialText.run(fadeIn)
                         self.tutorialText.run(SKAction.sequence(action))
+                        self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                        self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                        self.textBox.fillColor = .black
+                        self.textBox.alpha = 0.5
+                        self.tutorialText.position = CGPoint(x: Follie.screenSize.width*3/4, y: Follie.screenSize.height/2)
+                        self.tutorialText.addChild(self.textBox)
                         self.gameNode.addChild(self.tutorialText)
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                            self.tutorialText.text = "You have 5 lives. Try not to miss the beat"
-                            self.tutorialText.run(SKAction.sequence(action))
+                        self.run(SKAction.wait(forDuration: 5.5)) {
+                            self.tutorialText.removeAllChildren()
+                            self.tutorialText.removeFromParent()
                             
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                                self.tutorialText.text = "Every 2 successful hits will regain 1 of your life"
-                                self.tutorialText.run(SKAction.sequence(action))
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-                                    self.tutorialText.text = "Let's catch the beat with Follie!"
-                                    self.tutorialText.run(SKAction.sequence(action))
-                                    
-                                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
-                                        self.tutorialText.removeFromParent()
-                                    }
-                                    
-                                    DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
-                                        UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-                                        self.onTuto = false
-                                        self.startGameplay()
-                                    }
-                                })
+                            DispatchQueue.main.asyncAfter(wallDeadline: .now() + 3) {
+                                UserDefaults.standard.set(true, forKey: "TutorialCompleted")
+                                UserDefaults.standard.set(true, forKey: "Tutorial2Completed")
+                                self.onTuto = false
+                                self.onTutoChap2 = false
+                                self.startGameplay()
                             }
                         }
+                        
                     }
                     
                     self.currBlock.zPosition = Follie.zPos.hiddenBlockArea.rawValue
@@ -1770,19 +1986,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.thirdTutoCount += 2
                     
                     self.helpingFingerHold.removeFromParent()
+                    self.tutorialText.removeAllChildren()
                     self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
-                    self.tutorialText.text = "Oops! You've missed the beat. Let's try again"
+                    if self.engLangSelection == true{
+                        self.tempText = "\(self.allTutorialText["tuto3FailEng"]!)"
+                    }
+                    else{
+                        self.tempText = "\(self.allTutorialText["tuto3FailIndo"]!)"
+                    }
+                    self.tutorialText.text = self.tempText
+                    self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                    self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                    self.textBox.fillColor = .black
+                    self.textBox.alpha = 0.5
+                    self.tutorialText.addChild(self.textBox)
                     self.tutorialText.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
                     DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2) {
                         self.tutorialText.run(SKAction.fadeAlpha(to: 0, duration: 0.5))
                         
                         DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1, execute: {
                             self.textHasBeenDisplayed = false
-                            self.tutorialText.text = "Try to keep the penguin on the line.\nHold and release at the end of the line"
+                            self.tutorialText.removeAllChildren()
+                            if self.engLangSelection == true{
+                                self.tempText = "\(self.allTutorialText["tuto3Eng"]!)"
+                            }
+                            else{
+                                self.tempText = "\(self.allTutorialText["tuto3Indo"]!)"
+                            }
+                            self.tutorialText.text = self.tempText
+                            self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
+                            self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
+                            self.textBox.fillColor = .black
+                            self.textBox.alpha = 0.5
+                            self.tutorialText.addChild(self.textBox)
                             self.tutorialText.removeFromParent()
                             self.tutorialText.alpha = 1.0
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                self.tutorialText.removeAllChildren()
                                 self.startTutorial3()
                             }
                         })
@@ -1875,6 +2116,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 if (self.firstTuto == true && self.firstTutoDistance>200.0) {
                     self.scene?.speed = 1.0
                     self.tutorialText.removeFromParent()
+                    self.tutorialText.removeAllChildren()
                     self.firstTuto = false
                     self.secondTuto = true
                     self.startTutorial2()
@@ -1964,5 +2206,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(self.melodyProjectiles), userInfo: nil, repeats: true)
             }
         }
+    }
+}
+
+extension UIDevice {
+    var hasNotch: Bool {
+        let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+        return bottom > 0
     }
 }
