@@ -33,7 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
         
         if (GameScene.sharedInstance != nil && GameScene.sharedInstance?.onTuto == false && GameScene.sharedInstance!.isCurrentlyPaused == false) {
-            print("masuk")
             GameScene.sharedInstance!.isCurrentlyPaused = true
             GameScene.sharedInstance!.screenCover.alpha = 0.65
             GameScene.sharedInstance!.showPauseMenu {

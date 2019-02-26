@@ -49,7 +49,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     let resumeCountdownSfx = SKAction.playSoundFileNamed("Countdown Tick.mp3", waitForCompletion: false)
     
     // Timer
-    var onTrackTimer: Timer? = nil
     var currSec: Double!
     var diffSec: Double!
     
@@ -59,7 +58,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var backToMainMenuButton: SKSpriteNode!
     var countownNode: SKLabelNode!
     var resumeCountdown : Int = 3
-    var pauseToPlayTimer: Timer!
+    var pauseToPlayTimer: Timer? = nil
     
     // Tutorial
     var onTuto: Bool = !(UserDefaults.standard.bool(forKey: "TutorialCompleted"))
@@ -142,6 +141,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var xPerBeat: Double!
     
     var currBeat: Double = 0
+    var hasStarted: Bool = true
     // new var ------------------------------------------------------
     
     deinit {
@@ -536,6 +536,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         }
         else {
             // melody
+            self.hasStarted = false
             self.setupGameplay()
             self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(melodyProjectiles), userInfo: nil, repeats: true)
         }
@@ -571,8 +572,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         if (self.isFirstBeat) {
             self.isFirstBeat = false
             
-            self.run(SKAction.wait(forDuration: self.toFairyTime)) {
+            self.gameNode.run(SKAction.wait(forDuration: self.toFairyTime)) {
                 self.player.play()
+                self.hasStarted = true
                 self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
             }
         }
@@ -1469,10 +1471,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         fadeOutNode.fillColor = SKColor.black
         fadeOutNode.lineWidth = 0
         fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
-        self.gameNode.addChild(fadeOutNode)
+        self.addChild(fadeOutNode)
         
         self.blockTimer?.invalidate()
         self.blockTimer = nil
+        self.gameNode.removeAllActions()
+        self.gameNode.removeAllChildren()
+        self.player = nil
+        GameScene.sharedInstance = nil
         
         fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
             let newScene = MainMenu(size: FollieMainMenu.screenSize)
@@ -1512,9 +1518,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.gameNode.isPaused = false
                 self.countownNode.run(SKAction.fadeAlpha(to: 0, duration: 0.1))
                 self.screenCover.run(SKAction.fadeAlpha(to: 0, duration: 0.1))
-                self.player.play()
+                
+                if (self.hasStarted) {
+                    self.player.play()
+                }
+                
                 self.resumeTimer()
-                self.pauseToPlayTimer.invalidate()
+                self.pauseToPlayTimer?.invalidate()
+                self.pauseToPlayTimer = nil
                 self.resumeCountdown = 3
                 self.isDismiss = false
             }
@@ -1597,8 +1608,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         self.showPauseMenu {
                             self.gameNodeIsPaused = true
                             self.gameNode.isPaused = true
-                            self.player.pause()
                             self.pauseTimer()
+                            self.player.pause()
                         }
                     }
                 }
@@ -1609,8 +1620,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.run(self.buttonClickedSfx)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.gameNodeIsPaused = true
-                    self.gameNode.isPaused = true
+//                    self.gameNodeIsPaused = true
+//                    self.gameNode.isPaused = false
                     self.backToMainMenu()
                 }
             }
@@ -1946,11 +1957,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         else {
             DispatchQueue.main.asyncAfter(deadline: .now() + self.diffSec) {
                 self.currSec = Date().timeIntervalSince1970 * 1000.0
-                self.blockProjectiles()
+                self.melodyProjectiles()
                 
                 self.isCurrentlyPaused = false
                 
-                self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
+                self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(self.melodyProjectiles), userInfo: nil, repeats: true)
             }
         }
     }
