@@ -61,7 +61,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var pauseToPlayTimer: Timer? = nil
     
     // Tutorial
-    var onTuto: Bool = !(UserDefaults.standard.bool(forKey: "TutorialCompleted"))
+    var onTuto: Bool = false
     var onTutoChap1: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial1Completed"))
     var onTutoChap2: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial2Completed"))
     var limitMovement: Bool = false // so that player cannot move before the first tutorial start
@@ -186,23 +186,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.initialSetup()
         if (self.repeatTutorial == true){
-            if (self.chapterNo == 1){
-                self.onTuto = true
-                self.limitMovement = true
-                self.startTutorial()
-            }
+//            if (self.chapterNo == 1){
+//                self.onTuto = true
+//                self.limitMovement = true
+//                self.startTutorial()
+//            }
             
         }
         else if (self.onTutoChap1 == true && self.chapterNo == 1){
             self.onTuto = true
-            UserDefaults.standard.set(false, forKey: "TutorialCompleted")
             
             self.limitMovement = true
             self.startTutorial()
         }
         else if (self.onTutoChap2 == true && self.chapterNo == 2){
             self.onTuto = true
-            UserDefaults.standard.set(false, forKey: "TutorialCompleted")
             
             self.thirdTuto = true
             self.startTutorial3()

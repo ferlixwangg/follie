@@ -21,8 +21,8 @@
 		859562A122252F2F00869E76 /* Beat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859562A022252F2F00869E76 /* Beat.swift */; };
 		859562A422252F8E00869E76 /* chapter1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859562A322252F8E00869E76 /* chapter1.swift */; };
 		859562A622252F9600869E76 /* chapter2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859562A522252F9600869E76 /* chapter2.swift */; };
-		85A7DC092216CB8700CA9019 /* Baby.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 85A7DC082216CB8600CA9019 /* Baby.atlas */; };
-		85AAC5FA21E72F9C00E0E46B /* DYATHON - Goodbye.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */; };
+		85969E6622268A39001CE8DF /* Baby.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 85969E6522268A39001CE8DF /* Baby.atlas */; };
+		85969E682226A49A001CE8DF /* DYATHON - Emoticon.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85969E672226A49A001CE8DF /* DYATHON - Emoticon.mp3 */; };
 		85BD970E21F989EC004099DB /* Follie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD970D21F989EC004099DB /* Follie.swift */; };
 		85BD971121F992AF004099DB /* Fairy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD971021F992AF004099DB /* Fairy.swift */; };
 		85BD971521F9B324004099DB /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BD971421F9B324004099DB /* Background.swift */; };
@@ -64,8 +64,8 @@
 		859562A022252F2F00869E76 /* Beat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Beat.swift; sourceTree = "<group>"; };
 		859562A322252F8E00869E76 /* chapter1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chapter1.swift; sourceTree = "<group>"; };
 		859562A522252F9600869E76 /* chapter2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chapter2.swift; sourceTree = "<group>"; };
-		85A7DC082216CB8600CA9019 /* Baby.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Baby.atlas; sourceTree = "<group>"; };
-		85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Goodbye.mp3"; sourceTree = "<group>"; };
+		85969E6522268A39001CE8DF /* Baby.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Baby.atlas; sourceTree = "<group>"; };
+		85969E672226A49A001CE8DF /* DYATHON - Emoticon.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "DYATHON - Emoticon.mp3"; sourceTree = "<group>"; };
 		85BD970D21F989EC004099DB /* Follie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follie.swift; sourceTree = "<group>"; };
 		85BD971021F992AF004099DB /* Fairy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fairy.swift; sourceTree = "<group>"; };
 		85BD971421F9B324004099DB /* Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
@@ -128,6 +128,7 @@
 				85BD970921F97ACD004099DB /* Animations */,
 				BA5467CD220362EF0078924A /* Fonts */,
 				85BD970821F97A7F004099DB /* Music */,
+				85969E692226A4A8001CE8DF /* SFX */,
 				85BD971821F9CE99004099DB /* Emitters */,
 				8505DD5821E5E2FE001D66A6 /* GameViewController.swift */,
 				8505DD5F21E5E2FF001D66A6 /* LaunchScreen.storyboard */,
@@ -150,6 +151,17 @@
 			path = "Chapter Melody";
 			sourceTree = "<group>";
 		};
+		85969E692226A4A8001CE8DF /* SFX */ = {
+			isa = PBXGroup;
+			children = (
+				BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */,
+				851A8FFA220D9906004EA137 /* Button Click.wav */,
+				BA5313D4220826090044BDFD /* Play Chapter.wav */,
+				BA5313D5220826090044BDFD /* Rising Chapter.wav */,
+			);
+			path = SFX;
+			sourceTree = "<group>";
+		};
 		85BD970721F97A13004099DB /* GameScene */ = {
 			isa = PBXGroup;
 			children = (
@@ -162,14 +174,10 @@
 		85BD970821F97A7F004099DB /* Music */ = {
 			isa = PBXGroup;
 			children = (
-				BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */,
-				851A8FFA220D9906004EA137 /* Button Click.wav */,
-				BA5313D4220826090044BDFD /* Play Chapter.wav */,
-				BA5313D5220826090044BDFD /* Rising Chapter.wav */,
-				851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */,
-				851A8FF7220D9249004EA137 /* DYATHON - Your Eyes.mp3 */,
 				BA5467C9220362AB0078924A /* DYATHON - Monologue.mp3 */,
-				85AAC5F921E72F9C00E0E46B /* DYATHON - Goodbye.mp3 */,
+				851A8FF7220D9249004EA137 /* DYATHON - Your Eyes.mp3 */,
+				851A8FF6220D9249004EA137 /* DYATHON - Blooming Romance.mp3 */,
+				85969E672226A49A001CE8DF /* DYATHON - Emoticon.mp3 */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -177,7 +185,7 @@
 		85BD970921F97ACD004099DB /* Animations */ = {
 			isa = PBXGroup;
 			children = (
-				85A7DC082216CB8600CA9019 /* Baby.atlas */,
+				85969E6522268A39001CE8DF /* Baby.atlas */,
 				BA531426220B00500044BDFD /* Vignette.atlas */,
 			);
 			path = Animations;
@@ -310,20 +318,20 @@
 				851A8FF9220D9249004EA137 /* DYATHON - Your Eyes.mp3 in Resources */,
 				BA5467CC220362C90078924A /* Snow.sks in Resources */,
 				BA5313D7220826090044BDFD /* Rising Chapter.wav in Resources */,
+				85969E6622268A39001CE8DF /* Baby.atlas in Resources */,
 				BA531427220B00500044BDFD /* Vignette.atlas in Resources */,
 				8505DD5C21E5E2FE001D66A6 /* Main.storyboard in Resources */,
 				BA98C9642222A4A500873AB8 /* Star Disperse.sks in Resources */,
 				BA5467C8220362660078924A /* MainMenu.sks in Resources */,
 				BA98C9622222A48000873AB8 /* Countdown Tick.mp3 in Resources */,
 				8505DD5321E5E2FE001D66A6 /* GameScene.sks in Resources */,
+				85969E682226A49A001CE8DF /* DYATHON - Emoticon.mp3 in Resources */,
 				85BD971721F9CE86004099DB /* Aurora.sks in Resources */,
-				85AAC5FA21E72F9C00E0E46B /* DYATHON - Goodbye.mp3 in Resources */,
 				BA5467D12203630F0078924A /* DEARJI__.TTF in Resources */,
 				8505DD5E21E5E2FF001D66A6 /* Assets.xcassets in Resources */,
 				BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */,
 				851A8FF8220D9249004EA137 /* DYATHON - Blooming Romance.mp3 in Resources */,
 				851A8FFB220D9906004EA137 /* Button Click.wav in Resources */,
-				85A7DC092216CB8700CA9019 /* Baby.atlas in Resources */,
 				BA5313D6220826090044BDFD /* Play Chapter.wav in Resources */,
 				BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */,
 				8505DD6121E5E2FF001D66A6 /* LaunchScreen.storyboard in Resources */,
@@ -500,14 +508,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = R4V66L97P8;
+				DEVELOPMENT_TEAM = 98R673PJSG;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Luffandri.Follie;
+				PRODUCT_BUNDLE_IDENTIFIER = "Steven-Muliamin.FollieBG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -519,14 +527,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = R4V66L97P8;
+				DEVELOPMENT_TEAM = 98R673PJSG;
 				INFOPLIST_FILE = cubeRun/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Luffandri.Follie;
+				PRODUCT_BUNDLE_IDENTIFIER = "Steven-Muliamin.FollieBG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";

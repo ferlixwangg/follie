@@ -12,7 +12,7 @@ class MainMenuBackground {
     init() {}
     
     // Constants
-    private let availableChapter: Int = UserDefaults.standard.integer(forKey: "AvailableChapter")
+    private let availableChapter: Int = FollieMainMenu.availableChapter
     
     private var sky: SKSpriteNode {
         let skyTexture = SKTexture(imageNamed: "Sky - Main Menu")

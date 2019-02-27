@@ -10,14 +10,16 @@ import SpriteKit
 
 // Contains all background elements and animations
 class Background {
-    init(skyName: String, backgroundName: String, bg1Name: String, bg2Name: String) {
+    init(skyName: String, hiddenSkyName: String, backgroundName: String, bg1Name: String, bg2Name: String) {
         self.skyName = skyName
+        self.hiddenSkyName = hiddenSkyName
         self.backgroundName = backgroundName
         self.bg1Name = bg1Name
         self.bg2Name = bg2Name
     }
     
     private var skyName: String
+    private var hiddenSkyName: String
     private var backgroundName: String
     private var bg1Name: String
     private var bg2Name: String
@@ -26,7 +28,10 @@ class Background {
         let skyTexture = SKTexture(imageNamed: self.skyName)
         let skyNode = SKSpriteNode(texture: skyTexture)
         
-        skyNode.size = Follie.screenSize
+        let newWidth = Follie.screenSize.width
+        let newHeight = skyNode.size.height * (newWidth / skyNode.size.width)
+        
+        skyNode.size = CGSize(width: newWidth, height: newHeight)
         skyNode.position = CGPoint(x: Follie.screenSize.width/2, y: Follie.screenSize.height/2)
         skyNode.zPosition = Follie.zPos.sky.rawValue
         
@@ -34,10 +39,13 @@ class Background {
     } // Sky background (static)
     
     private func hiddenSky() -> SKSpriteNode {
-        let hiddenSkyTexture = SKTexture(imageNamed: self.skyName)
+        let hiddenSkyTexture = SKTexture(imageNamed: self.hiddenSkyName)
         let hiddenSkyNode = SKSpriteNode(texture: hiddenSkyTexture)
         
-        hiddenSkyNode.size = CGSize(width: Follie.screenSize.width * CGFloat(Follie.hiddenSkyX), height: Follie.screenSize.height)
+        let newWidth = Follie.screenSize.width * CGFloat(Follie.hiddenSkyX)
+        let newHeight = hiddenSkyNode.size.height * (newWidth / hiddenSkyNode.size.width)
+        
+        hiddenSkyNode.size = CGSize(width: newWidth, height: newHeight)
         hiddenSkyNode.position = CGPoint(x: hiddenSkyNode.size.width/2, y: Follie.screenSize.height/2)
         hiddenSkyNode.zPosition = Follie.zPos.hiddenSky.rawValue
         
@@ -103,6 +111,10 @@ class Background {
     } // Moving background (background1)
     
     private func background2s() -> [SKSpriteNode] {
+        if (self.bg2Name == "blank") {
+            return []
+        }
+        
         let background2Texture = SKTexture(imageNamed: self.bg2Name)
         var tempBackground2s: [SKSpriteNode] = []
         

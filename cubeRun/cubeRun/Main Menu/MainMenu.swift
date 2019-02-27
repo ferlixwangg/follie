@@ -20,7 +20,7 @@ class MainMenu: SKScene {
     var tuto2Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial2Completed")
     
     /// UserDefault value of the unlocked chapters
-    let availableChapter: Int = UserDefaults.standard.integer(forKey: "AvailableChapter")
+    let availableChapter: Int = FollieMainMenu.availableChapter
     
     /// Background music of the main menu
     let backgroundMusic = SKAudioNode(fileNamed: "DYATHON - Monologue.mp3")
