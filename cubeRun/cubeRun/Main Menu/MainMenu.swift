@@ -11,10 +11,6 @@ import UIKit
 
 class MainMenu: SKScene {
     
-    // Layer nodes
-    let mainMenuNode = SKNode()
-    let settingsNode = SKNode()
-    
     var engLangSelection: Bool = UserDefaults.standard.bool(forKey: "EnglishLanguage")
     var tuto1Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial1Completed")
     var tuto2Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial2Completed")
@@ -66,6 +62,7 @@ class MainMenu: SKScene {
     var settingsBackground: SKShapeNode!
     var settingsTitle: SKLabelNode!
     var backButton: SKSpriteNode!
+    var invisibleBackBox : SKSpriteNode!
     var innerSettingsBackground: SKShapeNode!
     var musicVolumeText: SKLabelNode!
     var sensitivityText: SKLabelNode!
@@ -91,7 +88,6 @@ class MainMenu: SKScene {
         
         self.isDismiss = true
         self.isInSettings = false
-        
         if (showFollieTitle == true) {
             self.run(SKAction.wait(forDuration: 1)) {
                 self.splashScreen()
@@ -118,6 +114,7 @@ class MainMenu: SKScene {
             self.snowEmitter()
             self.startBackgroundMusic()
             self.settingsButton.alpha = 1.0
+            self.settingsButton.children[0].alpha = 1.0
             
             self.cameraDownOnGoing = false
             let goUpDuration = 0.0
@@ -210,6 +207,7 @@ class MainMenu: SKScene {
             chapterNumber.run(SKAction.moveTo(y: chapterNumber.position.y + 10, duration: 0.5))
             
             self.settingsButton.run(SKAction.fadeIn(withDuration: 0.5))
+            self.settingsButton.children[0].run(SKAction.fadeIn(withDuration: 0.5))
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + durationStartDispatch, execute: self.task!)
@@ -409,6 +407,13 @@ class MainMenu: SKScene {
         backButton.alpha = 0
         backButton.zPosition = FollieMainMenu.zPos.settingsTitleLevel.rawValue
         self.addChild(backButton)
+        
+        invisibleBackBox = SKSpriteNode(color: .clear, size: CGSize(width: backButtonWidth*2, height: backButtonHeight*3))
+        invisibleBackBox.position = backButton.position
+        invisibleBackBox.alpha = 0
+        invisibleBackBox.name = "Back Button Settings"
+        invisibleBackBox.zPosition = FollieMainMenu.zPos.settingsTitleLevel.rawValue
+        self.addChild(invisibleBackBox)
         
         innerSettingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width/5*4, height: FollieMainMenu.screenSize.height/5*3))
         innerSettingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: self.settingsTitle.position.y - self.settingsTitle.frame.height/2 - self.innerSettingsBackground.frame.height/2)
@@ -616,6 +621,7 @@ class MainMenu: SKScene {
         self.replayTutorialText.alpha = alphaAll
         self.basicButton.alpha = alphaAll
         self.holdButton.alpha = alphaAll
+        self.invisibleBackBox.alpha = alphaAll
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -673,7 +679,6 @@ class MainMenu: SKScene {
                         
                         screenCover.run(SKAction.fadeIn(withDuration: 0.5)) {
                             self.enumerateChildNodes(withName: "*Settings*", using: { (node, stop) in
-                                print(node.name)
                                 node.removeFromParent()
                             })
                             
@@ -893,7 +898,13 @@ class MainMenu: SKScene {
                     let generator = UIImpactFeedbackGenerator(style: .light)
                     generator.impactOccurred()
                     
-                    let unavailableNode = SKLabelNode(text: "This chapter is not unlocked yet")
+                    let unavailableNode = SKLabelNode()
+                    if (engLangSelection) {
+                        unavailableNode.text = "This chapter is not unlocked yet"
+                    } else {
+                        unavailableNode.text = "Chapter ini belum terbuka"
+                    }
+                    
                     unavailableNode.fontColor = UIColor.white
                     unavailableNode.fontName = ".SFUIText"
                     unavailableNode.fontSize = CGFloat(14 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height

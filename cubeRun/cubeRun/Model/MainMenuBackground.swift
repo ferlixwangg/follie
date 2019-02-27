@@ -15,6 +15,7 @@ class MainMenuBackground {
     private let availableChapter: Int = FollieMainMenu.availableChapter
     
     private var sky: SKSpriteNode {
+        print("MainMenuBackground \(availableChapter)")
         let skyTexture = SKTexture(imageNamed: "Sky - Main Menu")
         let skyNode = SKSpriteNode(texture: skyTexture)
         
@@ -173,13 +174,17 @@ class MainMenuBackground {
         let settingsNodeHeight = 20/396 * FollieMainMenu.screenSize.height
         let settingsNodeWidth = settingsNode.size.width * (settingsNodeHeight / settingsNode.size.height)
         settingsNode.size = CGSize(width: settingsNodeWidth, height: settingsNodeHeight)
-        settingsNode.position.x = FollieMainMenu.screenSize.width/11
-        settingsNode.position.y = FollieMainMenu.screenSize.height/10 * 8.5
-        settingsNode.zPosition = FollieMainMenu.zPos.mainMenuSettingsButton.rawValue
+        settingsNode.position = CGPoint(x: 0, y: 0)
         settingsNode.name = "Setings"
         settingsNode.alpha = 0
         
-        return settingsNode
+        let invisibleSettingsBox = SKSpriteNode(color: .clear, size: CGSize(width: settingsNodeWidth*3, height: settingsNodeHeight*3))
+        invisibleSettingsBox.position = CGPoint(x: FollieMainMenu.screenSize.width/11, y: FollieMainMenu.screenSize.height/10 * 8.5)
+        invisibleSettingsBox.name = "Setings"
+        invisibleSettingsBox.addChild(settingsNode)
+        invisibleSettingsBox.zPosition = FollieMainMenu.zPos.mainMenuSettingsButton.rawValue
+        invisibleSettingsBox.alpha = 0
+        return invisibleSettingsBox
     }
     
     private var vignetteAnimationTextures: [SKTexture] {

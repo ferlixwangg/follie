@@ -64,6 +64,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var onTuto: Bool = false
     var onTutoChap1: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial1Completed"))
     var onTutoChap2: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial2Completed"))
+    var engLangSelection: Bool = UserDefaults.standard.bool(forKey: "EnglishLanguage")
     var limitMovement: Bool = false // so that player cannot move before the first tutorial start
     var firstTuto: Bool = false // indicator whether the first tutorial is done or not
     var firstTutoDistance: CGFloat = 0 // how much movement should be done before the first tutorial is finished
@@ -81,7 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var helpingFingerHold: SKSpriteNode!
     var textHasBeenDisplayed: Bool = false // a flag so that the same text won't be displayed multiple times
     var textBox: SKShapeNode!
-    var engLangSelection: Bool = UserDefaults.standard.bool(forKey: "EnglishLanguage")
+    
     var allTutorialText: Dictionary <String, String> = [
         "tuto1Eng":"Use your left thumb to move Follie up and down.",
         "tuto1Indo":"Gunakan jempol kanan kamu untuk menggerakan Follie naik dan turun.",
@@ -1168,7 +1169,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.gameNode.addChild(snowflakeProgress)
         snowflakeProgress.run(SKAction.fadeAlpha(to: 0.7, duration: 0.5))
         
-        let retryTexture = SKTexture(imageNamed: "Retry Button")
+        var retryTexture = SKTexture()
+        if (engLangSelection) {
+            retryTexture = SKTexture(imageNamed: "Retry Button")
+        } else {
+            retryTexture = SKTexture(imageNamed: "Ulang")
+        }
         let retry = SKSpriteNode(texture: retryTexture)
         let retryHeight = retry.size.height/396 * Follie.screenSize.height
         let retryWidth: CGFloat = retry.size.width * (retryHeight / retry.size.height)
@@ -1181,7 +1187,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         retry.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         retry.name = "retry"
         
-        let menuTexture = SKTexture(imageNamed: "Back To Main Menu")
+        var menuTexture = SKTexture()
+        if (engLangSelection) {
+            menuTexture = SKTexture(imageNamed: "Back To Main Menu")
+        } else {
+            menuTexture = SKTexture(imageNamed: "Menu Utama")
+        }
         let menu = SKSpriteNode(texture: menuTexture)
         let menuHeight = menu.size.height/396 * Follie.screenSize.height
         let menuWidth = menu.size.width * (menuHeight / menu.size.height)
@@ -1247,11 +1258,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.auroraTimer = nil
 
                 // go back to menu
-                let availableLevel = UserDefaults.standard.integer(forKey: "AvailableChapter")
-                if (self.chapterNo == availableLevel && availableLevel != 2) {
+                let availableLevel = FollieMainMenu.availableChapter
+                if (self.chapterNo == availableLevel && availableLevel != 12) {
                     UserDefaults.standard.set(availableLevel+1, forKey: "AvailableChapter")
+                    FollieMainMenu.availableChapter = UserDefaults.standard.integer(forKey: "AvailableChapter")
                 }
-                
                 self.removeAllActions()
                 self.isCurrentlyPaused = true
                 self.showWinMenu()
@@ -1261,7 +1272,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     func showWinMenu() {
         let winText = SKLabelNode(fontNamed: "dearJoeII")
-        winText.text = "Completed!"
+        if (engLangSelection) {
+            winText.text = "Completed!"
+        } else {
+            winText.text = "Selesai!"
+        }
         winText.fontSize = 100 / 396 * Follie.screenSize.height
         winText.fontColor = UIColor.white
         winText.position = CGPoint(x: self.screenW/2, y: self.screenH/2 + winText.frame.height/2)
@@ -1271,7 +1286,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         winText.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
         
         let tapText = SKLabelNode(fontNamed: ".SFUIText")
-        tapText.text = "Tap to continue"
+        if (engLangSelection) {
+            tapText.text = "Tap to continue"
+        } else {
+            tapText.text = "Tekan untuk melanjutkan"
+        }
         tapText.fontSize = 20 / 396 * Follie.screenSize.height
         tapText.fontColor = UIColor.white
         tapText.position = CGPoint(x: self.screenW/2, y: self.screenH/2 - tapText.frame.height/2)
@@ -1338,7 +1357,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.pauseNode.addChild(self.pauseText)
         self.pauseText.run(SKAction.fadeAlpha(to: 1, duration: 0.1))
         
-        let resumeTexture = SKTexture(imageNamed: "Resume Button")
+        var resumeTexture = SKTexture()
+        if (engLangSelection) {
+            resumeTexture = SKTexture(imageNamed: "Resume Button")
+        } else {
+            resumeTexture = SKTexture(imageNamed: "Lanjutkan")
+        }
         self.resumeButton = SKSpriteNode(texture: resumeTexture)
         let resumeHeight = resumeButton.size.height / 396 * Follie.screenSize.height
         let resumeWidth = resumeButton.size.width * (resumeHeight / resumeButton.size.height)
@@ -1350,7 +1374,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.resumeButton.run(SKAction.fadeAlpha(to: 1, duration: 0.1))
         self.resumeButton.name = "resume"
         
-        let menuTexture = SKTexture(imageNamed: "Back To Main Menu")
+        var menuTexture = SKTexture()
+        if (engLangSelection) {
+            menuTexture = SKTexture(imageNamed: "Back To Main Menu")
+        } else {
+            menuTexture = SKTexture(imageNamed: "Menu Utama")
+        }
         self.backToMainMenuButton = SKSpriteNode(texture: menuTexture)
         let menuHeight = backToMainMenuButton.size.height / 396 * Follie.screenSize.height
         let menuWidth = backToMainMenuButton.size.width * (menuHeight / backToMainMenuButton.size.height)
