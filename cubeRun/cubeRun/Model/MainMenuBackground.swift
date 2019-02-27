@@ -153,7 +153,7 @@ class MainMenuBackground {
         chapterTitle.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/50*31)
         chapterTitle.alpha = 0
         chapterTitle.addChild(self.chapterNumber)
-        chapterTitle.zPosition = 10
+        chapterTitle.zPosition = FollieMainMenu.zPos.mainMenuSettingsButton.rawValue
         
         return chapterTitle
     }
@@ -162,6 +162,7 @@ class MainMenuBackground {
         let chapterNumber = SKLabelNode(fontNamed: ".SFUIText")
         chapterNumber.fontSize = CGFloat(20 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
         chapterNumber.alpha = 0
+        chapterNumber.zPosition = FollieMainMenu.zPos.mainMenuSettingsButton.rawValue
         
         return chapterNumber
     }
@@ -174,7 +175,7 @@ class MainMenuBackground {
         settingsNode.size = CGSize(width: settingsNodeWidth, height: settingsNodeHeight)
         settingsNode.position.x = FollieMainMenu.screenSize.width/11
         settingsNode.position.y = FollieMainMenu.screenSize.height/10 * 8.5
-        settingsNode.zPosition = FollieMainMenu.zPos.mainMenuSettings.rawValue
+        settingsNode.zPosition = FollieMainMenu.zPos.mainMenuSettingsButton.rawValue
         settingsNode.name = "Settings"
         settingsNode.alpha = 0
         

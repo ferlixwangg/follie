@@ -7,12 +7,17 @@
 //
 
 import SpriteKit
+import UIKit
 
 class MainMenu: SKScene {
     
     // Layer nodes
     let mainMenuNode = SKNode()
     let settingsNode = SKNode()
+    
+    var engLangSelection: Bool = UserDefaults.standard.bool(forKey: "EnglishLanguage")
+    var tuto1Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial1Completed")
+    var tuto2Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial2Completed")
     
     /// UserDefault value of the unlocked chapters
     let availableChapter: Int = UserDefaults.standard.integer(forKey: "AvailableChapter")
@@ -53,15 +58,36 @@ class MainMenu: SKScene {
     // To disable the chances of tapping chapter multiple times
     var chapterChosen: Bool!
     
+    // Settings nodes
+    var isInSettings: Bool!
+    var effectNode: SKEffectNode!
+    var settingsBackground: SKShapeNode!
+    var settingsTitle: SKLabelNode!
+    var backButton: SKSpriteNode!
+    var innerSettingsBackground: SKShapeNode!
+    var musicVolumeText: SKLabelNode!
+    var sensitivityText: SKLabelNode!
+    var volumeSlider: UISlider!
+    var sensitivitySlider: UISlider!
+    var languageText : SKLabelNode!
+    var englishButton : SKSpriteNode!
+    var indonesiaButton: SKSpriteNode!
+    var mostInnerSettingsBackground: SKShapeNode!
+    var replayTutorialText: SKLabelNode!
+    var basicButton: SKSpriteNode!
+    var holdButton: SKSpriteNode!
+    let buttonClickedSfx = SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false)
+    
     deinit {
         print("main menu deinit")
     }
     
     override func didMove(to view: SKView) {
-        let showFollieTitle = FollieMainMenu.showFollieTitle
-//        let showFollieTitle = false
+//        let showFollieTitle = FollieMainMenu.showFollieTitle
+        let showFollieTitle = false
         
         self.isDismiss = true
+        self.isInSettings = false
         
         if (showFollieTitle == true) {
             self.run(SKAction.wait(forDuration: 1)) {
@@ -224,6 +250,13 @@ class MainMenu: SKScene {
     }
     
     func setNodes() {
+        self.effectNode = SKEffectNode()
+        self.effectNode.blendMode = .alpha
+        self.effectNode.shouldEnableEffects = true
+        self.effectNode.shouldRasterize = true
+        self.effectNode.zPosition = FollieMainMenu.zPos.settingsBackground.rawValue
+        self.addChild(self.effectNode)
+        
         let tempBackground = FollieMainMenu.getMainMenuBackground()
         
         self.sky = tempBackground.getSkyNode()
@@ -256,6 +289,7 @@ class MainMenu: SKScene {
         self.groundFinalY = self.ground.position.y + goingUpRange
         self.gameTitalFinalY = self.gameTitle.position.y + goingUpRange
         
+        self.initiateSettingsMenu()
     } // Initialize all nodes in the main menu
     
     func snowEmitter() {
@@ -289,7 +323,6 @@ class MainMenu: SKScene {
     }
     
     func changeActiveChapterTitleTransition(node: SKSpriteNode, index: Int) {
-        
         // remove the rotating snowflake animation and go down
         node.children[0].removeAction(forKey: "repeatForeverActionKey")
         let pi = Double(round(1000*CGFloat.pi/3)/1000)
@@ -327,6 +360,232 @@ class MainMenu: SKScene {
         }
     }
     
+    func initiateSettingsMenu() {
+        settingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width, height: FollieMainMenu.screenSize.height))
+        settingsBackground.name = "Settings Background"
+        settingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
+        settingsBackground.alpha = 0
+        settingsBackground.strokeColor = .clear
+        settingsBackground.fillColor = .white
+        settingsBackground.zPosition = FollieMainMenu.zPos.settingsBackground.rawValue
+        self.effectNode.addChild(settingsBackground)
+        
+        settingsTitle = SKLabelNode(fontNamed: "dearJoeII")
+        settingsTitle.name = "Settings Title"
+        if (engLangSelection) {
+            settingsTitle.text = "Settings"
+        } else {
+            settingsTitle.text = "Pengaturan"
+        }
+        settingsTitle.fontSize = 55/396 * FollieMainMenu.screenSize.height
+        settingsTitle.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/10*8)
+        settingsTitle.alpha = 0
+        settingsTitle.fontColor = .white
+        settingsTitle.zPosition = FollieMainMenu.zPos.settingsTitleLevel.rawValue
+        self.addChild(settingsTitle)
+        
+        var backTexture = SKTexture()
+        if (engLangSelection) {
+            backTexture = SKTexture(imageNamed: "Back Button")
+        } else {
+            backTexture = SKTexture(imageNamed: "Kembali Button")
+        }
+        backButton = SKSpriteNode(texture: backTexture)
+        backButton.name = "Back Button Settings"
+        let backButtonHeight = 15/396 * FollieMainMenu.screenSize.height
+        let backButtonWidth = backButton.size.width * (backButtonHeight / backButton.size.height)
+        backButton.size = CGSize(width: backButtonWidth, height: backButtonHeight)
+        backButton.position = CGPoint(x: FollieMainMenu.screenSize.width/11, y: FollieMainMenu.screenSize.height/10 * 8.5)
+        backButton.alpha = 0
+        backButton.zPosition = FollieMainMenu.zPos.settingsTitleLevel.rawValue
+        self.addChild(backButton)
+        
+        innerSettingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width/5*4, height: FollieMainMenu.screenSize.height/5*3))
+        innerSettingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: self.settingsTitle.position.y - self.settingsTitle.frame.height/2 - self.innerSettingsBackground.frame.height/2)
+        innerSettingsBackground.name = "Settings Inner Background"
+        innerSettingsBackground.alpha = 0
+        innerSettingsBackground.strokeColor = .clear
+        innerSettingsBackground.fillColor = .white
+        innerSettingsBackground.zPosition = FollieMainMenu.zPos.settingsInnerBackground.rawValue
+        self.addChild(innerSettingsBackground)
+        
+        sensitivityText = SKLabelNode(fontNamed: ".SFUIText")
+        if (engLangSelection) {
+            sensitivityText.text = "Sensitivity"
+        } else {
+            sensitivityText.text = "Sensitivitas"
+        }
+        sensitivityText.name = "Settings Sensitivity"
+        sensitivityText.horizontalAlignmentMode = .left
+        sensitivityText.fontSize = 18/396 * FollieMainMenu.screenSize.height
+        sensitivityText.position = CGPoint(x: FollieMainMenu.screenSize.width/5 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*5.2)
+        sensitivityText.alpha = 0
+        sensitivityText.fontColor = .white
+        sensitivityText.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
+        self.addChild(sensitivityText)
+        
+        let sliderWidth = 100/396 * FollieMainMenu.screenSize.height
+        let sliderHeight = 10/396 * FollieMainMenu.screenSize.height
+        sensitivitySlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.55, y: FollieMainMenu.screenSize.height-sensitivityText.position.y-sensitivityText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
+        sensitivitySlider.maximumValue = 1.0
+        sensitivitySlider.minimumValue = 0.0
+        sensitivitySlider.isContinuous = true
+        sensitivitySlider.value = 1.0
+        sensitivitySlider.alpha = 0.0
+        sensitivitySlider.minimumTrackTintColor = UIColor.white
+        sensitivitySlider.maximumTrackTintColor = UIColor.gray
+        sensitivitySlider.setThumbImage(UIImage.init(named: "Knob"), for: .normal)
+        sensitivitySlider.tag = 2
+        sensitivitySlider.addTarget(self, action: #selector(self.updateSlider(_:)), for: .valueChanged)
+        view?.addSubview(sensitivitySlider)
+        
+        musicVolumeText = SKLabelNode(fontNamed: ".SFUIText")
+        musicVolumeText.name = "Settings Music Volume"
+        if (engLangSelection) {
+            musicVolumeText.text = "Music Volume"
+        } else {
+            musicVolumeText.text = "Volume musik"
+        }
+        musicVolumeText.horizontalAlignmentMode = .left
+        musicVolumeText.fontSize = 18/396 * FollieMainMenu.screenSize.height
+        musicVolumeText.position = CGPoint(x: FollieMainMenu.screenSize.width/5 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*6.2)
+        musicVolumeText.alpha = 0
+        musicVolumeText.fontColor = .white
+        musicVolumeText.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
+        self.addChild(musicVolumeText)
+        
+        volumeSlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.55, y: FollieMainMenu.screenSize.height-musicVolumeText.position.y-musicVolumeText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
+        volumeSlider.maximumValue = 1.0
+        volumeSlider.minimumValue = 0.0
+        volumeSlider.isContinuous = true
+        volumeSlider.value = 1.0
+        volumeSlider.alpha = 0.0
+        volumeSlider.minimumTrackTintColor = UIColor.white
+        volumeSlider.maximumTrackTintColor = UIColor.gray
+        volumeSlider.setThumbImage(UIImage.init(named: "Knob"), for: .normal)
+        volumeSlider.tag = 1
+        volumeSlider.addTarget(self, action: #selector(self.updateSlider(_:)), for: .valueChanged)
+        view?.addSubview(volumeSlider)
+        
+        languageText = SKLabelNode(fontNamed: ".SFUIText")
+        languageText.name = "Settings Language"
+        if (engLangSelection) {
+            languageText.text = "Language"
+        } else {
+            languageText.text = "Bahasa"
+        }
+        languageText.horizontalAlignmentMode = .left
+        languageText.fontSize = 18/396 * FollieMainMenu.screenSize.height
+        languageText.position = CGPoint(x: FollieMainMenu.screenSize.width/5 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*4.2)
+        languageText.alpha = 0
+        languageText.fontColor = .white
+        languageText.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
+        self.addChild(languageText)
+        
+        var indonesiaButtonTexture = SKTexture()
+        if (engLangSelection) {
+            indonesiaButtonTexture = SKTexture(imageNamed: "Indonesia Nonactive")
+        } else {
+            indonesiaButtonTexture = SKTexture(imageNamed: "Indonesia Active")
+        }
+        indonesiaButton = SKSpriteNode(texture: indonesiaButtonTexture)
+        indonesiaButton.name = "Settings Indonesia Button"
+        indonesiaButton.size = CGSize(width: indonesiaButton.size.width * (languageText.frame.height*1.25/indonesiaButton.size.height), height: languageText.frame.height*1.25)
+        indonesiaButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*8.5 - indonesiaButton.size.width/2, y: languageText.position.y + languageText.frame.height/2)
+        indonesiaButton.alpha = 0.0
+        indonesiaButton.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
+        self.addChild(indonesiaButton)
+        
+        var englishButtonTexture = SKTexture()
+        if (engLangSelection) {
+            englishButtonTexture = SKTexture(imageNamed: "English Active")
+        } else {
+            englishButtonTexture = SKTexture(imageNamed: "English Nonactive")
+        }
+        englishButton = SKSpriteNode(texture: englishButtonTexture)
+        englishButton.name = "Settings English Button"
+        englishButton.size = CGSize(width: englishButton.size.width * (languageText.frame.height*1.25/englishButton.size.height), height: languageText.frame.height*1.25)
+        englishButton.position = CGPoint(x: indonesiaButton.position.x - indonesiaButton.size.width/2 - 20/396 * FollieMainMenu.screenSize.height - englishButton.size.width/2, y: languageText.position.y + languageText.frame.height/2)
+        englishButton.alpha = 0.0
+        englishButton.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
+        self.addChild(englishButton)
+        
+        mostInnerSettingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width/5*3.6, height: FollieMainMenu.screenSize.height/5))
+        mostInnerSettingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: self.languageText.position.y - self.languageText.frame.height - self.mostInnerSettingsBackground.frame.height/2)
+        mostInnerSettingsBackground.name = "Settings Most Inner Background"
+        mostInnerSettingsBackground.alpha = 0
+        mostInnerSettingsBackground.strokeColor = .clear
+        mostInnerSettingsBackground.fillColor = .white
+        mostInnerSettingsBackground.zPosition = FollieMainMenu.zPos.settingsMostInner.rawValue
+        self.addChild(mostInnerSettingsBackground)
+        
+        replayTutorialText = SKLabelNode(fontNamed: ".SFUIText")
+        replayTutorialText.name = "Settings Replay Tutorial Text"
+        if (engLangSelection) {
+            replayTutorialText.text = "Replay Tutorials"
+        } else {
+            replayTutorialText.text = "Ulangi tutorial"
+        }
+        replayTutorialText.fontSize = 18/396 * FollieMainMenu.screenSize.height
+        replayTutorialText.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/10*2.95)
+        replayTutorialText.alpha = 0
+        replayTutorialText.fontColor = .white
+        replayTutorialText.zPosition = FollieMainMenu.zPos.replaySection.rawValue
+        self.addChild(replayTutorialText)
+        
+        var basicButtonTexture = SKTexture()
+        if (engLangSelection) {
+            if (tuto1Done) {
+                basicButtonTexture = SKTexture(imageNamed: "Basic Active")
+            } else {
+                basicButtonTexture = SKTexture(imageNamed: "Basic Nonactive")
+            }
+        } else {
+            if (tuto1Done) {
+                basicButtonTexture = SKTexture(imageNamed: "Dasar Active")
+            } else {
+                basicButtonTexture = SKTexture(imageNamed: "Dasar Nonactive")
+            }
+        }
+        basicButton = SKSpriteNode(texture: basicButtonTexture)
+        basicButton.name = "Settings Basic Button"
+        basicButton.size = CGSize(width: basicButton.size.width * (languageText.frame.height*1.25/basicButton.size.height), height: languageText.frame.height*1.25)
+        basicButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*4.5, y: FollieMainMenu.screenSize.height/10*2.3)
+        basicButton.alpha = 0.0
+        basicButton.zPosition = FollieMainMenu.zPos.replaySection.rawValue
+        self.addChild(basicButton)
+        
+        var holdButtonTexture = SKTexture()
+        if (engLangSelection) {
+            if (tuto2Done) {
+                holdButtonTexture = SKTexture(imageNamed: "Hold Active")
+            } else {
+                holdButtonTexture = SKTexture(imageNamed: "Hold Nonactive")
+            }
+        } else {
+            if (tuto2Done) {
+                holdButtonTexture = SKTexture(imageNamed: "Tahan Active")
+            } else {
+                holdButtonTexture = SKTexture(imageNamed: "Tahan Nonactive")
+            }
+        }
+        holdButton = SKSpriteNode(texture: holdButtonTexture)
+        holdButton.name = "Settings Hold Button"
+        holdButton.size = CGSize(width: holdButton.size.width * (languageText.frame.height*1.25/holdButton.size.height), height: languageText.frame.height*1.25)
+        holdButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*5.5, y: FollieMainMenu.screenSize.height/10*2.3)
+        holdButton.alpha = 0.0
+        holdButton.zPosition = FollieMainMenu.zPos.replaySection.rawValue
+        self.addChild(holdButton)
+    }
+    
+    @objc func updateSlider(_ sender:UISlider!) {
+        if (sender.tag == 1) {
+            print("BBB")
+        } else {
+            print("CCC")
+        }
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if (self.chapterChosen || self.isDismiss) {
             return
@@ -355,9 +614,76 @@ class MainMenu: SKScene {
         let touchedGroundNodes = self.ground.nodes(at: positionInGroundScene)
         let touchedNodes = self.nodes(at: positionInScene)
         
+        if (isInSettings == true) {
+            
+            for node in touchedNodes {
+                if (node.name != nil && node.name!.contains("Back Button Settings")) {
+                    self.run(self.buttonClickedSfx)
+                    self.isInSettings = false
+                    self.effectNode.filter = nil
+                    self.settingsBackground.alpha = 0
+                    self.settingsTitle.alpha = 0
+                    self.backButton.alpha = 0
+                    self.innerSettingsBackground.alpha = 0.0
+                    self.musicVolumeText.alpha = 0.0
+                    self.sensitivityText.alpha = 0.0
+                    self.volumeSlider.alpha = 0.0
+                    self.sensitivitySlider.alpha = 0.0
+                    self.languageText.alpha = 0.0
+                    self.indonesiaButton.alpha = 0.0
+                    self.englishButton.alpha = 0.0
+                    self.mostInnerSettingsBackground.alpha = 0.0
+                    self.replayTutorialText.alpha = 0.0
+                    self.basicButton.alpha = 0.0
+                    self.holdButton.alpha = 0.0
+                } else if (node.name != nil && node.name!.contains("Settings English Button")) {
+                    self.run(self.buttonClickedSfx)
+                } else if (node.name != nil && node.name!.contains("Settings Indonesia Button")) {
+                    self.run(self.buttonClickedSfx)
+                } else if (node.name != nil && node.name!.contains("Settings Basic Button")) {
+                    if (tuto1Done) {
+                        self.run(self.buttonClickedSfx)
+                        print("tuto1Done")
+                    }
+                } else if (node.name != nil && node.name!.contains("Settings Hold Button")) {
+                    if (tuto2Done) {
+                        self.run(self.buttonClickedSfx)
+                        print("tuto2Done")
+                    }
+                }
+            }
+            
+            return
+        }
+        
         for node in touchedNodes {
             if (node.name != nil && node.name!.contains("Settings")) {
+                self.isInSettings = true
+                self.run(self.buttonClickedSfx)
                 
+                let filter = CIFilter(name: "CIGaussianBlur")
+                filter?.setValue(20.0, forKey: kCIInputRadiusKey)
+                let settingsTexture = self.view?.texture(from: self.scene!, crop: self.settingsBackground.frame)
+                self.settingsBackground.fillTexture = settingsTexture
+                self.settingsBackground.alpha = 0.98
+                self.effectNode.filter = filter
+                
+                self.settingsTitle.alpha = 1.0
+                self.backButton.alpha = 1.0
+                self.innerSettingsBackground.alpha = 0.15
+                self.musicVolumeText.alpha = 1.0
+                self.sensitivityText.alpha = 1.0
+                self.volumeSlider.alpha = 1.0
+                self.sensitivitySlider.alpha = 1.0
+                self.languageText.alpha = 1.0
+                self.indonesiaButton.alpha = 1.0
+                self.englishButton.alpha = 1.0
+                self.mostInnerSettingsBackground.alpha = 0.15
+                self.replayTutorialText.alpha = 1.0
+                self.basicButton.alpha = 1.0
+                self.holdButton.alpha = 1.0
+                
+                return
             }
         }
         

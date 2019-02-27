@@ -55,7 +55,7 @@ class Follie {
     
     static let groundRatio: Double = 1/6 // ground height ratio to the screen height
     
-    static let backgroundRatio: Double = 1/3 // background1 & background2 height ratio to the screen
+    static let backgroundRatio: Double = 1/6 // background1 & background2 height ratio to the screen
     
     static let screenMovementSec: Double = 25.0 // the time (seconds) it takes for a node to move a distance (screen width * 2)
     
