@@ -19,6 +19,8 @@ class MainMenu: SKScene {
     var tuto1Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial1Completed")
     var tuto2Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial2Completed")
     
+    var repeatTutorial : Bool = UserDefaults.standard.bool(forKey: "RepeatTuto")
+    
     /// UserDefault value of the unlocked chapters
     let availableChapter: Int = FollieMainMenu.availableChapter
     
@@ -76,6 +78,7 @@ class MainMenu: SKScene {
     var replayTutorialText: SKLabelNode!
     var basicButton: SKSpriteNode!
     var holdButton: SKSpriteNode!
+    var screenCover: SKShapeNode!
     let buttonClickedSfx = SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false)
     
     deinit {
@@ -83,7 +86,7 @@ class MainMenu: SKScene {
     }
     
     override func didMove(to view: SKView) {
-//        let showFollieTitle = FollieMainMenu.showFollieTitle
+        //        let showFollieTitle = FollieMainMenu.showFollieTitle
         let showFollieTitle = false
         
         self.isDismiss = true
@@ -250,13 +253,6 @@ class MainMenu: SKScene {
     }
     
     func setNodes() {
-        self.effectNode = SKEffectNode()
-        self.effectNode.blendMode = .alpha
-        self.effectNode.shouldEnableEffects = true
-        self.effectNode.shouldRasterize = true
-        self.effectNode.zPosition = FollieMainMenu.zPos.settingsBackground.rawValue
-        self.addChild(self.effectNode)
-        
         let tempBackground = FollieMainMenu.getMainMenuBackground()
         
         self.sky = tempBackground.getSkyNode()
@@ -290,6 +286,29 @@ class MainMenu: SKScene {
         self.gameTitalFinalY = self.gameTitle.position.y + goingUpRange
         
         self.initiateSettingsMenu()
+        
+        screenCover = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width, height: FollieMainMenu.screenSize.height))
+        screenCover.fillColor = .black
+        screenCover.strokeColor = .clear
+        screenCover.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
+        screenCover.alpha = 0.0
+        screenCover.zPosition = FollieMainMenu.zPos.screenCover.rawValue
+        self.addChild(screenCover)
+        
+        self.effectNode = SKEffectNode()
+        self.effectNode.blendMode = .alpha
+        self.effectNode.shouldEnableEffects = true
+        self.effectNode.shouldRasterize = true
+        self.effectNode.zPosition = FollieMainMenu.zPos.settingsBackground.rawValue
+        self.addChild(self.effectNode)
+        
+        settingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width, height: FollieMainMenu.screenSize.height))
+        settingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
+        settingsBackground.alpha = 0
+        settingsBackground.strokeColor = .clear
+        settingsBackground.fillColor = .white
+        settingsBackground.zPosition = FollieMainMenu.zPos.settingsBackground.rawValue
+        self.effectNode.addChild(settingsBackground)
     } // Initialize all nodes in the main menu
     
     func snowEmitter() {
@@ -361,15 +380,6 @@ class MainMenu: SKScene {
     }
     
     func initiateSettingsMenu() {
-        settingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width, height: FollieMainMenu.screenSize.height))
-        settingsBackground.name = "Settings Background"
-        settingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/2)
-        settingsBackground.alpha = 0
-        settingsBackground.strokeColor = .clear
-        settingsBackground.fillColor = .white
-        settingsBackground.zPosition = FollieMainMenu.zPos.settingsBackground.rawValue
-        self.effectNode.addChild(settingsBackground)
-        
         settingsTitle = SKLabelNode(fontNamed: "dearJoeII")
         settingsTitle.name = "Settings Title"
         if (engLangSelection) {
@@ -524,7 +534,7 @@ class MainMenu: SKScene {
         if (engLangSelection) {
             replayTutorialText.text = "Replay Tutorials"
         } else {
-            replayTutorialText.text = "Ulangi tutorial"
+            replayTutorialText.text = "Ulang Tutorial"
         }
         replayTutorialText.fontSize = 18/396 * FollieMainMenu.screenSize.height
         replayTutorialText.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/10*2.95)
@@ -586,6 +596,28 @@ class MainMenu: SKScene {
         }
     }
     
+    func updateSettingsElementsAlpha(alphaAll: CGFloat, alphaBackground: CGFloat) {
+        if (alphaAll == 1.0) {
+            self.settingsBackground.alpha = alphaAll - 0.02
+        } else {
+            self.settingsBackground.alpha = alphaAll
+        }
+        self.settingsTitle.alpha = alphaAll
+        self.backButton.alpha = alphaAll
+        self.innerSettingsBackground.alpha = alphaBackground
+        self.musicVolumeText.alpha = alphaAll
+        self.sensitivityText.alpha = alphaAll
+        self.volumeSlider.alpha = alphaAll
+        self.sensitivitySlider.alpha = alphaAll
+        self.languageText.alpha = alphaAll
+        self.indonesiaButton.alpha = alphaAll
+        self.englishButton.alpha = alphaAll
+        self.mostInnerSettingsBackground.alpha = alphaBackground
+        self.replayTutorialText.alpha = alphaAll
+        self.basicButton.alpha = alphaAll
+        self.holdButton.alpha = alphaAll
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if (self.chapterChosen || self.isDismiss) {
             return
@@ -621,40 +653,84 @@ class MainMenu: SKScene {
                     self.run(self.buttonClickedSfx)
                     self.isInSettings = false
                     self.effectNode.filter = nil
-                    self.settingsBackground.alpha = 0
-                    self.settingsTitle.alpha = 0
-                    self.backButton.alpha = 0
-                    self.innerSettingsBackground.alpha = 0.0
-                    self.musicVolumeText.alpha = 0.0
-                    self.sensitivityText.alpha = 0.0
-                    self.volumeSlider.alpha = 0.0
-                    self.sensitivitySlider.alpha = 0.0
-                    self.languageText.alpha = 0.0
-                    self.indonesiaButton.alpha = 0.0
-                    self.englishButton.alpha = 0.0
-                    self.mostInnerSettingsBackground.alpha = 0.0
-                    self.replayTutorialText.alpha = 0.0
-                    self.basicButton.alpha = 0.0
-                    self.holdButton.alpha = 0.0
+                    updateSettingsElementsAlpha(alphaAll: 0.0, alphaBackground: 0.0)
                 } else if (node.name != nil && node.name!.contains("Settings English Button")) {
-                    self.run(self.buttonClickedSfx)
+                    
+                    if !(engLangSelection) {
+                        self.run(self.buttonClickedSfx)
+                        engLangSelection = true
+                        UserDefaults.standard.set(true, forKey: "EnglishLanguage")
+                        
+                        UIView.animate(withDuration: 0.5) {
+                            self.sensitivitySlider.alpha = 0.0
+                            self.volumeSlider.alpha = 0.0
+                            
+                            self.run(SKAction.wait(forDuration: 0.5)) {
+                                self.sensitivitySlider.removeFromSuperview()
+                                self.volumeSlider.removeFromSuperview()
+                            }
+                        }
+                        
+                        screenCover.run(SKAction.fadeIn(withDuration: 0.5)) {
+                            self.enumerateChildNodes(withName: "*Settings*", using: { (node, stop) in
+                                print(node.name)
+                                node.removeFromParent()
+                            })
+                            
+                            self.initiateSettingsMenu()
+                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
+                            self.screenCover.run(SKAction.fadeOut(withDuration: 0.5))
+                        }
+                    }
+                    
                 } else if (node.name != nil && node.name!.contains("Settings Indonesia Button")) {
-                    self.run(self.buttonClickedSfx)
+                    if (engLangSelection) {
+                        self.run(self.buttonClickedSfx)
+                        engLangSelection = false
+                        UserDefaults.standard.set(false, forKey: "EnglishLanguage")
+                        
+                        UIView.animate(withDuration: 0.5) {
+                            self.sensitivitySlider.alpha = 0.0
+                            self.volumeSlider.alpha = 0.0
+                            
+                            self.run(SKAction.wait(forDuration: 0.5)) {
+                                self.sensitivitySlider.removeFromSuperview()
+                                self.volumeSlider.removeFromSuperview()
+                            }
+                        }
+                        
+                        screenCover.run(SKAction.fadeIn(withDuration: 0.5)) {
+                            self.enumerateChildNodes(withName: "*Settings*", using: { (node, stop) in
+                                node.removeFromParent()
+                            })
+                            
+                            self.initiateSettingsMenu()
+                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
+                            self.screenCover.run(SKAction.fadeOut(withDuration: 0.5))
+                        }
+                    }
+                    
                 } else if (node.name != nil && node.name!.contains("Settings Basic Button")) {
                     if (tuto1Done) {
                         self.run(self.buttonClickedSfx)
-                        // here
+                        
+                        UIView.animate(withDuration: 2.0) {
+                            self.sensitivitySlider.alpha = 0.0
+                            self.volumeSlider.alpha = 0.0
+                        }
+                        
                         self.chapterChosen = true
                         Follie.selectedChapter = 1
                         
-                        self.run(self.playedChapterSfx)
                         self.stopBackgroundMusic()
+                        
+                        UserDefaults.standard.set(true, forKey: "RepeatTuto")
                         
                         self.run(SKAction.fadeOut(withDuration: 2.0)) {
                             // Preload animation
                             var preAtlas = [SKTextureAtlas]()
                             preAtlas.append(SKTextureAtlas(named: "Baby"))
-//                            tuto1Done
+                            
                             // Move to next scene
                             SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
                                 DispatchQueue.main.sync {
@@ -674,7 +750,40 @@ class MainMenu: SKScene {
                 } else if (node.name != nil && node.name!.contains("Settings Hold Button")) {
                     if (tuto2Done) {
                         self.run(self.buttonClickedSfx)
-                        print("tuto2Done")
+                        // here
+                        
+                        UIView.animate(withDuration: 2.0) {
+                            self.sensitivitySlider.alpha = 0.0
+                            self.volumeSlider.alpha = 0.0
+                        }
+                        
+                        self.chapterChosen = true
+                        Follie.selectedChapter = 2
+                        
+                        self.stopBackgroundMusic()
+                        
+                        UserDefaults.standard.set(true, forKey: "RepeatTuto")
+                        
+                        self.run(SKAction.fadeOut(withDuration: 2.0)) {
+                            // Preload animation
+                            var preAtlas = [SKTextureAtlas]()
+                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+                            
+                            // Move to next scene
+                            SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
+                                DispatchQueue.main.sync {
+                                    self.removeAllActions()
+                                    self.removeAllChildren()
+                                    self.task = nil
+                                    let transition = SKTransition.fade(withDuration: 1)
+                                    if let scene = SKScene(fileNamed: "GameScene") {
+                                        scene.scaleMode = .aspectFill
+                                        scene.size = Follie.screenSize
+                                        self.view?.presentScene(scene, transition: transition)
+                                    }
+                                }
+                            })
+                        }
                     }
                 }
             }
@@ -683,7 +792,7 @@ class MainMenu: SKScene {
         }
         
         for node in touchedNodes {
-            if (node.name != nil && node.name!.contains("Settings")) {
+            if (node.name != nil && node.name!.contains("Setings")) {
                 self.isInSettings = true
                 self.run(self.buttonClickedSfx)
                 
@@ -691,24 +800,9 @@ class MainMenu: SKScene {
                 filter?.setValue(20.0, forKey: kCIInputRadiusKey)
                 let settingsTexture = self.view?.texture(from: self.scene!, crop: self.settingsBackground.frame)
                 self.settingsBackground.fillTexture = settingsTexture
-                self.settingsBackground.alpha = 0.98
                 self.effectNode.filter = filter
                 
-                self.settingsTitle.alpha = 1.0
-                self.backButton.alpha = 1.0
-                self.innerSettingsBackground.alpha = 0.15
-                self.musicVolumeText.alpha = 1.0
-                self.sensitivityText.alpha = 1.0
-                self.volumeSlider.alpha = 1.0
-                self.sensitivitySlider.alpha = 1.0
-                self.languageText.alpha = 1.0
-                self.indonesiaButton.alpha = 1.0
-                self.englishButton.alpha = 1.0
-                self.mostInnerSettingsBackground.alpha = 0.15
-                self.replayTutorialText.alpha = 1.0
-                self.basicButton.alpha = 1.0
-                self.holdButton.alpha = 1.0
-                
+                updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
                 return
             }
         }
@@ -823,7 +917,7 @@ class MainMenu: SKScene {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if (self.chapterChosen || self.isDismiss) {
+        if (self.chapterChosen || self.isDismiss || isInSettings) {
             return
         }
         

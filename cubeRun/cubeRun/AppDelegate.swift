@@ -21,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if (launchedBefore == false) {
             UserDefaults.standard.set(1, forKey: "AvailableChapter")
-            UserDefaults.standard.set(false, forKey: "TutorialCompleted")
             UserDefaults.standard.set(true, forKey: "LaunchedBefore")
             UserDefaults.standard.set(false, forKey: "Tutorial1Completed")
             UserDefaults.standard.set(false, forKey: "Tutorial2Completed")

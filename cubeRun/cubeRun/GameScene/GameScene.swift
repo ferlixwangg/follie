@@ -93,7 +93,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         "tuto3FailIndo":"Ups! Kamu gagal untuk menekan bintang tepat waktu. Mari coba lagi.",
         "passed1TutoEng":"Okay, that's all for now.",
         "passed1TutoIndo":"Ok, itu saja untuk saat ini.",
-        "passed2TutoEng":"You have 5 lifes. Try not to miss the star.",
+        "passed2TutoEng":"You have 5 lives. Try not to miss the star.",
         "passed2TutoIndo":"Kamu memiliki 5 nyawa. Cobalah untuk menekan bintang tepat waktu.",
         "passed3TutoEng":"Every 2 successful hits will regain 1 of your life.",
         "passed3TutoIndo":"Kamu akan mendapatkan kembali 1 nyawa setiap 2 bintang yang ditekan tepat waktu.",
@@ -104,6 +104,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     ]
     var tempText: String = ""
     var repeatTutorial = UserDefaults.standard.bool(forKey: "RepeatTuto")
+    var repeatTuto1: Bool = false
+    var repeatTuto2: Bool = false
     
     // Gameplay logic
     var nextCountdown: Int = 0 // new block will appear when countdown reaches 0
@@ -186,22 +188,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.initialSetup()
         if (self.repeatTutorial == true){
-//            if (self.chapterNo == 1){
-//                self.onTuto = true
-//                self.limitMovement = true
-//                self.startTutorial()
-//            }
-            
+            self.setupPause()
+            if (self.chapterNo == 1){
+                self.onTuto = true
+                self.repeatTuto1 = true
+                self.limitMovement = true
+                self.startTutorial()
+            }
+            else if (self.chapterNo == 2){
+                self.onTuto = true
+                self.repeatTuto2 = true
+                self.thirdTuto = true
+                self.startTutorial3()
+            }
         }
         else if (self.onTutoChap1 == true && self.chapterNo == 1){
             self.onTuto = true
-            
             self.limitMovement = true
             self.startTutorial()
         }
         else if (self.onTutoChap2 == true && self.chapterNo == 2){
             self.onTuto = true
-            
             self.thirdTuto = true
             self.startTutorial3()
         }
@@ -466,7 +473,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             self.gameNode.enumerateChildNodes(withName: "*") {
                 node , stop in
-                if (self.onTutoChap1 == true && self.chapterNo == 1){
+                if (self.onTutoChap1 == true && self.chapterNo == 1 || self.repeatTutorial == true && self.repeatTuto1 == true){
                     
                     // Check if the star for first tutorial is getting closer
                     if (node is SKSpriteNode && node.name == "0") {
@@ -513,7 +520,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         }
                     }
                 }
-                else if (self.onTutoChap2 == true && self.chapterNo == 2) {
+                else if (self.onTutoChap2 == true && self.chapterNo == 2 || self.repeatTutorial == true && self.repeatTuto2 == true) {
                     // Check if the star for third tutorial is getting closer
                     if (node is SKSpriteNode && node.name == "\(self.thirdTutoCount)") {
                         
@@ -1580,12 +1587,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.blockTimer?.invalidate()
         self.blockTimer = nil
-        self.gameNode.removeAllActions()
-        self.gameNode.removeAllChildren()
         self.player = nil
         GameScene.sharedInstance = nil
         
         fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
+            self.gameNode.removeAllActions()
+            self.gameNode.removeAllChildren()
             let newScene = MainMenu(size: FollieMainMenu.screenSize)
             newScene.scaleMode = self.scaleMode
             let animation = SKTransition.fade(withDuration: 1.0)
@@ -1624,7 +1631,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.countownNode.run(SKAction.fadeAlpha(to: 0, duration: 0.1))
                 self.screenCover.run(SKAction.fadeAlpha(to: 0, duration: 0.1))
                 
-                if (self.hasStarted) {
+                if (self.hasStarted && self.repeatTutorial == false) {
                     self.player.play()
                 }
                 
@@ -1723,7 +1730,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             }
             else if (node.name != nil && node.name == "menu") {
                 self.run(self.buttonClickedSfx)
-                
+                UserDefaults.standard.set(false, forKey: "RepeatTuto")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 //                    self.gameNodeIsPaused = true
 //                    self.gameNode.isPaused = false
@@ -1758,7 +1765,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 }
                 
                 if (self.onTuto == true) {
-                    if (self.onTutoChap1 == true && self.chapterNo == 1){
+                    if (self.onTutoChap1 == true && self.chapterNo == 1 || self.repeatTutorial == true && repeatTuto1 == true){
                         // Tutorial 2 baru bisa done kalo udah berhenti
                         if (self.secondTuto == true && self.secondTutoFlag == true) {
                             self.scene?.speed = 1.0
@@ -1872,11 +1879,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                                         }
                                         
                                         DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
-                                            UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-                                            UserDefaults.standard.set(true, forKey: "Tutorial1Completed")
-                                            self.onTutoChap1 = false
-                                            self.onTuto = false
-                                            self.startGameplay()
+                                            
+                                            if (self.repeatTutorial == true){
+                                                self.repeatTutorial = false
+                                                UserDefaults.standard.set(false, forKey: "RepeatTuto")
+                                                self.onTuto = false
+                                                self.repeatTuto1 = false
+                                                self.backToMainMenu()
+                                            }
+                                            else if (self.repeatTutorial == false){
+                                                
+                                                UserDefaults.standard.set(true, forKey: "Tutorial1Completed")
+                                                self.onTutoChap1 = false
+                                                self.onTuto = false
+                                                self.startGameplay()
+                                            }
                                         }
                                     })
                                 }
@@ -1884,7 +1901,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                             self.successfulHit()
                         }
                     }
-                    else if (self.onTutoChap2 == true && self.chapterNo == 2) {
+                    else if (self.onTutoChap2 == true && self.chapterNo == 2 || self.repeatTutorial == true && self.repeatTuto2 == true) {
                         
                         // Check Tuto 3 (Kalo scenenya uda berhenti baru bisa proceed)
                         if (self.thirdTuto == true && thirdTutoFlag == true) {
@@ -1955,11 +1972,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                             self.tutorialText.removeFromParent()
                             
                             DispatchQueue.main.asyncAfter(wallDeadline: .now() + 3) {
-                                UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-                                UserDefaults.standard.set(true, forKey: "Tutorial2Completed")
-                                self.onTuto = false
-                                self.onTutoChap2 = false
-                                self.startGameplay()
+                                if (self.repeatTutorial == true){
+                                    self.repeatTutorial = false
+                                    UserDefaults.standard.set(false, forKey: "RepeatTuto")
+                                    self.repeatTuto2 = false
+                                    self.onTuto = false
+                                    self.backToMainMenu()
+                                }
+                                else if (self.repeatTutorial == false){
+                                    
+                                    UserDefaults.standard.set(true, forKey: "Tutorial2Completed")
+                                    self.onTuto = false
+                                    self.onTutoChap2 = false
+                                    self.startGameplay()
+                                }
                             }
                         }
                         
@@ -2176,6 +2202,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func pauseTimer() {
+        
+        if self.repeatTutorial {
+            return
+        }
+        
         self.blockTimer?.invalidate()
         self.blockTimer = nil
         
@@ -2192,6 +2223,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func resumeTimer() {
+        
+        if self.repeatTutorial {
+            self.isCurrentlyPaused = false
+            return
+        }
+        
         if (self.chapterNo > 2) {
             DispatchQueue.main.asyncAfter(deadline: .now() + self.diffSec) {
                 self.currSec = Date().timeIntervalSince1970 * 1000.0

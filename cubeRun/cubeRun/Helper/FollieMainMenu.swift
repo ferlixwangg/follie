@@ -24,6 +24,7 @@ class FollieMainMenu {
         case settingsElementsInInnerBackground = 13
         case settingsMostInner = 14
         case replaySection = 15
+        case screenCover = 20
     } // z-position for nodes
     
     static var screenSize: CGSize {

@@ -176,7 +176,7 @@ class MainMenuBackground {
         settingsNode.position.x = FollieMainMenu.screenSize.width/11
         settingsNode.position.y = FollieMainMenu.screenSize.height/10 * 8.5
         settingsNode.zPosition = FollieMainMenu.zPos.mainMenuSettingsButton.rawValue
-        settingsNode.name = "Settings"
+        settingsNode.name = "Setings"
         settingsNode.alpha = 0
         
         return settingsNode
