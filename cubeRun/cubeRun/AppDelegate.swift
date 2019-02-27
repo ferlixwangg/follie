@@ -26,6 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UserDefaults.standard.set(false, forKey: "Tutorial1Completed")
             UserDefaults.standard.set(false, forKey: "Tutorial2Completed")
             UserDefaults.standard.set(true, forKey: "EnglishLanguage")
+            UserDefaults.standard.set(false, forKey: "RepeatTuto")
         }
         else{
             UserDefaults.standard.bool(forKey: "EnglishLanguage")

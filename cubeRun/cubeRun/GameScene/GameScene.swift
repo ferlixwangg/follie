@@ -103,6 +103,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         "passed5TutoIndo":"Ok, kamu sudah siap!"
     ]
     var tempText: String = ""
+    var repeatTutorial = UserDefaults.standard.bool(forKey: "RepeatTuto")
     
     // Gameplay logic
     var nextCountdown: Int = 0 // new block will appear when countdown reaches 0
@@ -184,8 +185,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.chapterNo = Follie.selectedChapter
         
         self.initialSetup()
-        
-        if (self.onTutoChap1 == true && self.chapterNo == 1){
+        if (self.repeatTutorial == true){
+            if (self.chapterNo == 1){
+                self.onTuto = true
+                self.limitMovement = true
+                self.startTutorial()
+            }
+            
+        }
+        else if (self.onTutoChap1 == true && self.chapterNo == 1){
             self.onTuto = true
             UserDefaults.standard.set(false, forKey: "TutorialCompleted")
             

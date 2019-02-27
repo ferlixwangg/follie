@@ -643,7 +643,33 @@ class MainMenu: SKScene {
                 } else if (node.name != nil && node.name!.contains("Settings Basic Button")) {
                     if (tuto1Done) {
                         self.run(self.buttonClickedSfx)
-                        print("tuto1Done")
+                        // here
+                        self.chapterChosen = true
+                        Follie.selectedChapter = 1
+                        
+                        self.run(self.playedChapterSfx)
+                        self.stopBackgroundMusic()
+                        
+                        self.run(SKAction.fadeOut(withDuration: 2.0)) {
+                            // Preload animation
+                            var preAtlas = [SKTextureAtlas]()
+                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+//                            tuto1Done
+                            // Move to next scene
+                            SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
+                                DispatchQueue.main.sync {
+                                    self.removeAllActions()
+                                    self.removeAllChildren()
+                                    self.task = nil
+                                    let transition = SKTransition.fade(withDuration: 1)
+                                    if let scene = SKScene(fileNamed: "GameScene") {
+                                        scene.scaleMode = .aspectFill
+                                        scene.size = Follie.screenSize
+                                        self.view?.presentScene(scene, transition: transition)
+                                    }
+                                }
+                            })
+                        }
                     }
                 } else if (node.name != nil && node.name!.contains("Settings Hold Button")) {
                     if (tuto2Done) {
