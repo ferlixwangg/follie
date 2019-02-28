@@ -11,12 +11,12 @@ import SpriteKit
 // Contains all music file names used in the project
 class Music {
     var name: String // music filename
-    var secPerBeat: Double // the time (seconds) it takes between beats
+    var bpm: Double // bpm of the music
     var beats: [Beat]
     
-    init(name: String, secPerBeat: Double, beats: [Beat]) {
+    init(name: String, bpm: Double, beats: [Beat]) {
         self.name = name
-        self.secPerBeat = secPerBeat
+        self.bpm = bpm
         self.beats = beats
     }
 }

@@ -16,18 +16,18 @@ class Chapter {
     var chapterNo: Int
     
     private let chapterMusic: [Int:Music] = [
-        1: Music(name: "DYATHON - Your Eyes", secPerBeat: (Double(60)/Double(78)), beats: chapter1().beats),
-        2: Music(name: "DYATHON - Blooming Romance", secPerBeat: (Double(60)/Double(89)), beats: chapter2().beats),
-        3: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        4: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        5: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        6: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        7: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        8: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        9: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        10: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        11: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: []),
-        12: Music(name: "DYATHON - Emoticon", secPerBeat: (Double(60)/Double(89)), beats: [])
+        1: Music(name: "#1 - DYATHON - Your Eyes", bpm: 78, beats: chapter1().beats),
+        2: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        3: Music(name: "#3 - DYATHON - Emoticon", bpm: 89, beats: []),
+        4: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        5: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        6: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        7: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        8: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        9: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        10: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        11: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
+        12: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats)
     ]
     
     private let chapterTitle: [Int:String] = [

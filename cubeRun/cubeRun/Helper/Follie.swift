@@ -69,7 +69,9 @@ class Follie {
         return (Double(Follie.screenSize.width*2) / Follie.screenMovementSec)
     } // x-coordinate movement per second based on screenMovementSec
     
-    static let blockToGroundSpeed: Double = 2 // block speed multiplier relative to the ground's
+    static var xPerBeat: Double {
+        return Follie.xSpeed * (120/78) * Double(Follie.screenSize.width/812)
+    } // fixed x distance between two beats in every chapter
     
     static let auroraColors: [UIColor] = [
         UIColor.init(red: 0.3, green: 0, blue: 1, alpha: 1),

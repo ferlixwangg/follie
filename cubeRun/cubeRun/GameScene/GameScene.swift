@@ -38,6 +38,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     
     // Music and Block
     var music: Music!
+    var secPerBeat: Double!
     var totalMusicDuration: Double!
     var currMusicDuration: Double = 0
     var blockTexture: SKTexture!
@@ -169,7 +170,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var tempBeats: [Beat]!
     var isFirstBeat: Bool = true
     var linesY: [Int:CGFloat] = [:]
-    var xPerBeat: Double!
     
     var currBeat: Double = 0
     var hasStarted: Bool = true
@@ -329,16 +329,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             // get min distance from fairy to newBlock, get min multiplier for how many beats for block to reach fairy
             // get distance from min beats
             let minDistance = self.screenW - self.fairyNode.position.x + newBlock.size.width/2
-            let xPerBeat = Follie.xSpeed * self.music.secPerBeat * Follie.blockToGroundSpeed
-            let minMultiplier: Double = ceil(Double(minDistance) / xPerBeat)
-            let distance = xPerBeat * minMultiplier
+            let minMultiplier: Double = ceil(Double(minDistance) / Follie.xPerBeat)
+            let distance = Follie.xPerBeat * minMultiplier
             
             let blockX = self.fairyNode.position.x + CGFloat(distance)
             let blockY = (Follie.getFairy().maxY + Follie.getFairy().minY) / 2
             newBlock.position = CGPoint(x: blockX, y: blockY)
             
             let totalDistance: Double = Double(blockX + newBlock.size.width/2)
-            let toFairyTime: Double = minMultiplier * self.music.secPerBeat
+            let toFairyTime: Double = minMultiplier * self.secPerBeat
             let totalTime: Double = toFairyTime * (totalDistance / distance)
             
             let actions: [SKAction] = [
@@ -370,16 +369,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         // get min distance from fairy to newBlock, get min multiplier for how many beats for block to reach fairy
         // get distance from min beats
         let minDistance = self.screenW - self.fairyNode.position.x + newBlock.size.width/2
-        let xPerBeat = Follie.xSpeed * self.music.secPerBeat * Follie.blockToGroundSpeed
-        let minMultiplier: Double = ceil(Double(minDistance) / xPerBeat)
-        let distance = xPerBeat * minMultiplier
+        let minMultiplier: Double = ceil(Double(minDistance) / Follie.xPerBeat)
+        let distance = Follie.xPerBeat * minMultiplier
         
         let blockX = self.fairyNode.position.x + CGFloat(distance)
         let blockY = (Follie.getFairy().maxY + Follie.getFairy().minY) / 2
         newBlock.position = CGPoint(x: blockX, y: blockY)
         
         let totalDistance: Double = Double(blockX + newBlock.size.width/2)
-        let toFairyTime: Double = minMultiplier * self.music.secPerBeat
+        let toFairyTime: Double = minMultiplier * self.secPerBeat
         let totalTime: Double = toFairyTime * (totalDistance / distance)
         let blockSpeed: Double = totalDistance / totalTime
         
@@ -410,10 +408,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         let holdBeatNum: Int = 1
         n += Double(holdBeatNum)
         
-        let connectingX = blockX + CGFloat(xPerBeat * n)
+        let connectingX = blockX + CGFloat(Follie.xPerBeat * n)
         let connectingY = blockY
-        let connectingDistance = totalDistance + (xPerBeat * n)
-        let connectingTime = totalTime + (self.music.secPerBeat * n)
+        let connectingDistance = totalDistance + (Follie.xPerBeat * n)
+        let connectingTime = totalTime + (self.secPerBeat * n)
         
         connectingBlock.position = CGPoint(x: connectingX, y: connectingY)
         
@@ -603,6 +601,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         // chapter music
         self.music = chapter.getMusic()
+        self.secPerBeat = 60 / self.music.bpm
         
         guard let url = Bundle.main.url(forResource: self.music.name, withExtension: "mp3") else { return }
         do {
@@ -646,12 +645,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         if (self.chapterNo > 2) {
             self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
             self.player.play()
-            self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
+            self.blockTimer = Timer.scheduledTimer(timeInterval: self.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
         }
         else {
             // melody
             self.hasStarted = false
-            self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(melodyProjectiles), userInfo: nil, repeats: true)
+            self.blockTimer = Timer.scheduledTimer(timeInterval: self.secPerBeat/4, target: self, selector: #selector(melodyProjectiles), userInfo: nil, repeats: true)
         }
     }
     
@@ -661,15 +660,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         // get min distance from fairy to newBlock, get min multiplier for how many beats for block to reach fairy
         // get distance from min beats
         let minDistance = self.screenW - self.fairyNode.position.x + tempsize.width/2
-        self.xPerBeat = Follie.xSpeed * self.music.secPerBeat * Follie.blockToGroundSpeed
-        let minMultiplier: Double = ceil(Double(minDistance) / self.xPerBeat)
-        let distance = self.xPerBeat * minMultiplier
+        let minMultiplier: Double = ceil(Double(minDistance) / Follie.xPerBeat)
+        let toFairyDistance = Follie.xPerBeat * minMultiplier
         
-        self.blockX = self.fairyNode.position.x + CGFloat(distance)
+        self.blockX = self.fairyNode.position.x + CGFloat(toFairyDistance)
         
         self.totalDistance = Double(self.blockX + tempsize.width/2)
-        self.toFairyTime = minMultiplier * self.music.secPerBeat
-        self.totalTime = self.toFairyTime * (self.totalDistance / distance)
+        self.toFairyTime = minMultiplier * self.secPerBeat
+        self.totalTime = self.toFairyTime * (self.totalDistance / toFairyDistance)
         
         let allowedYDistance = self.fairyMaxY - self.fairyMinY
         let yInterval: Double = Double(allowedYDistance) / 4
@@ -733,7 +731,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.blockNameFlag += 1
         
         if ((self.tempBeats.first?.connectToNext)!) {
-            let additionalX: Double = self.tempBeats.first!.nextBeatIn * self.xPerBeat
+            let additionalX: Double = self.tempBeats.first!.nextBeatIn * Follie.xPerBeat
             
             let newX = self.blockX + CGFloat(additionalX)
             let newY = self.linesY[self.tempBeats[1].nthLine]
@@ -828,10 +826,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             let holdBeatNum: Int = Int.random(in: 1 ... self.maxHoldBeat)
             n += Double(holdBeatNum)
             
-            let connectingX = self.blockX + CGFloat(self.xPerBeat * n)
+            let connectingX = self.blockX + CGFloat(Follie.xPerBeat * n)
             let connectingY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
-            let connectingDistance = self.totalDistance + (self.xPerBeat * n)
-            let connectingTime = self.totalTime + (self.music.secPerBeat * n)
+            let connectingDistance = self.totalDistance + (Follie.xPerBeat * n)
+            let connectingTime = self.totalTime + (self.secPerBeat * n)
             
             connectingBlock.position = CGPoint(x: connectingX, y: connectingY)
             
@@ -2241,13 +2239,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         if (self.chapterNo > 2) {
             self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
-            self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.music.secPerBeat)
-            self.diffSec = self.music.secPerBeat - self.diffSec
+            self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.secPerBeat)
+            self.diffSec = self.secPerBeat - self.diffSec
         }
         else {
             self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
-            self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.music.secPerBeat/4)
-            self.diffSec = self.music.secPerBeat/4 - self.diffSec
+            self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.secPerBeat/4)
+            self.diffSec = self.secPerBeat/4 - self.diffSec
         }
     }
     
@@ -2265,7 +2263,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 
                 self.isCurrentlyPaused = false
                 
-                self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
+                self.blockTimer = Timer.scheduledTimer(timeInterval: self.secPerBeat, target: self, selector: #selector(self.blockProjectiles), userInfo: nil, repeats: true)
             }
         }
         else {
@@ -2275,7 +2273,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 
                 self.isCurrentlyPaused = false
                 
-                self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(self.melodyProjectiles), userInfo: nil, repeats: true)
+                self.blockTimer = Timer.scheduledTimer(timeInterval: self.secPerBeat/4, target: self, selector: #selector(self.melodyProjectiles), userInfo: nil, repeats: true)
             }
         }
     }
