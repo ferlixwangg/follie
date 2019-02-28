@@ -18,6 +18,9 @@
 		851A8FF8220D9249004EA137 /* #2 - DYATHON - Blooming Romance.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FF6220D9249004EA137 /* #2 - DYATHON - Blooming Romance.mp3 */; };
 		851A8FF9220D9249004EA137 /* #1 - DYATHON - Your Eyes.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FF7220D9249004EA137 /* #1 - DYATHON - Your Eyes.mp3 */; };
 		851A8FFB220D9906004EA137 /* Button Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 851A8FFA220D9906004EA137 /* Button Click.wav */; };
+		8545D1B82227E838008DBE29 /* #7 - DYATHON - Insane.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8545D1B72227E838008DBE29 /* #7 - DYATHON - Insane.mp3 */; };
+		8545D1BA2227F232008DBE29 /* #6 - DYATHON - Solitude.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8545D1B92227F232008DBE29 /* #6 - DYATHON - Solitude.mp3 */; };
+		8545D1BC2227F250008DBE29 /* #5 - DYATHON - Falling.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8545D1BB2227F250008DBE29 /* #5 - DYATHON - Falling.mp3 */; };
 		859562A122252F2F00869E76 /* Beat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859562A022252F2F00869E76 /* Beat.swift */; };
 		859562A422252F8E00869E76 /* chapter1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859562A322252F8E00869E76 /* chapter1.swift */; };
 		859562A622252F9600869E76 /* chapter2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859562A522252F9600869E76 /* chapter2.swift */; };
@@ -61,6 +64,9 @@
 		851A8FF6220D9249004EA137 /* #2 - DYATHON - Blooming Romance.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#2 - DYATHON - Blooming Romance.mp3"; sourceTree = "<group>"; };
 		851A8FF7220D9249004EA137 /* #1 - DYATHON - Your Eyes.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#1 - DYATHON - Your Eyes.mp3"; sourceTree = "<group>"; };
 		851A8FFA220D9906004EA137 /* Button Click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Button Click.wav"; sourceTree = "<group>"; };
+		8545D1B72227E838008DBE29 /* #7 - DYATHON - Insane.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#7 - DYATHON - Insane.mp3"; sourceTree = "<group>"; };
+		8545D1B92227F232008DBE29 /* #6 - DYATHON - Solitude.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#6 - DYATHON - Solitude.mp3"; sourceTree = "<group>"; };
+		8545D1BB2227F250008DBE29 /* #5 - DYATHON - Falling.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#5 - DYATHON - Falling.mp3"; sourceTree = "<group>"; };
 		859562A022252F2F00869E76 /* Beat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Beat.swift; sourceTree = "<group>"; };
 		859562A322252F8E00869E76 /* chapter1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chapter1.swift; sourceTree = "<group>"; };
 		859562A522252F9600869E76 /* chapter2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chapter2.swift; sourceTree = "<group>"; };
@@ -178,6 +184,9 @@
 				851A8FF7220D9249004EA137 /* #1 - DYATHON - Your Eyes.mp3 */,
 				851A8FF6220D9249004EA137 /* #2 - DYATHON - Blooming Romance.mp3 */,
 				85969E672226A49A001CE8DF /* #3 - DYATHON - Emoticon.mp3 */,
+				8545D1BB2227F250008DBE29 /* #5 - DYATHON - Falling.mp3 */,
+				8545D1B92227F232008DBE29 /* #6 - DYATHON - Solitude.mp3 */,
+				8545D1B72227E838008DBE29 /* #7 - DYATHON - Insane.mp3 */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -323,6 +332,7 @@
 				8505DD5C21E5E2FE001D66A6 /* Main.storyboard in Resources */,
 				BA98C9642222A4A500873AB8 /* Star Disperse.sks in Resources */,
 				BA5467C8220362660078924A /* MainMenu.sks in Resources */,
+				8545D1BC2227F250008DBE29 /* #5 - DYATHON - Falling.mp3 in Resources */,
 				BA98C9622222A48000873AB8 /* Countdown Tick.mp3 in Resources */,
 				8505DD5321E5E2FE001D66A6 /* GameScene.sks in Resources */,
 				85969E682226A49A001CE8DF /* #3 - DYATHON - Emoticon.mp3 in Resources */,
@@ -332,6 +342,8 @@
 				BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */,
 				851A8FF8220D9249004EA137 /* #2 - DYATHON - Blooming Romance.mp3 in Resources */,
 				851A8FFB220D9906004EA137 /* Button Click.wav in Resources */,
+				8545D1B82227E838008DBE29 /* #7 - DYATHON - Insane.mp3 in Resources */,
+				8545D1BA2227F232008DBE29 /* #6 - DYATHON - Solitude.mp3 in Resources */,
 				BA5313D6220826090044BDFD /* Play Chapter.wav in Resources */,
 				BA5467CA220362AB0078924A /* DYATHON - Monologue.mp3 in Resources */,
 				8505DD6121E5E2FF001D66A6 /* LaunchScreen.storyboard in Resources */,

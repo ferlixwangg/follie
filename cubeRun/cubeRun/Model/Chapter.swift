@@ -19,15 +19,15 @@ class Chapter {
         1: Music(name: "#1 - DYATHON - Your Eyes", bpm: 78, beats: chapter1().beats),
         2: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
         3: Music(name: "#3 - DYATHON - Emoticon", bpm: 89, beats: []),
-        4: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
-        5: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
-        6: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
-        7: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
-        8: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
-        9: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
-        10: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
-        11: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
-        12: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats)
+        4: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 90, beats: []),
+        5: Music(name: "#5 - DYATHON - Falling", bpm: 92, beats: []),
+        6: Music(name: "#6 - DYATHON - Solitude", bpm: 100, beats: []),
+        7: Music(name: "#7 - DYATHON - Insane", bpm: 100, beats: []),
+        8: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: []),
+        9: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: []),
+        10: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: []),
+        11: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: []),
+        12: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: [])
     ]
     
     private let chapterTitle: [Int:String] = [
@@ -67,7 +67,7 @@ class Chapter {
         4: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
         5: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
         6: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
-        7: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
+        7: Difficulty(maxInterval: 0, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
         8: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
         9: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
         10: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 1, holdChance: 4/10),
