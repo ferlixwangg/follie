@@ -641,6 +641,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.setupLife()
         self.animateProgress()
         self.setupPause()
+        self.setupGameplay()
         
         if (self.chapterNo > 2) {
             self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
@@ -650,7 +651,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         else {
             // melody
             self.hasStarted = false
-            self.setupGameplay()
             self.blockTimer = Timer.scheduledTimer(timeInterval: self.music.secPerBeat/4, target: self, selector: #selector(melodyProjectiles), userInfo: nil, repeats: true)
         }
     }
