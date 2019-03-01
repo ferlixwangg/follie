@@ -163,16 +163,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var lifeBar: SKSpriteNode!
     
     // new var ------------------------------------------------------
-    var blockX: CGFloat!
-    var toFairyTime: Double!
-    var totalTime: Double!
-    var totalDistance: Double!
-    var tempBeats: [Beat]!
-    var isFirstBeat: Bool = true
-    var linesY: [Int:CGFloat] = [:]
+    var blockX: CGFloat! // x spawn position of every block
+    var toFairyTime: Double! // time it takes for a block to reach fairy from spawn position
+    var totalTime: Double! // total time it takes for a block to reach the other end of the screen
+    var totalDistance: Double! // distance from spawn point to end of the screen
+    var tempBeats: [Beat]! // used in melody gameplay, custom beats and positions
+    var isFirstBeat: Bool = true // to check if its first beat of the melody
+    var isMelody: Bool! // to check if chapter is melody gameplay or randomized beat
+    var linesY: [Int:CGFloat] = [:] // y positions of each pre-defined line in the game (melody gameplay)
     
-    var currBeat: Double = 0
-    var hasStarted: Bool = true
+    var currBeat: Double = 0 // current beat
+    var hasStarted: Bool = true // if music in melody gameplay has started
     // new var ------------------------------------------------------
     
     deinit {
@@ -602,6 +603,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         // chapter music
         self.music = chapter.getMusic()
         self.secPerBeat = 60 / self.music.bpm
+        if (self.music.beats.isEmpty) {
+            self.isMelody = false
+        }
+        else {
+            self.isMelody = true
+        }
         
         guard let url = Bundle.main.url(forResource: self.music.name, withExtension: "mp3") else { return }
         do {
@@ -642,7 +649,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.setupPause()
         self.setupGameplay()
         
-        if (self.chapterNo > 2) {
+        if (!self.isMelody) {
             self.progressNode.run(SKAction.moveBy(x: self.progressDistance, y: 0, duration: self.totalMusicDuration))
             self.player.play()
             self.blockTimer = Timer.scheduledTimer(timeInterval: self.secPerBeat, target: self, selector: #selector(blockProjectiles), userInfo: nil, repeats: true)
@@ -2237,7 +2244,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.blockTimer?.invalidate()
         self.blockTimer = nil
         
-        if (self.chapterNo > 2) {
+        if (!self.isMelody) {
             self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
             self.diffSec = self.diffSec.truncatingRemainder(dividingBy: self.secPerBeat)
             self.diffSec = self.secPerBeat - self.diffSec
@@ -2256,7 +2263,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
-        if (self.chapterNo > 2) {
+        if (!self.isMelody) {
             DispatchQueue.main.asyncAfter(deadline: .now() + self.diffSec) {
                 self.currSec = Date().timeIntervalSince1970 * 1000.0
                 self.blockProjectiles()

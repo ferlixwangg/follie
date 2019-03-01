@@ -19,15 +19,15 @@ class Chapter {
         1: Music(name: "#1 - DYATHON - Your Eyes", bpm: 78, beats: chapter1().beats),
         2: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: chapter2().beats),
         3: Music(name: "#3 - DYATHON - Emoticon", bpm: 89, beats: []),
-        4: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 90, beats: []),
+        4: Music(name: "#4 - DYATHON - Hope", bpm: 90, beats: []),
         5: Music(name: "#5 - DYATHON - Falling", bpm: 92, beats: []),
         6: Music(name: "#6 - DYATHON - Solitude", bpm: 100, beats: []),
         7: Music(name: "#7 - DYATHON - Insane", bpm: 100, beats: []),
-        8: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: []),
-        9: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: []),
-        10: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: []),
-        11: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: []),
-        12: Music(name: "#2 - DYATHON - Blooming Romance", bpm: 89, beats: [])
+        8: Music(name: "#8 - DYATHON - The Poetry of Your Heart", bpm: 112, beats: []),
+        9: Music(name: "#9 - DYATHON - I Need You Here", bpm: 116, beats: []),
+        10: Music(name: "#10 - DYATHON - She Loves You", bpm: 132, beats: []),
+        11: Music(name: "#11 - DYATHON - I Saw You in a Dream", bpm: 132, beats: []),
+        12: Music(name: "#12 - DYATHON - Dear Sister", bpm: 136, beats: [])
     ]
     
     private let chapterTitle: [Int:String] = [
