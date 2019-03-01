@@ -35,11 +35,11 @@
 		85C932C821FB764C00CB47BC /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C932C721FB764C00CB47BC /* Block.swift */; };
 		85C932CA21FB82EB00CB47BC /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C932C921FB82EB00CB47BC /* Chapter.swift */; };
 		85F2DF3122292B4D00B4D62C /* #8 - DYATHON - The Poetry of Your Heart.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF3022292B4D00B4D62C /* #8 - DYATHON - The Poetry of Your Heart.mp3 */; };
-		85F2DF3622292B6A00B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF3222292B6A00B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 */; };
-		85F2DF3822292B6A00B4D62C /* #10 - DYATHON - She Loves You.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF3422292B6A00B4D62C /* #10 - DYATHON - She Loves You.mp3 */; };
-		85F2DF3922292B6A00B4D62C /* #9 - DYATHON - I Need You Here.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF3522292B6A00B4D62C /* #9 - DYATHON - I Need You Here.mp3 */; };
-		85F2DF3B22292B7100B4D62C /* #4 - DYATHON - Hope.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF3A22292B7100B4D62C /* #4 - DYATHON - Hope.mp3 */; };
-		85F2DF3D22292D2000B4D62C /* #12 - DYATHON - Dear Sister.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF3C22292D2000B4D62C /* #12 - DYATHON - Dear Sister.mp3 */; };
+		85F2DF4222293F2300B4D62C /* #9 - DYATHON - I Need You Here.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF3E22293F2300B4D62C /* #9 - DYATHON - I Need You Here.mp3 */; };
+		85F2DF4322293F2300B4D62C /* #12 - DYATHON - Dear Sister.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF3F22293F2300B4D62C /* #12 - DYATHON - Dear Sister.mp3 */; };
+		85F2DF4422293F2300B4D62C /* #10 - DYATHON - She Loves You.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF4022293F2300B4D62C /* #10 - DYATHON - She Loves You.mp3 */; };
+		85F2DF4522293F2300B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF4122293F2300B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 */; };
+		85F2DF4722293F2D00B4D62C /* #4 - DYATHON - Hope.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 85F2DF4622293F2C00B4D62C /* #4 - DYATHON - Hope.mp3 */; };
 		BA5313CF220742B10044BDFD /* FollieMainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5313CE220742B10044BDFD /* FollieMainMenu.swift */; };
 		BA5313D6220826090044BDFD /* Play Chapter.wav in Resources */ = {isa = PBXBuildFile; fileRef = BA5313D4220826090044BDFD /* Play Chapter.wav */; };
 		BA5313D7220826090044BDFD /* Rising Chapter.wav in Resources */ = {isa = PBXBuildFile; fileRef = BA5313D5220826090044BDFD /* Rising Chapter.wav */; };
@@ -87,11 +87,11 @@
 		85C932C721FB764C00CB47BC /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		85C932C921FB82EB00CB47BC /* Chapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chapter.swift; sourceTree = "<group>"; };
 		85F2DF3022292B4D00B4D62C /* #8 - DYATHON - The Poetry of Your Heart.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#8 - DYATHON - The Poetry of Your Heart.mp3"; sourceTree = "<group>"; };
-		85F2DF3222292B6A00B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#11 - DYATHON - I Saw You in a Dream.mp3"; sourceTree = "<group>"; };
-		85F2DF3422292B6A00B4D62C /* #10 - DYATHON - She Loves You.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#10 - DYATHON - She Loves You.mp3"; sourceTree = "<group>"; };
-		85F2DF3522292B6A00B4D62C /* #9 - DYATHON - I Need You Here.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#9 - DYATHON - I Need You Here.mp3"; sourceTree = "<group>"; };
-		85F2DF3A22292B7100B4D62C /* #4 - DYATHON - Hope.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#4 - DYATHON - Hope.mp3"; sourceTree = "<group>"; };
-		85F2DF3C22292D2000B4D62C /* #12 - DYATHON - Dear Sister.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#12 - DYATHON - Dear Sister.mp3"; sourceTree = "<group>"; };
+		85F2DF3E22293F2300B4D62C /* #9 - DYATHON - I Need You Here.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#9 - DYATHON - I Need You Here.mp3"; sourceTree = "<group>"; };
+		85F2DF3F22293F2300B4D62C /* #12 - DYATHON - Dear Sister.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#12 - DYATHON - Dear Sister.mp3"; sourceTree = "<group>"; };
+		85F2DF4022293F2300B4D62C /* #10 - DYATHON - She Loves You.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#10 - DYATHON - She Loves You.mp3"; sourceTree = "<group>"; };
+		85F2DF4122293F2300B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#11 - DYATHON - I Saw You in a Dream.mp3"; sourceTree = "<group>"; };
+		85F2DF4622293F2C00B4D62C /* #4 - DYATHON - Hope.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "#4 - DYATHON - Hope.mp3"; sourceTree = "<group>"; };
 		BA5313CE220742B10044BDFD /* FollieMainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollieMainMenu.swift; sourceTree = "<group>"; };
 		BA5313D4220826090044BDFD /* Play Chapter.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Play Chapter.wav"; sourceTree = "<group>"; };
 		BA5313D5220826090044BDFD /* Rising Chapter.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Rising Chapter.wav"; sourceTree = "<group>"; };
@@ -196,15 +196,15 @@
 				851A8FF7220D9249004EA137 /* #1 - DYATHON - Your Eyes.mp3 */,
 				851A8FF6220D9249004EA137 /* #2 - DYATHON - Blooming Romance.mp3 */,
 				85969E672226A49A001CE8DF /* #3 - DYATHON - Emoticon.mp3 */,
-				85F2DF3A22292B7100B4D62C /* #4 - DYATHON - Hope.mp3 */,
+				85F2DF4622293F2C00B4D62C /* #4 - DYATHON - Hope.mp3 */,
 				8545D1BB2227F250008DBE29 /* #5 - DYATHON - Falling.mp3 */,
 				8545D1B92227F232008DBE29 /* #6 - DYATHON - Solitude.mp3 */,
 				8545D1B72227E838008DBE29 /* #7 - DYATHON - Insane.mp3 */,
 				85F2DF3022292B4D00B4D62C /* #8 - DYATHON - The Poetry of Your Heart.mp3 */,
-				85F2DF3522292B6A00B4D62C /* #9 - DYATHON - I Need You Here.mp3 */,
-				85F2DF3422292B6A00B4D62C /* #10 - DYATHON - She Loves You.mp3 */,
-				85F2DF3222292B6A00B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 */,
-				85F2DF3C22292D2000B4D62C /* #12 - DYATHON - Dear Sister.mp3 */,
+				85F2DF3E22293F2300B4D62C /* #9 - DYATHON - I Need You Here.mp3 */,
+				85F2DF4022293F2300B4D62C /* #10 - DYATHON - She Loves You.mp3 */,
+				85F2DF4122293F2300B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 */,
+				85F2DF3F22293F2300B4D62C /* #12 - DYATHON - Dear Sister.mp3 */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -342,30 +342,30 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85F2DF3822292B6A00B4D62C /* #10 - DYATHON - She Loves You.mp3 in Resources */,
 				851A8FF9220D9249004EA137 /* #1 - DYATHON - Your Eyes.mp3 in Resources */,
 				BA5467CC220362C90078924A /* Snow.sks in Resources */,
 				BA5313D7220826090044BDFD /* Rising Chapter.wav in Resources */,
 				85969E6622268A39001CE8DF /* Baby.atlas in Resources */,
-				85F2DF3B22292B7100B4D62C /* #4 - DYATHON - Hope.mp3 in Resources */,
 				BA531427220B00500044BDFD /* Vignette.atlas in Resources */,
+				85F2DF4722293F2D00B4D62C /* #4 - DYATHON - Hope.mp3 in Resources */,
 				8505DD5C21E5E2FE001D66A6 /* Main.storyboard in Resources */,
 				BA98C9642222A4A500873AB8 /* Star Disperse.sks in Resources */,
+				85F2DF4422293F2300B4D62C /* #10 - DYATHON - She Loves You.mp3 in Resources */,
 				BA5467C8220362660078924A /* MainMenu.sks in Resources */,
 				8545D1BC2227F250008DBE29 /* #5 - DYATHON - Falling.mp3 in Resources */,
-				85F2DF3622292B6A00B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 in Resources */,
-				85F2DF3922292B6A00B4D62C /* #9 - DYATHON - I Need You Here.mp3 in Resources */,
 				85F2DF3122292B4D00B4D62C /* #8 - DYATHON - The Poetry of Your Heart.mp3 in Resources */,
 				BA98C9622222A48000873AB8 /* Countdown Tick.mp3 in Resources */,
 				8505DD5321E5E2FE001D66A6 /* GameScene.sks in Resources */,
-				85F2DF3D22292D2000B4D62C /* #12 - DYATHON - Dear Sister.mp3 in Resources */,
 				85969E682226A49A001CE8DF /* #3 - DYATHON - Emoticon.mp3 in Resources */,
 				85BD971721F9CE86004099DB /* Aurora.sks in Resources */,
 				BA5467D12203630F0078924A /* DEARJI__.TTF in Resources */,
 				8505DD5E21E5E2FF001D66A6 /* Assets.xcassets in Resources */,
+				85F2DF4222293F2300B4D62C /* #9 - DYATHON - I Need You Here.mp3 in Resources */,
 				BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */,
+				85F2DF4322293F2300B4D62C /* #12 - DYATHON - Dear Sister.mp3 in Resources */,
 				851A8FF8220D9249004EA137 /* #2 - DYATHON - Blooming Romance.mp3 in Resources */,
 				851A8FFB220D9906004EA137 /* Button Click.wav in Resources */,
+				85F2DF4522293F2300B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 in Resources */,
 				8545D1B82227E838008DBE29 /* #7 - DYATHON - Insane.mp3 in Resources */,
 				8545D1BA2227F232008DBE29 /* #6 - DYATHON - Solitude.mp3 in Resources */,
 				BA5313D6220826090044BDFD /* Play Chapter.wav in Resources */,
