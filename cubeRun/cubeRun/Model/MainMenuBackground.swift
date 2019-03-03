@@ -101,29 +101,16 @@ class MainMenuBackground {
         return dashLineNode
     } // Dash line
     
-    private var groundExtension1: SKSpriteNode {
+    private var groundExtension: SKSpriteNode {
         let groundTexture = SKTexture(imageNamed: "Ground - Main Menu")
         let groundExtensionNode = SKSpriteNode(texture: groundTexture)
         let newHeight = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
         groundExtensionNode.size.width = groundExtensionNode.size.width * (newHeight / groundExtensionNode.size.height)
         groundExtensionNode.size.height = newHeight
-        groundExtensionNode.zPosition = FollieMainMenu.zPos.mainMenuGround.rawValue
         groundExtensionNode.position = CGPoint(x: groundExtensionNode.size.width, y: 0)
         
         return groundExtensionNode
-    } // Ground Extension 1
-    
-    private var groundExtension2: SKSpriteNode {
-        let groundTexture = SKTexture(imageNamed: "Ground - Main Menu")
-        let groundExtensionNode = SKSpriteNode(texture: groundTexture)
-        let newHeight = CGFloat(Double(FollieMainMenu.screenSize.height) * FollieMainMenu.groundRatio)
-        groundExtensionNode.size.width = groundExtensionNode.size.width * (newHeight / groundExtensionNode.size.height)
-        groundExtensionNode.size.height = newHeight
-        groundExtensionNode.zPosition = FollieMainMenu.zPos.mainMenuGround.rawValue
-        groundExtensionNode.position = CGPoint(x: groundExtensionNode.size.width * 2, y: 0)
-        
-        return groundExtensionNode
-    } // Ground Extension 2
+    } // Ground Extension
     
     private var mountain: SKSpriteNode {
         let mountainTexture = SKTexture(imageNamed: "Mountain")
@@ -238,8 +225,7 @@ class MainMenuBackground {
         var tempNodes: [SKSpriteNode] = []
         
         tempNodes.append(contentsOf: self.chapters)
-        tempNodes.append(self.groundExtension1)
-//        tempNodes.append(self.groundExtension2)
+        tempNodes.append(self.groundExtension)
         tempNodes.append(self.mountain)
         
         return tempNodes

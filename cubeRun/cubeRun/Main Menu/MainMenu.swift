@@ -80,6 +80,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
     var basicButton: SKSpriteNode!
     var holdButton: SKSpriteNode!
     var screenCover: SKShapeNode!
+    var resetButton: SKLabelNode!
+    var invisibleResetBox : SKSpriteNode!
     let buttonClickedSfx = SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false)
     
     deinit {
@@ -435,12 +437,12 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         invisibleBackBox.zPosition = FollieMainMenu.zPos.settingsTitleLevel.rawValue
         self.addChild(invisibleBackBox)
         
-        innerSettingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width/5*4, height: FollieMainMenu.screenSize.height/5*3))
+        innerSettingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width/5*4, height: FollieMainMenu.screenSize.height/10*6.5))
         innerSettingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: self.settingsTitle.position.y - self.settingsTitle.frame.height/2 - self.innerSettingsBackground.frame.height/2)
         innerSettingsBackground.name = "Settings Inner Background"
         innerSettingsBackground.alpha = 0
         innerSettingsBackground.strokeColor = .clear
-        innerSettingsBackground.fillColor = .white
+        innerSettingsBackground.fillColor = .black
         innerSettingsBackground.zPosition = FollieMainMenu.zPos.settingsInnerBackground.rawValue
         self.addChild(innerSettingsBackground)
         
@@ -453,7 +455,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         sensitivityText.name = "Settings Sensitivity"
         sensitivityText.horizontalAlignmentMode = .left
         sensitivityText.fontSize = 18/396 * FollieMainMenu.screenSize.height
-        sensitivityText.position = CGPoint(x: FollieMainMenu.screenSize.width/5 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*5.2)
+        sensitivityText.position = CGPoint(x: FollieMainMenu.screenSize.width/4.9 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*5.2)
         sensitivityText.alpha = 0
         sensitivityText.fontColor = .white
         sensitivityText.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
@@ -461,7 +463,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         
         let sliderWidth = 100/396 * FollieMainMenu.screenSize.height
         let sliderHeight = 10/396 * FollieMainMenu.screenSize.height
-        sensitivitySlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.55, y: FollieMainMenu.screenSize.height-sensitivityText.position.y-sensitivityText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
+        sensitivitySlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.65, y: FollieMainMenu.screenSize.height-sensitivityText.position.y-sensitivityText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
         sensitivitySlider.maximumValue = 1.5
         sensitivitySlider.minimumValue = 0.5
         sensitivitySlider.isContinuous = true
@@ -483,13 +485,13 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         }
         musicVolumeText.horizontalAlignmentMode = .left
         musicVolumeText.fontSize = 18/396 * FollieMainMenu.screenSize.height
-        musicVolumeText.position = CGPoint(x: FollieMainMenu.screenSize.width/5 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*6.2)
+        musicVolumeText.position = CGPoint(x: FollieMainMenu.screenSize.width/4.9 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*6.2)
         musicVolumeText.alpha = 0
         musicVolumeText.fontColor = .white
         musicVolumeText.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
         self.addChild(musicVolumeText)
         
-        volumeSlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.55, y: FollieMainMenu.screenSize.height-musicVolumeText.position.y-musicVolumeText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
+        volumeSlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.65, y: FollieMainMenu.screenSize.height-musicVolumeText.position.y-musicVolumeText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
         volumeSlider.maximumValue = 1.0
         volumeSlider.minimumValue = 0.0
         volumeSlider.isContinuous = true
@@ -511,7 +513,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         }
         languageText.horizontalAlignmentMode = .left
         languageText.fontSize = 18/396 * FollieMainMenu.screenSize.height
-        languageText.position = CGPoint(x: FollieMainMenu.screenSize.width/5 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*4.2)
+        languageText.position = CGPoint(x: FollieMainMenu.screenSize.width/4.9 - sensitivityText.frame.width/2, y: FollieMainMenu.screenSize.height/10*4.2)
         languageText.alpha = 0
         languageText.fontColor = .white
         languageText.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
@@ -545,24 +547,45 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         englishButton.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
         self.addChild(englishButton)
         
-        mostInnerSettingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width/5*3.6, height: FollieMainMenu.screenSize.height/5))
-        mostInnerSettingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: self.languageText.position.y - self.languageText.frame.height - self.mostInnerSettingsBackground.frame.height/2)
+        resetButton = SKLabelNode(fontNamed: ".SFUIText")
+        resetButton.name = "Settings Reset"
+        if (engLangSelection) {
+            resetButton.text = "Reset"
+        } else {
+            resetButton.text = "Reset"
+        }
+        resetButton.fontSize = 15/396 * FollieMainMenu.screenSize.height
+        resetButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*8.5 - resetButton.frame.size.width/2, y: FollieMainMenu.screenSize.height/10*3.5)
+        resetButton.alpha = 0
+        resetButton.fontColor = .white
+        resetButton.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
+        self.addChild(resetButton)
+        
+        invisibleResetBox = SKSpriteNode(color: .clear, size: CGSize(width: resetButton.frame.width*2, height: resetButton.frame.height*2))
+        invisibleResetBox.position = resetButton.position
+        invisibleResetBox.alpha = 0
+        invisibleResetBox.name = "Settings Reset"
+        invisibleResetBox.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
+        self.addChild(invisibleResetBox)
+        
+        mostInnerSettingsBackground = SKShapeNode(rectOf: CGSize(width: FollieMainMenu.screenSize.width/5*3.5, height: FollieMainMenu.screenSize.height/5))
+        mostInnerSettingsBackground.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: self.languageText.position.y - self.languageText.frame.height*2.5 - self.mostInnerSettingsBackground.frame.height/2)
         mostInnerSettingsBackground.name = "Settings Most Inner Background"
         mostInnerSettingsBackground.alpha = 0
         mostInnerSettingsBackground.strokeColor = .clear
-        mostInnerSettingsBackground.fillColor = .white
+        mostInnerSettingsBackground.fillColor = .black
         mostInnerSettingsBackground.zPosition = FollieMainMenu.zPos.settingsMostInner.rawValue
         self.addChild(mostInnerSettingsBackground)
         
         replayTutorialText = SKLabelNode(fontNamed: ".SFUIText")
         replayTutorialText.name = "Settings Replay Tutorial Text"
         if (engLangSelection) {
-            replayTutorialText.text = "Replay Tutorials"
+            replayTutorialText.text = "Replay Tutorial"
         } else {
             replayTutorialText.text = "Ulang Tutorial"
         }
         replayTutorialText.fontSize = 18/396 * FollieMainMenu.screenSize.height
-        replayTutorialText.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/10*2.95)
+        replayTutorialText.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/10*2.2)
         replayTutorialText.alpha = 0
         replayTutorialText.fontColor = .white
         replayTutorialText.zPosition = FollieMainMenu.zPos.replaySection.rawValue
@@ -585,7 +608,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         basicButton = SKSpriteNode(texture: basicButtonTexture)
         basicButton.name = "Settings Basic Button"
         basicButton.size = CGSize(width: basicButton.size.width * (languageText.frame.height*1.25/basicButton.size.height), height: languageText.frame.height*1.25)
-        basicButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*4.5, y: FollieMainMenu.screenSize.height/10*2.3)
+        basicButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*4.5, y: FollieMainMenu.screenSize.height/10*1.6)
         basicButton.alpha = 0.0
         basicButton.zPosition = FollieMainMenu.zPos.replaySection.rawValue
         self.addChild(basicButton)
@@ -607,7 +630,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         holdButton = SKSpriteNode(texture: holdButtonTexture)
         holdButton.name = "Settings Hold Button"
         holdButton.size = CGSize(width: holdButton.size.width * (languageText.frame.height*1.25/holdButton.size.height), height: languageText.frame.height*1.25)
-        holdButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*5.5, y: FollieMainMenu.screenSize.height/10*2.3)
+        holdButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*5.5, y: FollieMainMenu.screenSize.height/10*1.6)
         holdButton.alpha = 0.0
         holdButton.zPosition = FollieMainMenu.zPos.replaySection.rawValue
         self.addChild(holdButton)
@@ -645,6 +668,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         self.basicButton.alpha = alphaAll
         self.holdButton.alpha = alphaAll
         self.invisibleBackBox.alpha = alphaAll
+        self.resetButton.alpha = alphaAll
+        self.invisibleResetBox.alpha = alphaAll
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -680,6 +705,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                 } else if (node.name != nil && node.name!.contains("Settings Basic Button")) {
                     self.nodeNameInTouchesBegan = node.name
                 } else if (node.name != nil && node.name!.contains("Settings Hold Button")) {
+                    self.nodeNameInTouchesBegan = node.name
+                } else if (node.name != nil && node.name!.contains("Settings Reset")) {
                     self.nodeNameInTouchesBegan = node.name
                 }
             }
@@ -744,7 +771,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                             })
                             
                             self.initiateSettingsMenu()
-                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
+                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.50)
                             self.screenCover.run(SKAction.fadeOut(withDuration: 0.5))
                         }
                     }
@@ -771,7 +798,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                             })
                             
                             self.initiateSettingsMenu()
-                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
+                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.50)
                             self.screenCover.run(SKAction.fadeOut(withDuration: 0.5))
                         }
                     }
@@ -817,7 +844,6 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                 } else if (node.name != nil && node.name!.contains("Settings Hold Button") && node.name == self.nodeNameInTouchesBegan) {
                     if (tuto2Done) {
                         self.run(self.buttonClickedSfx)
-                        // here
                         
                         UIView.animate(withDuration: 2.0) {
                             self.sensitivitySlider.alpha = 0.0
@@ -853,6 +879,17 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                             })
                         }
                     }
+                } else if (node.name != nil && node.name!.contains("Settings Reset") && node.name == self.nodeNameInTouchesBegan) {
+                    self.run(self.buttonClickedSfx)
+                    
+                    UserDefaults.standard.set(1.0, forKey: "MusicVolume")
+                    Follie.musicVolume = 1.0
+                    self.player.volume = 1.0
+                    self.volumeSlider.value = Follie.musicVolume
+                    
+                    UserDefaults.standard.set(1.0, forKey: "Sensitivity")
+                    Follie.sensitivity = 1.0
+                    self.sensitivitySlider.value = Follie.sensitivity
                 }
             }
             
@@ -870,7 +907,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                 self.settingsBackground.fillTexture = settingsTexture
                 self.effectNode.filter = filter
                 
-                updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
+                updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.50)
                 return
             }
         }
