@@ -6,10 +6,11 @@
 //  Copyright © 2019 Steven Muliamin. All rights reserved.
 //
 
+import AVFoundation
 import SpriteKit
 import UIKit
 
-class MainMenu: SKScene {
+class MainMenu: SKScene, AVAudioPlayerDelegate {
     
     var engLangSelection: Bool = UserDefaults.standard.bool(forKey: "EnglishLanguage")
     var tuto1Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial1Completed")
@@ -21,7 +22,7 @@ class MainMenu: SKScene {
     let availableChapter: Int = FollieMainMenu.availableChapter
     
     /// Background music of the main menu
-    let backgroundMusic = SKAudioNode(fileNamed: "DYATHON - Monologue.mp3")
+    var player: AVAudioPlayer!
     
     /// Soundeffects for the clicked chapter
     var clickedChapterSfx = SKAction.playSoundFileNamed("Rising Chapter.wav", waitForCompletion: false)
@@ -55,6 +56,9 @@ class MainMenu: SKScene {
     
     // To disable the chances of tapping chapter multiple times
     var chapterChosen: Bool!
+    
+    // Store the node on touchesBegan and check it on touchesEnded
+    var nodeNameInTouchesBegan: String!
     
     // Settings nodes
     var isInSettings: Bool!
@@ -97,7 +101,6 @@ class MainMenu: SKScene {
                 self.initialVignette()
                 self.setNodes()
                 self.snowEmitter()
-                self.startBackgroundMusic()
                 
                 self.cameraDownOnGoing = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -112,7 +115,6 @@ class MainMenu: SKScene {
             self.isDismiss = false
             self.setNodes()
             self.snowEmitter()
-            self.startBackgroundMusic()
             self.settingsButton.alpha = 1.0
             self.settingsButton.children[0].alpha = 1.0
             
@@ -124,15 +126,6 @@ class MainMenu: SKScene {
         }
         
         self.chapterChosen = false
-    }
-    
-    func startBackgroundMusic() {
-        self.backgroundMusic.autoplayLooped = true
-        self.addChild(self.backgroundMusic)
-    }
-    
-    func stopBackgroundMusic() {
-        self.backgroundMusic.removeFromParent()
     }
     
     func splashScreen() {
@@ -224,7 +217,7 @@ class MainMenu: SKScene {
         self.chapterTitle.text = FollieMainMenu.getChapter(chapterNo: index).getTitle()
         let chapterNumber = self.chapterTitle.children.first as! SKLabelNode
         chapterNumber.text = "Chapter \(index)"
-        chapterNumber.position = CGPoint(x: 0, y: self.chapterTitle.frame.height/2 + (10/396 * FollieMainMenu.screenSize.height))
+        chapterNumber.position = CGPoint(x: 0, y: self.chapterTitle.frame.height/2 + (25/396 * FollieMainMenu.screenSize.height))
         
         moveChapterTitleAndNumber(durationStartDispatch: duration)
         
@@ -276,6 +269,33 @@ class MainMenu: SKScene {
                 self.mountain = child
             }
         }
+        
+        // Set initial screen based on the latest chapter
+        let lastAvailableChapter = self.ground.childNode(withName: "Chapter\(availableChapter)") as! SKSpriteNode
+        let newPositionX = self.ground.position.x - lastAvailableChapter.position.x - lastAvailableChapter.size.width*2
+        if (newPositionX < -(self.mountain.position.x + self.mountain.size.width/2 - FollieMainMenu.screenSize.width)) {
+            self.ground.position.x = -(self.mountain.position.x + self.mountain.size.width/2 - FollieMainMenu.screenSize.width)
+        } else if (newPositionX > self.ground.size.width/2) {
+            self.ground.position.x = self.ground.size.width/2
+        } else {
+            self.ground.position.x = newPositionX
+        }
+        
+        // Background music player
+        guard let url = Bundle.main.url(forResource: "DYATHON - Monologue", withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            self.player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            self.player.volume = Follie.musicVolume
+            self.player.delegate = self
+            self.player.numberOfLoops = -1
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        
+        self.player.play()
         
         // Assign nodes final position after animation
         let goingUpRange: CGFloat = self.ground.size.height + self.gameTitle.size.height
@@ -442,10 +462,10 @@ class MainMenu: SKScene {
         let sliderWidth = 100/396 * FollieMainMenu.screenSize.height
         let sliderHeight = 10/396 * FollieMainMenu.screenSize.height
         sensitivitySlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.55, y: FollieMainMenu.screenSize.height-sensitivityText.position.y-sensitivityText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
-        sensitivitySlider.maximumValue = 1.0
-        sensitivitySlider.minimumValue = 0.0
+        sensitivitySlider.maximumValue = 1.5
+        sensitivitySlider.minimumValue = 0.5
         sensitivitySlider.isContinuous = true
-        sensitivitySlider.value = 1.0
+        sensitivitySlider.value = Follie.sensitivity
         sensitivitySlider.alpha = 0.0
         sensitivitySlider.minimumTrackTintColor = UIColor.white
         sensitivitySlider.maximumTrackTintColor = UIColor.gray
@@ -473,7 +493,7 @@ class MainMenu: SKScene {
         volumeSlider.maximumValue = 1.0
         volumeSlider.minimumValue = 0.0
         volumeSlider.isContinuous = true
-        volumeSlider.value = 1.0
+        volumeSlider.value = Follie.musicVolume
         volumeSlider.alpha = 0.0
         volumeSlider.minimumTrackTintColor = UIColor.white
         volumeSlider.maximumTrackTintColor = UIColor.gray
@@ -595,9 +615,12 @@ class MainMenu: SKScene {
     
     @objc func updateSlider(_ sender:UISlider!) {
         if (sender.tag == 1) {
-            print("BBB")
+            UserDefaults.standard.set(sender.value, forKey: "MusicVolume")
+            Follie.musicVolume = sender.value
+            self.player.volume = sender.value
         } else {
-            print("CCC")
+            UserDefaults.standard.set(sender.value, forKey: "Sensitivity")
+            Follie.sensitivity = sender.value
         }
     }
     
@@ -638,6 +661,45 @@ class MainMenu: SKScene {
             self.beginMoveByAnimation(goUpDuration: 1)
             self.cameraDownOnGoing = false
         }
+        
+        // Obtain the node that is touched
+        let touch: UITouch = touches.first! as UITouch
+        let positionInGroundScene = touch.location(in: self.ground)
+        let positionInScene = touch.location(in: self.scene!)
+        let touchedGroundNodes = self.ground.nodes(at: positionInGroundScene)
+        let touchedNodes = self.nodes(at: positionInScene)
+        
+        if (isInSettings == true) {
+            for node in touchedNodes {
+                if (node.name != nil && node.name!.contains("Back Button Settings")) {
+                    self.nodeNameInTouchesBegan = node.name
+                } else if (node.name != nil && node.name!.contains("Settings English Button")) {
+                    self.nodeNameInTouchesBegan = node.name
+                } else if (node.name != nil && node.name!.contains("Settings Indonesia Button")) {
+                    self.nodeNameInTouchesBegan = node.name
+                } else if (node.name != nil && node.name!.contains("Settings Basic Button")) {
+                    self.nodeNameInTouchesBegan = node.name
+                } else if (node.name != nil && node.name!.contains("Settings Hold Button")) {
+                    self.nodeNameInTouchesBegan = node.name
+                }
+            }
+            
+            return
+        }
+        
+        for node in touchedNodes {
+            if (node.name != nil && node.name!.contains("Setings")) {
+                self.nodeNameInTouchesBegan = node.name
+                return
+            }
+        }
+        
+        for node in touchedGroundNodes {
+            if (node.name != nil && node.name!.contains("Chapter")) {
+                self.nodeNameInTouchesBegan = node.name
+                return
+            }
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -653,14 +715,13 @@ class MainMenu: SKScene {
         let touchedNodes = self.nodes(at: positionInScene)
         
         if (isInSettings == true) {
-            
             for node in touchedNodes {
-                if (node.name != nil && node.name!.contains("Back Button Settings")) {
+                if (node.name != nil && node.name!.contains("Back Button Settings") && node.name == self.nodeNameInTouchesBegan) {
                     self.run(self.buttonClickedSfx)
                     self.isInSettings = false
                     self.effectNode.filter = nil
                     updateSettingsElementsAlpha(alphaAll: 0.0, alphaBackground: 0.0)
-                } else if (node.name != nil && node.name!.contains("Settings English Button")) {
+                } else if (node.name != nil && node.name!.contains("Settings English Button") && node.name == self.nodeNameInTouchesBegan) {
                     
                     if !(engLangSelection) {
                         self.run(self.buttonClickedSfx)
@@ -688,7 +749,7 @@ class MainMenu: SKScene {
                         }
                     }
                     
-                } else if (node.name != nil && node.name!.contains("Settings Indonesia Button")) {
+                } else if (node.name != nil && node.name!.contains("Settings Indonesia Button") && node.name == self.nodeNameInTouchesBegan) {
                     if (engLangSelection) {
                         self.run(self.buttonClickedSfx)
                         engLangSelection = false
@@ -715,7 +776,7 @@ class MainMenu: SKScene {
                         }
                     }
                     
-                } else if (node.name != nil && node.name!.contains("Settings Basic Button")) {
+                } else if (node.name != nil && node.name!.contains("Settings Basic Button") && node.name == self.nodeNameInTouchesBegan) {
                     if (tuto1Done) {
                         self.run(self.buttonClickedSfx)
                         
@@ -727,7 +788,7 @@ class MainMenu: SKScene {
                         self.chapterChosen = true
                         Follie.selectedChapter = 1
                         
-                        self.stopBackgroundMusic()
+                        self.player.setVolume(0, fadeDuration: 2)
                         
                         UserDefaults.standard.set(true, forKey: "RepeatTuto")
                         
@@ -741,6 +802,7 @@ class MainMenu: SKScene {
                                 DispatchQueue.main.sync {
                                     self.removeAllActions()
                                     self.removeAllChildren()
+                                    self.player = nil
                                     self.task = nil
                                     let transition = SKTransition.fade(withDuration: 1)
                                     if let scene = SKScene(fileNamed: "GameScene") {
@@ -752,7 +814,7 @@ class MainMenu: SKScene {
                             })
                         }
                     }
-                } else if (node.name != nil && node.name!.contains("Settings Hold Button")) {
+                } else if (node.name != nil && node.name!.contains("Settings Hold Button") && node.name == self.nodeNameInTouchesBegan) {
                     if (tuto2Done) {
                         self.run(self.buttonClickedSfx)
                         // here
@@ -765,7 +827,7 @@ class MainMenu: SKScene {
                         self.chapterChosen = true
                         Follie.selectedChapter = 2
                         
-                        self.stopBackgroundMusic()
+                        self.player.setVolume(0, fadeDuration: 2)
                         
                         UserDefaults.standard.set(true, forKey: "RepeatTuto")
                         
@@ -779,6 +841,7 @@ class MainMenu: SKScene {
                                 DispatchQueue.main.sync {
                                     self.removeAllActions()
                                     self.removeAllChildren()
+                                    self.player = nil
                                     self.task = nil
                                     let transition = SKTransition.fade(withDuration: 1)
                                     if let scene = SKScene(fileNamed: "GameScene") {
@@ -797,7 +860,7 @@ class MainMenu: SKScene {
         }
         
         for node in touchedNodes {
-            if (node.name != nil && node.name!.contains("Setings")) {
+            if (node.name != nil && node.name!.contains("Setings") && node.name == self.nodeNameInTouchesBegan) {
                 self.isInSettings = true
                 self.run(self.buttonClickedSfx)
                 
@@ -814,7 +877,7 @@ class MainMenu: SKScene {
         
         for node in touchedGroundNodes {
             // Check if the selected node is the chapter node
-            if (node.name != nil && node.name!.contains("Chapter")) {
+            if (node.name != nil && self.nodeNameInTouchesBegan != nil && node.name!.contains("Chapter") && self.nodeNameInTouchesBegan.contains("Chapter")) {
                 
                 // Check the chapter number using substring
                 let start = node.name!.index(node.name!.startIndex, offsetBy: 7)
@@ -825,10 +888,9 @@ class MainMenu: SKScene {
                 // Check whether the selected chapter is already unlocked
                 if (index! <= self.availableChapter) {
                     
-                    self.chapterChosen = true
-                    
                     // Check whether the selected chapter is active or not
-                    if (node.name != self.activeChapterName) {
+                    if (node.name != self.activeChapterName && node.name == self.nodeNameInTouchesBegan) {
+                        self.chapterChosen = true
                         
                         // Change the chapter title
                         changeActiveChapterTitleTransition(node: self.activeChapter, index: index!)
@@ -866,12 +928,13 @@ class MainMenu: SKScene {
                         
                         glow.run(SKAction.repeatForever(SKAction.sequence(glowAction)))
                         node.addChild(glow)
-                    } else {
+                    } else if (node.name == self.activeChapterName && node.name == self.nodeNameInTouchesBegan){
+                        
                         self.chapterChosen = true
                         Follie.selectedChapter = index
                         
                         self.run(self.playedChapterSfx)
-                        self.stopBackgroundMusic()
+                        self.player.setVolume(0, fadeDuration: 2)
                         
                         self.run(SKAction.fadeOut(withDuration: 2.0)) {
                             // Preload animation
@@ -883,6 +946,7 @@ class MainMenu: SKScene {
                                 DispatchQueue.main.sync {
                                     self.removeAllActions()
                                     self.removeAllChildren()
+                                    self.player = nil
                                     self.task = nil
                                     let transition = SKTransition.fade(withDuration: 1)
                                     if let scene = SKScene(fileNamed: "GameScene") {
@@ -894,7 +958,8 @@ class MainMenu: SKScene {
                             })
                         }
                     }
-                } else {
+                } else if (node.name == self.nodeNameInTouchesBegan) {
+                    
                     let generator = UIImpactFeedbackGenerator(style: .light)
                     generator.impactOccurred()
                     

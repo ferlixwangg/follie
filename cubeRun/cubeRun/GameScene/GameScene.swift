@@ -61,6 +61,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var resumeCountdown : Int = 3
     var pauseToPlayTimer: Timer? = nil
     
+    // Store the node on touchesBegan and check it on touchesEnded
+    var nodeNameInTouchesBegan: String!
+    
     // Tutorial
     var onTuto: Bool = false
     var onTutoChap1: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial1Completed"))
@@ -1126,9 +1129,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         let chapterTitle = SKLabelNode(fontNamed: "dearJoeII")
         chapterTitle.text = self.chapterTitle
-        chapterTitle.fontSize = 100/396 * Follie.screenSize.height
+        chapterTitle.fontSize = 80/396 * Follie.screenSize.height
         chapterTitle.fontColor = UIColor.white
-        chapterTitle.position = CGPoint(x: self.screenW/2, y: self.screenH/4*3)
+        chapterTitle.position = CGPoint(x: self.screenW/2, y: self.screenH/10 * 6.5)
         chapterTitle.alpha = 0
         chapterTitle.zPosition = Follie.zPos.inGameMenu.rawValue
         self.gameNode.addChild(chapterTitle)
@@ -1139,7 +1142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         chapterNumber.fontSize = 20/396 * Follie.screenSize.height
         chapterNumber.fontColor = UIColor.white
         chapterNumber.alpha = 0
-        chapterNumber.position = CGPoint(x: chapterTitle.position.x, y: chapterTitle.position.y - chapterTitle.frame.height/2 - 10)
+        chapterNumber.position = CGPoint(x: chapterTitle.position.x, y: chapterTitle.position.y + chapterTitle.frame.height/2 + 25/396 * FollieMainMenu.screenSize.height)
         chapterNumber.zPosition = Follie.zPos.inGameMenu.rawValue
         self.gameNode.addChild(chapterNumber)
         chapterNumber.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
@@ -1316,12 +1319,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func correct() {
         self.showAurora()
         
-//        self.currCoverAlpha = self.screenCover.alpha - (self.maxCoverAlpha / CGFloat(self.maxLife) * CGFloat(self.correctVal))
-//        if (self.currCoverAlpha <= self.minCoverAlpha) {
-//            self.currCoverAlpha = self.minCoverAlpha
-//        }
-//        self.screenCover.run(SKAction.fadeAlpha(to: self.currCoverAlpha, duration: 0.2))
-
         self.currLife += self.correctVal
         if (self.currLife > self.maxLife) {
             self.currLife = self.maxLife
@@ -1341,6 +1338,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func starDispersedEmitter() {
         let starDispersedEmitter = Follie.getEmitters().getStarDispersed()
         starDispersedEmitter.position = self.fairyNode.position
+        let starDispersedH = 64 / 396 * Follie.screenSize.height
+        let starDispersedW = 64 * (starDispersedH / 64)
+        starDispersedEmitter.particleSize = CGSize(width: starDispersedW, height: starDispersedH)
         addChild(starDispersedEmitter)
         
         self.run(SKAction.wait(forDuration: 0.2)) {
@@ -1695,92 +1695,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         if (self.isLose) {
             for node in touchedNodes {
                 if (node.name != nil && node.name == "menu") {
-                    self.run(self.buttonClickedSfx)
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.backToMainMenu()
-                    }
+                    self.nodeNameInTouchesBegan = node.name
                 }
                 else if (node.name != nil && node.name == "retry") {
-                    self.run(self.buttonClickedSfx)
-                    self.isDismiss = true
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.removeAllActions()
-                        self.scene?.speed = 1
-                        
-                        let fadeOutNode = SKShapeNode(rectOf: CGSize(width: self.screenW, height: self.screenH))
-                        fadeOutNode.position = CGPoint(x: self.screenW/2, y: self.screenH/2)
-                        fadeOutNode.alpha = 0
-                        fadeOutNode.fillColor = SKColor.black
-                        fadeOutNode.lineWidth = 0
-                        fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
-                        self.gameNode.addChild(fadeOutNode)
-                        
-                        fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
-                            // Preload animation
-                            var preAtlas = [SKTextureAtlas]()
-                            preAtlas.append(SKTextureAtlas(named: "Baby"))
-                            
-                            // Move to next scene
-                            SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
-                                DispatchQueue.main.sync {
-                                    let newScene = GameScene(size: Follie.screenSize)
-                                    newScene.scaleMode = self.scaleMode
-                                    let animation = SKTransition.fade(withDuration: 2.0)
-                                    self.view?.presentScene(newScene, transition: animation)
-                                }
-                            })
-                        }
-                        return
-                    }
+                    self.nodeNameInTouchesBegan = node.name
                 }
             }
             return
         }
         
-        if (self.isWin) {
-            self.backToMainMenu()
-        }
-        
-//        self.blockTimer?.invalidate()
-//        self.blockTimer = nil
-        
         for node in touchedNodes {
             if (node.name != nil && node.name == "pause") {
-                if (self.isCurrentlyPaused == false) {
-                    self.isCurrentlyPaused = true
-                    self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 0.1)) {
-                        self.showPauseMenu {
-                            self.gameNodeIsPaused = true
-                            self.gameNode.isPaused = true
-                            self.pauseTimer()
-                            self.player.pause()
-                        }
-                    }
-                }
-                
+                self.nodeNameInTouchesBegan = node.name
                 return
             }
             else if (node.name != nil && node.name == "menu") {
-                self.run(self.buttonClickedSfx)
-                UserDefaults.standard.set(false, forKey: "RepeatTuto")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                    self.gameNodeIsPaused = true
-//                    self.gameNode.isPaused = false
-                    self.backToMainMenu()
-                }
+                self.nodeNameInTouchesBegan = node.name
             }
             else if (node.name != nil && node.name == "resume") {
-                self.isDismiss = true
-                self.run(self.buttonClickedSfx)
-                let goneAction = SKAction.fadeAlpha(to: 0, duration: 0.1)
-                self.pauseText.run(goneAction)
-                self.backToMainMenuButton.run(goneAction)
-                self.resumeButton.run(goneAction)
-                
-                // self.screnCover, self.player, self.resumeTimer pindah ke function startToPlayCounting()
-                self.startResumeTimer()
+                self.nodeNameInTouchesBegan = node.name
                 return
             }
         }
@@ -1957,8 +1890,103 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if (self.isLose) {
+        let touch: UITouch = touches.first! as UITouch
+        let positionInScene = touch.location(in: self.scene!)
+        let touchedNodes = self.scene!.nodes(at: positionInScene)
+        
+        if (self.isDismiss) {
             return
+        }
+        
+        if (self.isLose) {
+            for node in touchedNodes {
+                if (node.name != nil && node.name == "menu" && node.name == self.nodeNameInTouchesBegan) {
+                    self.run(self.buttonClickedSfx)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.backToMainMenu()
+                    }
+                }
+                else if (node.name != nil && node.name == "retry" && node.name == self.nodeNameInTouchesBegan) {
+                    self.run(self.buttonClickedSfx)
+                    self.isDismiss = true
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.removeAllActions()
+                        self.scene?.speed = 1
+                        
+                        let fadeOutNode = SKShapeNode(rectOf: CGSize(width: self.screenW, height: self.screenH))
+                        fadeOutNode.position = CGPoint(x: self.screenW/2, y: self.screenH/2)
+                        fadeOutNode.alpha = 0
+                        fadeOutNode.fillColor = SKColor.black
+                        fadeOutNode.lineWidth = 0
+                        fadeOutNode.zPosition = Follie.zPos.fadeOutNode.rawValue
+                        self.gameNode.addChild(fadeOutNode)
+                        
+                        fadeOutNode.run(SKAction.fadeAlpha(to: 1, duration: 1.0)) {
+                            // Preload animation
+                            var preAtlas = [SKTextureAtlas]()
+                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+                            
+                            // Move to next scene
+                            SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
+                                DispatchQueue.main.sync {
+                                    let newScene = GameScene(size: Follie.screenSize)
+                                    newScene.scaleMode = self.scaleMode
+                                    let animation = SKTransition.fade(withDuration: 2.0)
+                                    self.view?.presentScene(newScene, transition: animation)
+                                }
+                            })
+                        }
+                        return
+                    }
+                }
+            }
+            return
+        }
+        
+        if (self.isWin) {
+            self.backToMainMenu()
+        }
+        
+        //        self.blockTimer?.invalidate()
+        //        self.blockTimer = nil
+        
+        for node in touchedNodes {
+            if (node.name != nil && node.name == "pause" && node.name == self.nodeNameInTouchesBegan) {
+                if (self.isCurrentlyPaused == false) {
+                    self.isCurrentlyPaused = true
+                    self.screenCover.run(SKAction.fadeAlpha(to: 0.65, duration: 0.1)) {
+                        self.showPauseMenu {
+                            self.gameNodeIsPaused = true
+                            self.gameNode.isPaused = true
+                            self.pauseTimer()
+                            self.player.pause()
+                        }
+                    }
+                }
+                
+                return
+            }
+            else if (node.name != nil && node.name == "menu" && node.name == self.nodeNameInTouchesBegan) {
+                self.run(self.buttonClickedSfx)
+                UserDefaults.standard.set(false, forKey: "RepeatTuto")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.backToMainMenu()
+                }
+            }
+            else if (node.name != nil && node.name == "resume" && node.name == self.nodeNameInTouchesBegan) {
+                self.isDismiss = true
+                self.run(self.buttonClickedSfx)
+                let goneAction = SKAction.fadeAlpha(to: 0, duration: 0.1)
+                self.pauseText.run(goneAction)
+                self.backToMainMenuButton.run(goneAction)
+                self.resumeButton.run(goneAction)
+                
+                // self.screnCover, self.player, self.resumeTimer pindah ke function startToPlayCounting()
+                self.startResumeTimer()
+                return
+            }
         }
         
         guard let point = touches.first?.location(in: self) else { return }

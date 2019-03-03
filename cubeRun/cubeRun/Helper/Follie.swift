@@ -53,6 +53,10 @@ class Follie {
     
     static var selectedChapter: Int!
     
+    static var sensitivity : Float = UserDefaults.standard.float(forKey: "Sensitivity")
+    
+    static var musicVolume : Float = UserDefaults.standard.float(forKey: "MusicVolume")
+    
     static let groundRatio: Double = 1/8 // ground height ratio to the screen height
     
     static let backgroundRatio: Double = 75/292 // background1 & background2 height ratio to the screen

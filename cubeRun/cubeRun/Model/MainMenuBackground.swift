@@ -15,7 +15,6 @@ class MainMenuBackground {
     private let availableChapter: Int = FollieMainMenu.availableChapter
     
     private var sky: SKSpriteNode {
-        print("MainMenuBackground \(availableChapter)")
         let skyTexture = SKTexture(imageNamed: "Sky - Main Menu")
         let skyNode = SKSpriteNode(texture: skyTexture)
         
@@ -150,7 +149,7 @@ class MainMenuBackground {
     
     private var chapterTitle: SKLabelNode {
         let chapterTitle = SKLabelNode(fontNamed: "dearJoeII")
-        chapterTitle.fontSize = CGFloat(100 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
+        chapterTitle.fontSize = CGFloat(80 * FollieMainMenu.fontSizeRatio) * FollieMainMenu.screenSize.height
         chapterTitle.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/50*31)
         chapterTitle.alpha = 0
         chapterTitle.addChild(self.chapterNumber)
