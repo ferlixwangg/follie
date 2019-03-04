@@ -2219,7 +2219,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 let prevPoint = touch.previousLocation(in: self)
                 
                 let yMovement = point.y - prevPoint.y
-                var newPositionY = self.fairyNode.position.y + yMovement
+                var newPositionY = self.fairyNode.position.y + (yMovement * CGFloat(Follie.sensitivity))
                 
                 self.firstTutoDistance += abs(yMovement)
                 
