@@ -89,8 +89,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
     }
     
     override func didMove(to view: SKView) {
-//        let showFollieTitle = FollieMainMenu.showFollieTitle
-        let showFollieTitle = false
+        let showFollieTitle = FollieMainMenu.showFollieTitle
+//        let showFollieTitle = false
         
         self.isDismiss = true
         self.isInSettings = false
