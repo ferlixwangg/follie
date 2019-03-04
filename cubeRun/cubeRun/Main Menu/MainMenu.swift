@@ -89,7 +89,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
     }
     
     override func didMove(to view: SKView) {
-        let showFollieTitle = FollieMainMenu.showFollieTitle
+//        let showFollieTitle = FollieMainMenu.showFollieTitle
+        let showFollieTitle = false
         
         self.isDismiss = true
         self.isInSettings = false
@@ -460,21 +461,6 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         sensitivityText.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
         self.addChild(sensitivityText)
         
-        let sliderWidth = 100/396 * FollieMainMenu.screenSize.height
-        let sliderHeight = 10/396 * FollieMainMenu.screenSize.height
-        sensitivitySlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.65, y: FollieMainMenu.screenSize.height-sensitivityText.position.y-sensitivityText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
-        sensitivitySlider.maximumValue = 1.5
-        sensitivitySlider.minimumValue = 0.5
-        sensitivitySlider.isContinuous = true
-        sensitivitySlider.value = Follie.sensitivity
-        sensitivitySlider.alpha = 0.0
-        sensitivitySlider.minimumTrackTintColor = UIColor.white
-        sensitivitySlider.maximumTrackTintColor = UIColor.gray
-        sensitivitySlider.setThumbImage(UIImage.init(named: "Knob"), for: .normal)
-        sensitivitySlider.tag = 2
-        sensitivitySlider.addTarget(self, action: #selector(self.updateSlider(_:)), for: .valueChanged)
-        view?.addSubview(sensitivitySlider)
-        
         musicVolumeText = SKLabelNode(fontNamed: ".SFUIText")
         musicVolumeText.name = "Settings Music Volume"
         if (engLangSelection) {
@@ -489,19 +475,6 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         musicVolumeText.fontColor = .white
         musicVolumeText.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
         self.addChild(musicVolumeText)
-        
-        volumeSlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/5*3.65, y: FollieMainMenu.screenSize.height-musicVolumeText.position.y-musicVolumeText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
-        volumeSlider.maximumValue = 1.0
-        volumeSlider.minimumValue = 0.0
-        volumeSlider.isContinuous = true
-        volumeSlider.value = Follie.musicVolume
-        volumeSlider.alpha = 0.0
-        volumeSlider.minimumTrackTintColor = UIColor.white
-        volumeSlider.maximumTrackTintColor = UIColor.gray
-        volumeSlider.setThumbImage(UIImage.init(named: "Knob"), for: .normal)
-        volumeSlider.tag = 1
-        volumeSlider.addTarget(self, action: #selector(self.updateSlider(_:)), for: .valueChanged)
-        view?.addSubview(volumeSlider)
         
         languageText = SKLabelNode(fontNamed: ".SFUIText")
         languageText.name = "Settings Language"
@@ -546,6 +519,34 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         englishButton.zPosition = FollieMainMenu.zPos.settingsElementsInInnerBackground.rawValue
         self.addChild(englishButton)
         
+        let sliderWidth = indonesiaButton.size.width
+        let sliderHeight = 20/396 * FollieMainMenu.screenSize.height
+        sensitivitySlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/10*8.5 - indonesiaButton.size.width, y: FollieMainMenu.screenSize.height-sensitivityText.position.y-sensitivityText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
+        sensitivitySlider.maximumValue = 1.5
+        sensitivitySlider.minimumValue = 0.5
+        sensitivitySlider.isContinuous = true
+        sensitivitySlider.value = Follie.sensitivity
+        sensitivitySlider.alpha = 0.0
+        sensitivitySlider.minimumTrackTintColor = UIColor.white
+        sensitivitySlider.maximumTrackTintColor = UIColor.gray
+        sensitivitySlider.setThumbImage(UIImage.init(named: "Knob"), for: .normal)
+        sensitivitySlider.tag = 2
+        sensitivitySlider.addTarget(self, action: #selector(self.updateSlider(_:)), for: .valueChanged)
+        view?.addSubview(sensitivitySlider)
+        
+        volumeSlider = UISlider(frame: CGRect(x: FollieMainMenu.screenSize.width/10*8.5 - indonesiaButton.size.width, y: FollieMainMenu.screenSize.height-musicVolumeText.position.y-musicVolumeText.frame.height*1.25, width: sliderWidth, height: sliderHeight))
+        volumeSlider.maximumValue = 1.0
+        volumeSlider.minimumValue = 0.0
+        volumeSlider.isContinuous = true
+        volumeSlider.value = Follie.musicVolume
+        volumeSlider.alpha = 0.0
+        volumeSlider.minimumTrackTintColor = UIColor.white
+        volumeSlider.maximumTrackTintColor = UIColor.gray
+        volumeSlider.setThumbImage(UIImage.init(named: "Knob"), for: .normal)
+        volumeSlider.tag = 1
+        volumeSlider.addTarget(self, action: #selector(self.updateSlider(_:)), for: .valueChanged)
+        view?.addSubview(volumeSlider)
+        
         resetButton = SKLabelNode(fontNamed: ".SFUIText")
         resetButton.name = "Settings Reset"
         if (engLangSelection) {
@@ -553,7 +554,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         } else {
             resetButton.text = "Pengaturan Awal"
         }
-        resetButton.fontSize = 15/396 * FollieMainMenu.screenSize.height
+        resetButton.fontSize = 13/396 * FollieMainMenu.screenSize.height
         resetButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*8.5 - resetButton.frame.size.width/2, y: FollieMainMenu.screenSize.height/10*3.5)
         resetButton.alpha = 0
         resetButton.fontColor = .white
@@ -607,7 +608,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         basicButton = SKSpriteNode(texture: basicButtonTexture)
         basicButton.name = "Settings Basic Button"
         basicButton.size = CGSize(width: basicButton.size.width * (languageText.frame.height*1.25/basicButton.size.height), height: languageText.frame.height*1.25)
-        basicButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*4.5, y: FollieMainMenu.screenSize.height/10*1.6)
+        basicButton.position = CGPoint(x: FollieMainMenu.screenSize.width/2 - 15/396 * FollieMainMenu.screenSize.height - basicButton.size.width/2, y: FollieMainMenu.screenSize.height/10*1.6)
         basicButton.alpha = 0.0
         basicButton.zPosition = FollieMainMenu.zPos.replaySection.rawValue
         self.addChild(basicButton)
@@ -629,7 +630,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         holdButton = SKSpriteNode(texture: holdButtonTexture)
         holdButton.name = "Settings Hold Button"
         holdButton.size = CGSize(width: holdButton.size.width * (languageText.frame.height*1.25/holdButton.size.height), height: languageText.frame.height*1.25)
-        holdButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*5.5, y: FollieMainMenu.screenSize.height/10*1.6)
+        holdButton.position = CGPoint(x: FollieMainMenu.screenSize.width/2 + 15/396 * FollieMainMenu.screenSize.height + holdButton.size.width/2, y: FollieMainMenu.screenSize.height/10*1.6)
         holdButton.alpha = 0.0
         holdButton.zPosition = FollieMainMenu.zPos.replaySection.rawValue
         self.addChild(holdButton)
@@ -707,6 +708,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                     self.nodeNameInTouchesBegan = node.name
                 } else if (node.name != nil && node.name!.contains("Settings Reset")) {
                     self.nodeNameInTouchesBegan = node.name
+                } else {
+                    self.nodeNameInTouchesBegan = "No Name"
                 }
             }
             
@@ -717,6 +720,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
             if (node.name != nil && node.name!.contains("Setings")) {
                 self.nodeNameInTouchesBegan = node.name
                 return
+            } else {
+                self.nodeNameInTouchesBegan = "No Name"
             }
         }
         
@@ -724,6 +729,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
             if (node.name != nil && node.name!.contains("Chapter")) {
                 self.nodeNameInTouchesBegan = node.name
                 return
+            } else {
+                self.nodeNameInTouchesBegan = "No Name"
             }
         }
     }
@@ -732,6 +739,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         if (self.chapterChosen || self.isDismiss) {
             return
         }
+        
+        print(self.nodeNameInTouchesBegan)
         
         // Obtain the node that is touched
         let touch: UITouch = touches.first! as UITouch
@@ -966,6 +975,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                         node.addChild(glow)
                     } else if (node.name == self.activeChapterName && node.name == self.nodeNameInTouchesBegan){
                         
+                        print("nodeName: \(node.name)")
+                        print("nodeNameinTouchesBegan: \(self.nodeNameInTouchesBegan)")
                         self.chapterChosen = true
                         Follie.selectedChapter = index
                         

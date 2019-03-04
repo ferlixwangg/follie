@@ -61,18 +61,18 @@ class Chapter {
     ]
     
     private let chapterDifficulty: [Int:Difficulty] = [
-        1: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 3/10),
-        2: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 3/10),
-        3: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 3/10),
-        4: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 3/10),
-        5: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 4/10),
-        6: Difficulty(maxInterval: 1, maxHoldNum: 2, maxHoldBeat: 2, holdChance: 4/10),
-        7: Difficulty(maxInterval: 1, maxHoldNum: 2, maxHoldBeat: 2, holdChance: 4/10),
-        8: Difficulty(maxInterval: 1, maxHoldNum: 2, maxHoldBeat: 2, holdChance: 5/10),
-        9: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 5/10),
-        10: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 5/10),
-        11: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 5/10),
-        12: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 5/10)
+        1: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 2/10),
+        2: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 2/10),
+        3: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 2/10),
+        4: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 2/10),
+        5: Difficulty(maxInterval: 1, maxHoldNum: 1, maxHoldBeat: 2, holdChance: 3/10),
+        6: Difficulty(maxInterval: 1, maxHoldNum: 2, maxHoldBeat: 2, holdChance: 3/10),
+        7: Difficulty(maxInterval: 1, maxHoldNum: 2, maxHoldBeat: 2, holdChance: 3/10),
+        8: Difficulty(maxInterval: 1, maxHoldNum: 2, maxHoldBeat: 2, holdChance: 3/10),
+        9: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 4/10),
+        10: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 4/10),
+        11: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 4/10),
+        12: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 4/10)
     ]
     
     func getMusic() -> Music {

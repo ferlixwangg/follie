@@ -29,7 +29,8 @@ class Background {
         let skyNode = SKSpriteNode(texture: skyTexture)
         
         let newWidth = Follie.screenSize.width
-        let newHeight = skyNode.size.height * (newWidth / skyNode.size.width)
+//        let newHeight = skyNode.size.height * (newWidth / skyNode.size.width)
+        let newHeight = Follie.screenSize.height
         
         skyNode.size = CGSize(width: newWidth, height: newHeight)
         skyNode.position = CGPoint(x: Follie.screenSize.width/2, y: Follie.screenSize.height/2)
@@ -43,7 +44,8 @@ class Background {
         let hiddenSkyNode = SKSpriteNode(texture: hiddenSkyTexture)
         
         let newWidth = Follie.screenSize.width * CGFloat(Follie.hiddenSkyX)
-        let newHeight = hiddenSkyNode.size.height * (newWidth / hiddenSkyNode.size.width)
+//        let newHeight = hiddenSkyNode.size.height * (newWidth / hiddenSkyNode.size.width)
+        let newHeight = Follie.screenSize.height
         
         hiddenSkyNode.size = CGSize(width: newWidth, height: newHeight)
         hiddenSkyNode.position = CGPoint(x: hiddenSkyNode.size.width/2, y: Follie.screenSize.height/2)
