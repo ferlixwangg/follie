@@ -89,8 +89,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
     }
     
     override func didMove(to view: SKView) {
-        //        let showFollieTitle = FollieMainMenu.showFollieTitle
-        let showFollieTitle = false
+        let showFollieTitle = FollieMainMenu.showFollieTitle
         
         self.isDismiss = true
         self.isInSettings = false
@@ -442,7 +441,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         innerSettingsBackground.name = "Settings Inner Background"
         innerSettingsBackground.alpha = 0
         innerSettingsBackground.strokeColor = .clear
-        innerSettingsBackground.fillColor = .black
+        innerSettingsBackground.fillColor = .white
         innerSettingsBackground.zPosition = FollieMainMenu.zPos.settingsInnerBackground.rawValue
         self.addChild(innerSettingsBackground)
         
@@ -550,9 +549,9 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         resetButton = SKLabelNode(fontNamed: ".SFUIText")
         resetButton.name = "Settings Reset"
         if (engLangSelection) {
-            resetButton.text = "Reset"
+            resetButton.text = "Reset to default"
         } else {
-            resetButton.text = "Reset"
+            resetButton.text = "Pengaturan Awal"
         }
         resetButton.fontSize = 15/396 * FollieMainMenu.screenSize.height
         resetButton.position = CGPoint(x: FollieMainMenu.screenSize.width/10*8.5 - resetButton.frame.size.width/2, y: FollieMainMenu.screenSize.height/10*3.5)
@@ -573,7 +572,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         mostInnerSettingsBackground.name = "Settings Most Inner Background"
         mostInnerSettingsBackground.alpha = 0
         mostInnerSettingsBackground.strokeColor = .clear
-        mostInnerSettingsBackground.fillColor = .black
+        mostInnerSettingsBackground.fillColor = .white
         mostInnerSettingsBackground.zPosition = FollieMainMenu.zPos.settingsMostInner.rawValue
         self.addChild(mostInnerSettingsBackground)
         
@@ -771,7 +770,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                             })
                             
                             self.initiateSettingsMenu()
-                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.50)
+                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
                             self.screenCover.run(SKAction.fadeOut(withDuration: 0.5))
                         }
                     }
@@ -798,7 +797,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                             })
                             
                             self.initiateSettingsMenu()
-                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.50)
+                            self.updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
                             self.screenCover.run(SKAction.fadeOut(withDuration: 0.5))
                         }
                     }
@@ -907,7 +906,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                 self.settingsBackground.fillTexture = settingsTexture
                 self.effectNode.filter = filter
                 
-                updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.50)
+                updateSettingsElementsAlpha(alphaAll: 1.0, alphaBackground: 0.15)
                 return
             }
         }
