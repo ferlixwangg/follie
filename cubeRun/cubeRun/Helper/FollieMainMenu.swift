@@ -42,9 +42,9 @@ class FollieMainMenu {
         return CGSize(width: screenSize.width, height: height)
     } // get screen size for current device
     
-//    static var availableChapter: Int = UserDefaults.standard.integer(forKey: "AvailableChapter")
+    static var availableChapter: Int = UserDefaults.standard.integer(forKey: "AvailableChapter")
     
-    static var availableChapter: Int = 12
+//    static var availableChapter: Int = 12
     
     static let groundRatio: Double = 1/6 // ground height ratio to the screen height
     
