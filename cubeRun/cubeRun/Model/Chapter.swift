@@ -75,6 +75,63 @@ class Chapter {
         12: Difficulty(maxInterval: 1, maxHoldNum: 3, maxHoldBeat: 2, holdChance: 4/10)
     ]
     
+    private let chapterAurora: [Int:Aurora] = [
+        1: Aurora(colors: [
+            UIColor.init(red: 0.3, green: 0, blue: 1, alpha: 1),
+            UIColor.init(red: 0, green: 1, blue: 1, alpha: 1),
+            UIColor.init(red: 0.2, green: 1, blue: 0.2, alpha: 1)
+            ]),
+        2: Aurora(colors: [
+            UIColor.init(red: 198/255, green: 240/255, blue: 92/255, alpha: 1),
+            UIColor.init(red: 78/255, green: 181/255, blue: 111/255, alpha: 1)
+            ]),
+        3: Aurora(colors: [
+            UIColor.init(red: 88/255, green: 230/255, blue: 209/255, alpha: 1),
+            UIColor.init(red: 187/255, green: 100/255, blue: 117/255, alpha: 1)
+            ]),
+        4: Aurora(colors: [
+            UIColor.init(red: 255/255, green: 209/255, blue: 102211/255, alpha: 1),
+            UIColor.init(red: 248/255, green: 117/255, blue: 9255, alpha: 1),
+            UIColor.init(red: 228/255, green: 128/255, blue: 70/255, alpha: 1)
+            ]),
+        5: Aurora(colors: [
+            UIColor.init(red: 135/255, green: 227/255, blue: 229/255, alpha: 1),
+            UIColor.init(red: 1/255, green: 152/255, blue: 151/255, alpha: 1),
+            UIColor.init(red: 160/255, green: 214/255, blue: 204/255, alpha: 1)
+            ]),
+        6: Aurora(colors: [
+            UIColor.init(red: 0.3, green: 0, blue: 1, alpha: 1),
+            UIColor.init(red: 0, green: 1, blue: 1, alpha: 1),
+            UIColor.init(red: 0.2, green: 1, blue: 0.2, alpha: 1)
+            ]),
+        7: Aurora(colors: [
+            UIColor.init(red: 135/255, green: 0/255, blue: 191/255, alpha: 1),
+            UIColor.init(red: 183/255, green: 111/255, blue: 15/255, alpha: 1)
+            ]),
+        8: Aurora(colors: [
+            UIColor.init(red: 112/255, green: 198/255, blue: 171/255, alpha: 1),
+            UIColor.init(red: 0/255, green: 111/255, blue: 218/255, alpha: 1)
+            ]),
+        9: Aurora(colors: [
+            UIColor.init(red: 4/255, green: 49/255, blue: 90/255, alpha: 1),
+            UIColor.init(red: 57/255, green: 152/255, blue: 158/255, alpha: 1),
+            UIColor.init(red: 129/255, green: 202/255, blue: 190/255, alpha: 1)
+            ]),
+        10: Aurora(colors: [
+            UIColor.init(red: 209/255, green: 124/255, blue: 112/255, alpha: 1),
+            UIColor.init(red: 0, green: 1, blue: 1, alpha: 1),
+            ]),
+        11: Aurora(colors: [
+            UIColor.init(red: 153/255, green: 108/255, blue: 188/255, alpha: 1),
+            UIColor.init(red: 105/255, green: 104/255, blue: 218/255, alpha: 1),
+            UIColor.init(red: 203/255, green: 165/255, blue: 129/255, alpha: 1)
+            ]),
+        12: Aurora(colors: [
+            UIColor.init(red: 0, green: 1, blue: 1, alpha: 1),
+            UIColor.init(red: 0.2, green: 1, blue: 0.2, alpha: 1)
+            ])
+    ]
+    
     func getMusic() -> Music {
         return self.chapterMusic[self.chapterNo]!
     }
@@ -89,5 +146,9 @@ class Chapter {
     
     func getDifficulty() -> Difficulty {
         return self.chapterDifficulty[self.chapterNo]!
+    }
+    
+    func getAurora() -> Aurora {
+        return self.chapterAurora[self.chapterNo]!
     }
 }

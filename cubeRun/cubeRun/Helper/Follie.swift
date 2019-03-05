@@ -77,45 +77,7 @@ class Follie {
         return Follie.xSpeed * (120/78) * Double(Follie.screenSize.width/812)
     } // fixed x distance between two beats in every chapter
     
-    static let auroraColors: [UIColor] = [
-        UIColor.init(red: 0.3, green: 0, blue: 1, alpha: 1),
-        UIColor.init(red: 0, green: 1, blue: 1, alpha: 1),
-        UIColor.init(red: 0.2, green: 1, blue: 0.2, alpha: 1)
-    ] // possible aurora colors
-    
-    static var colorIndex: Int = -1 // index of current aurora color
-    
-    static var isRising: Bool = true // whether the color rotation is going up the index or down
-    
     static let colorChangeDuration: Double = 2 // the time (seconds) it takes to gradually change from one color to another
-    
-    static func auroraColorRotation() -> UIColor {
-        if (self.colorIndex < 0) {
-            self.colorIndex = Int.random(in: 0 ..< self.auroraColors.count)
-        }
-        else {
-            if (self.isRising) {
-                if (self.colorIndex == self.auroraColors.count - 1) {
-                    self.isRising = false
-                    self.colorIndex -= 1
-                }
-                else {
-                    self.colorIndex += 1
-                }
-            }
-            else {
-                if (self.colorIndex == 0) {
-                    self.isRising = true
-                    self.colorIndex += 1
-                }
-                else {
-                    self.colorIndex -= 1
-                }
-            }
-        }
-        
-        return self.auroraColors[self.colorIndex]
-    } // returns current aurora color in rotation
     
     // Fairy
     static func getFairy() -> Fairy {

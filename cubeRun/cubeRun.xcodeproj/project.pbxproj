@@ -54,6 +54,9 @@
 		BA5467D3220365BD0078924A /* MainMenuBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5467D2220365BD0078924A /* MainMenuBackground.swift */; };
 		BA98C9622222A48000873AB8 /* Countdown Tick.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */; };
 		BA98C9642222A4A500873AB8 /* Star Disperse.sks in Resources */ = {isa = PBXBuildFile; fileRef = BA98C9632222A4A500873AB8 /* Star Disperse.sks */; };
+		BAA6EBBD222E6FA900C513C5 /* Aurora.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA6EBBC222E6FA900C513C5 /* Aurora.swift */; };
+		BAA6EBC0222E7F3400C513C5 /* Coba.sks in Resources */ = {isa = PBXBuildFile; fileRef = BAA6EBBE222E7F3400C513C5 /* Coba.sks */; };
+		BAA6EBC1222E7F3400C513C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BAA6EBBF222E7F3400C513C5 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -106,6 +109,9 @@
 		BA5467D2220365BD0078924A /* MainMenuBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuBackground.swift; sourceTree = "<group>"; };
 		BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Countdown Tick.mp3"; sourceTree = "<group>"; };
 		BA98C9632222A4A500873AB8 /* Star Disperse.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = "Star Disperse.sks"; sourceTree = "<group>"; };
+		BAA6EBBC222E6FA900C513C5 /* Aurora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aurora.swift; sourceTree = "<group>"; };
+		BAA6EBBE222E7F3400C513C5 /* Coba.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Coba.sks; sourceTree = "<group>"; };
+		BAA6EBBF222E7F3400C513C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -239,6 +245,7 @@
 				85C932C921FB82EB00CB47BC /* Chapter.swift */,
 				BA5467D2220365BD0078924A /* MainMenuBackground.swift */,
 				850E9E1C221BB91100A5E4C7 /* Difficulty.swift */,
+				BAA6EBBC222E6FA900C513C5 /* Aurora.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -249,6 +256,8 @@
 				BA98C9632222A4A500873AB8 /* Star Disperse.sks */,
 				BA5467CB220362C90078924A /* Snow.sks */,
 				85BD971621F9CE86004099DB /* Aurora.sks */,
+				BAA6EBBE222E7F3400C513C5 /* Coba.sks */,
+				BAA6EBBF222E7F3400C513C5 /* Assets.xcassets */,
 			);
 			path = Emitters;
 			sourceTree = "<group>";
@@ -360,11 +369,13 @@
 				85BD971721F9CE86004099DB /* Aurora.sks in Resources */,
 				BA5467D12203630F0078924A /* DEARJI__.TTF in Resources */,
 				8505DD5E21E5E2FF001D66A6 /* Assets.xcassets in Resources */,
+				BAA6EBC0222E7F3400C513C5 /* Coba.sks in Resources */,
 				85F2DF4222293F2300B4D62C /* #9 - DYATHON - I Need You Here.mp3 in Resources */,
 				BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */,
 				85F2DF4322293F2300B4D62C /* #12 - DYATHON - Dear Sister.mp3 in Resources */,
 				851A8FF8220D9249004EA137 /* #2 - DYATHON - Blooming Romance.mp3 in Resources */,
 				851A8FFB220D9906004EA137 /* Button Click.wav in Resources */,
+				BAA6EBC1222E7F3400C513C5 /* Assets.xcassets in Resources */,
 				85F2DF4522293F2300B4D62C /* #11 - DYATHON - I Saw You in a Dream.mp3 in Resources */,
 				8545D1B82227E838008DBE29 /* #7 - DYATHON - Insane.mp3 in Resources */,
 				8545D1BA2227F232008DBE29 /* #6 - DYATHON - Solitude.mp3 in Resources */,
@@ -386,6 +397,7 @@
 				BA5467C4220362390078924A /* MainMenu.swift in Sources */,
 				850E9E1D221BB91100A5E4C7 /* Difficulty.swift in Sources */,
 				85BD971121F992AF004099DB /* Fairy.swift in Sources */,
+				BAA6EBBD222E6FA900C513C5 /* Aurora.swift in Sources */,
 				85C932CA21FB82EB00CB47BC /* Chapter.swift in Sources */,
 				8505DD5721E5E2FE001D66A6 /* GameScene.swift in Sources */,
 				85BD970E21F989EC004099DB /* Follie.swift in Sources */,

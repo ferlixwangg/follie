@@ -138,6 +138,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     let maxAurora: CGFloat = 16 // max aurora birthrate
     var currAurora: CGFloat = 0 // current aurora birthrate
     var stepAurora: CGFloat = 2 // increment step of aurora birthrate
+    var colorIndex: Int = -1 // index of current aurora color
+    var isRising: Bool = true // whether the color rotation is going up the index or down
+    var auroraColors: [UIColor] = [] // possible aurora colors
     
     let maxLife: Double = 5 // max life
     var currLife: Double = 5 // current life
@@ -642,6 +645,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.maxHoldNum = tempDifficulty.maxHoldNum
         self.maxHoldBeat = tempDifficulty.maxHoldBeat
         self.holdChance = tempDifficulty.holdChance
+        
+        // chapter aurora
+        self.auroraColors = chapter.getAurora().colors
     }
     
     func startGameplay() {
@@ -999,7 +1005,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.aurora.particleColorBlendFactorSequence = nil
         
         self.aurora.particleAction = SKAction.fadeAlpha(by: -1, duration: 1)
-        self.aurora.particleColor = Follie.auroraColorRotation()
+        self.aurora.particleColor = self.auroraColorRotation()
         
         self.hideAurora()
         self.gameNode.addChild(aurora)
@@ -1033,6 +1039,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.fairyLine.physicsBody?.collisionBitMask = 0
     }
     
+    func auroraColorRotation() -> UIColor {
+        if (self.colorIndex < 0) {
+            self.colorIndex = Int.random(in: 0 ..< self.auroraColors.count)
+        }
+        else {
+            if (self.isRising) {
+                if (self.colorIndex == self.auroraColors.count - 1) {
+                    self.isRising = false
+                    self.colorIndex -= 1
+                }
+                else {
+                    self.colorIndex += 1
+                }
+            }
+            else {
+                if (self.colorIndex == 0) {
+                    self.isRising = true
+                    self.colorIndex += 1
+                }
+                else {
+                    self.colorIndex -= 1
+                }
+            }
+        }
+        
+        return self.auroraColors[self.colorIndex]
+    } // returns current aurora color in rotation
+    
     func changeAuroraColor() {
         var r: CGFloat = 0
         var g: CGFloat = 0
@@ -1042,7 +1076,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         var newR: CGFloat = 0
         var newG: CGFloat = 0
         var newB: CGFloat = 0
-        let tempCol: UIColor = Follie.auroraColorRotation()
+        let tempCol: UIColor = self.auroraColorRotation()
         tempCol.getRed(&newR, green: &newG, blue: &newB, alpha: nil)
         
         let difR = newR-r
@@ -1331,7 +1365,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         }
         else {
             self.lifeArray[Int(self.currLife)-1].run(SKAction.fadeAlpha(by: 0.5, duration: 0.5))
-
         }
     }
     
