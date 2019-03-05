@@ -708,8 +708,6 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                     self.nodeNameInTouchesBegan = node.name
                 } else if (node.name != nil && node.name!.contains("Settings Reset")) {
                     self.nodeNameInTouchesBegan = node.name
-                } else {
-                    self.nodeNameInTouchesBegan = "No Name"
                 }
             }
             
@@ -739,8 +737,6 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         if (self.chapterChosen || self.isDismiss) {
             return
         }
-        
-        print(self.nodeNameInTouchesBegan)
         
         // Obtain the node that is touched
         let touch: UITouch = touches.first! as UITouch
@@ -975,8 +971,6 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                         node.addChild(glow)
                     } else if (node.name == self.activeChapterName && node.name == self.nodeNameInTouchesBegan){
                         
-                        print("nodeName: \(node.name)")
-                        print("nodeNameinTouchesBegan: \(self.nodeNameInTouchesBegan)")
                         self.chapterChosen = true
                         Follie.selectedChapter = index
                         

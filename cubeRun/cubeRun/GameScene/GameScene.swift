@@ -1219,7 +1219,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             return
         }
         
-        self.player.setVolume(0.2, fadeDuration: 0)
+        self.player.setVolume(self.player.volume-0.6, fadeDuration: 0)
         
         self.run(SKAction.wait(forDuration: 1)) {
             self.player.setVolume(1, fadeDuration: 0)
