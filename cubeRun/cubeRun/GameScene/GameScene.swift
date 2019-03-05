@@ -68,6 +68,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var onTuto: Bool = false
     var onTutoChap1: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial1Completed"))
     var onTutoChap2: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial2Completed"))
+    var onTutoChap3: Bool = !(UserDefaults.standard.bool(forKey: "Tutorial3Completed"))
     var engLangSelection: Bool = UserDefaults.standard.bool(forKey: "EnglishLanguage")
     var limitMovement: Bool = false // so that player cannot move before the first tutorial start
     var firstTuto: Bool = false // indicator whether the first tutorial is done or not
@@ -79,6 +80,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var thirdTutoFlag: Bool = false // // indicator when players can start tapping on the screen during the third tutorial
     var thirdTutoFlag2: Bool = false
     var thirdTutoCount: Int = 0 // To detect the number of the first star on the third tutorial
+    var fourthTutoCount: Int = 0 // To detect the number of the first star on the fourth tutorial
     var tutorialText: SKLabelNode! // Text node
     var helpingFingerUp: SKSpriteNode! // finger animation
     var helpingFingerDown: SKSpriteNode!
@@ -94,6 +96,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         "tuto2Indo":"Posisikan Follie sejajar dengan bintang dan tekan layar menggunakan jempol kanan kamu.",
         "tuto3Eng":"Try to keep Follie on the line. Hold and release at the end of the line.",
         "tuto3Indo":"Pastikan Follie selalu berada di garis. Tahan dan lepaskan pada akhir garis.",
+        "tuto4Eng":"For multiple lines, keep Follie on the line. Hold and release at the last star.",
+        "tuto4Indo":"Untuk beberapa garis, pastikan Follie tetap di garis. Tahan dan lepaskan pada bintang terakhir.",
         "tuto3FailEng":"Oops! You've missed the star. Let's try again.",
         "tuto3FailIndo":"Ups! Kamu gagal untuk menekan bintang tepat waktu. Mari coba lagi.",
         "passed1TutoEng":"Okay, that's all for now.",
@@ -103,9 +107,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         "passed3TutoEng":"Every 2 successful hits will regain 1 of your life.",
         "passed3TutoIndo":"Kamu akan mendapatkan kembali 1 nyawa setiap 2 bintang yang ditekan tepat waktu.",
         "passed4TutoEng":"Let's catch the star with Follie!",
-        "passed4TutoIndo":"Mari mulai menangkap bintang dengan Follie!",
+        "passed4TutoIndo":"Ayo tangkap bintang dengan Follie!",
         "passed5TutoEng":"Okay, you're all set!",
-        "passed5TutoIndo":"Ok, kamu sudah siap!"
+        "passed5TutoIndo":"Ok, kamu sudah siap!",
+        "passed6TutoEng":"Great! Let's continue on our journey!",
+        "passed6TutoIndo":"Baik! Ayo lanjutkan perjalanan kita!"
     ]
     var tempText: String = ""
     var repeatTutorial = UserDefaults.standard.bool(forKey: "RepeatTuto")
@@ -209,6 +215,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.thirdTuto = true
                 self.startTutorial3()
             }
+            else if (self.chapterNo == 6){
+                self.onTuto = true
+                self.repeatTuto2 = true
+                self.thirdTuto = true
+                self.startTutorial4()
+            }
         }
         else if (self.onTutoChap1 == true && self.chapterNo == 1){
             self.onTuto = true
@@ -219,6 +231,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.onTuto = true
             self.thirdTuto = true
             self.startTutorial3()
+        }
+        else if (self.onTutoChap3 == true && self.chapterNo == 6){
+            self.onTuto = true
+            self.thirdTuto = true
+            self.startTutorial4()
         }
         else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -323,7 +340,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func startTutorial2() {
         DispatchQueue.main.asyncAfter(deadline: .now()+1, execute: {
             let newBlock = SKSpriteNode(texture: self.blockTexture)
-            newBlock.size = CGSize(width: 15, height: 15)
+            newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
             newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
             
             newBlock.name = "\(self.blockNameFlag)"
@@ -361,9 +378,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func startTutorial3() {
         // setup tuto label
         self.setupTutorialLabel()
+        
         // new block
         let newBlock = SKSpriteNode(texture: self.blockTexture)
-        newBlock.size = CGSize(width: 15, height: 15)
+        newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
         newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
         
         newBlock.name = "\(self.blockNameFlag)"
@@ -402,7 +420,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         var n: Double = 0 // nth beat after newBlock
         
         let connectingBlock = SKSpriteNode(texture: self.blockTexture)
-        connectingBlock.size = CGSize(width: 15, height: 15)
+        connectingBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
         connectingBlock.zPosition = Follie.zPos.visibleBlock.rawValue
         
         connectingBlock.name = "\(self.blockNameFlag)"
@@ -444,7 +462,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         let dashedLine = SKShapeNode(path: dashPath)
         dashedLine.zPosition = Follie.zPos.visibleBlock.rawValue
-        dashedLine.lineWidth = 1.5
+        dashedLine.lineWidth = Follie.screenSize.height * CGFloat(Follie.dashedLineRatio)
         dashedLine.strokeColor = SKColor.white
         
         dashedLine.name = "\(self.blockNameFlag)"
@@ -468,6 +486,127 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         self.blockNameFlag += 1
         prevNodePos = connectingBlock.position
+    }
+    
+    func startTutorial4() {
+        // setup tuto label
+        self.setupTutorialLabel()
+        
+        // new block
+        let newBlock = SKSpriteNode(texture: self.blockTexture)
+        newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
+        newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
+        
+        newBlock.name = "\(self.blockNameFlag)"
+        newBlock.physicsBody = SKPhysicsBody(rectangleOf: newBlock.size)
+        newBlock.physicsBody?.isDynamic = true
+        newBlock.physicsBody?.categoryBitMask = Follie.categories.blockCategory.rawValue
+        newBlock.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+        newBlock.physicsBody?.collisionBitMask = 0
+        
+        // get min distance from fairy to newBlock, get min multiplier for how many beats for block to reach fairy
+        // get distance from min beats
+        let minDistance = self.screenW - self.fairyNode.position.x + newBlock.size.width/2
+        let minMultiplier: Double = ceil(Double(minDistance) / Follie.xPerBeat)
+        let distance = Follie.xPerBeat * minMultiplier
+        
+        let blockX = self.fairyNode.position.x + CGFloat(distance)
+        let blockY = (Follie.getFairy().maxY + Follie.getFairy().minY) / 2
+        newBlock.position = CGPoint(x: blockX, y: blockY)
+        
+        let totalDistance: Double = Double(blockX + newBlock.size.width/2)
+        let toFairyTime: Double = minMultiplier * self.secPerBeat
+        let totalTime: Double = toFairyTime * (totalDistance / distance)
+        let blockSpeed: Double = totalDistance / totalTime
+        
+        let actions: [SKAction] = [
+            SKAction.moveBy(x: CGFloat(-totalDistance), y: 0, duration: totalTime),
+            SKAction.removeFromParent()
+        ]
+        newBlock.run(SKAction.sequence(actions))
+        self.gameNode.addChild(newBlock)
+        self.upcomingBlocks.append(newBlock)
+        self.blockNameFlag += 1
+        
+        // chance of connecting beats (hold)
+        var prevNodePos = newBlock.position
+        var n: Double = 0 // nth beat after newBlock
+        var holdCountFlag: Int = 2
+        
+        while (true) {
+            if (holdCountFlag == 0) {
+                break
+            }
+            holdCountFlag -= 1
+            
+            let connectingBlock = SKSpriteNode(texture: self.blockTexture)
+            connectingBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
+            connectingBlock.zPosition = Follie.zPos.visibleBlock.rawValue
+            
+            connectingBlock.name = "\(self.blockNameFlag)"
+            connectingBlock.physicsBody = SKPhysicsBody(rectangleOf: connectingBlock.size)
+            connectingBlock.physicsBody?.isDynamic = true
+            connectingBlock.physicsBody?.categoryBitMask = Follie.categories.blockCategory.rawValue
+            connectingBlock.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+            connectingBlock.physicsBody?.collisionBitMask = 0
+            
+            let holdBeatNum: Int = 1
+            n += Double(holdBeatNum)
+            
+            let connectingX = blockX + CGFloat(Follie.xPerBeat * n)
+            let connectingY = blockY
+            let connectingDistance = totalDistance + (Follie.xPerBeat * n)
+            let connectingTime = totalTime + (self.secPerBeat * n)
+            
+            connectingBlock.position = CGPoint(x: connectingX, y: connectingY)
+            
+            let connectingActions: [SKAction] = [
+                SKAction.moveBy(x: CGFloat(-connectingDistance), y: 0, duration: connectingTime),
+                SKAction.removeFromParent()
+            ]
+            connectingBlock.run(SKAction.sequence(connectingActions))
+            self.gameNode.addChild(connectingBlock)
+            self.upcomingBlocks.append(connectingBlock)
+            
+            // Define start & end point for line
+            let startPoint = prevNodePos
+            let endPoint = connectingBlock.position
+            
+            // Create path
+            let path = UIBezierPath()
+            path.move(to: startPoint)
+            path.addLine(to: endPoint)
+            
+            let pattern : [CGFloat] = [5.0, 5.0]
+            let dashPath = path.cgPath.copy(dashingWithPhase: 1, lengths: pattern)
+            
+            let dashedLine = SKShapeNode(path: dashPath)
+            dashedLine.zPosition = Follie.zPos.visibleBlock.rawValue
+            dashedLine.lineWidth = Follie.screenSize.height * CGFloat(Follie.dashedLineRatio)
+            dashedLine.strokeColor = SKColor.white
+            
+            dashedLine.name = "\(self.blockNameFlag)"
+            dashedLine.physicsBody = SKPhysicsBody(edgeChainFrom: path.cgPath)
+            dashedLine.physicsBody?.isDynamic = true
+            dashedLine.physicsBody?.categoryBitMask = Follie.categories.holdLineCategory.rawValue
+            dashedLine.physicsBody?.contactTestBitMask = Follie.categories.fairyCategory.rawValue | Follie.categories.fairyLineCategory.rawValue
+            dashedLine.physicsBody?.collisionBitMask = 0
+            
+            let lineX = prevNodePos.x + (connectingX - prevNodePos.x)/2
+            let lineDistance = CGFloat(totalDistance) + (lineX - blockX) + dashedLine.frame.width/2
+            let lineTime: Double = Double(lineDistance / CGFloat(blockSpeed))
+            
+            let lineActions: [SKAction] = [
+                SKAction.moveBy(x: -lineDistance, y: 0, duration: lineTime),
+                SKAction.removeFromParent()
+            ]
+            dashedLine.run(SKAction.sequence(lineActions))
+            self.gameNode.addChild(dashedLine)
+            self.upcomingLines.append(dashedLine)
+            
+            self.blockNameFlag += 1
+            prevNodePos = connectingBlock.position
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -526,21 +665,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         }
                     }
                 }
-                else if (self.onTutoChap2 == true && self.chapterNo == 2 || self.repeatTutorial == true && self.repeatTuto2 == true) {
+                else if (((self.onTutoChap2 == true && self.chapterNo == 2) || (self.onTutoChap3 == true && self.chapterNo == 6)) || self.repeatTutorial == true && self.repeatTuto2 == true) {
                     // Check if the star for third tutorial is getting closer
-                    if (node is SKSpriteNode && node.name == "\(self.thirdTutoCount)") {
+                    
+                    var nodeCount = self.thirdTutoCount
+                    if (self.chapterNo == 6) {
+                        nodeCount = self.fourthTutoCount
+                    }
+                    
+                    if (node is SKSpriteNode && node.name == "\(nodeCount)") {
                         
                         // Check the first star of the third tutorial
                         if (node.position.x - self.fairyNode.position.x < 50 && node.position.x - self.fairyNode.position.x >= 15  && self.thirdTuto == true) {
                             self.scene?.speed = 0.3
                             
                             if (self.textHasBeenDisplayed == false) {
-                                if self.engLangSelection == true{
-                                    self.tempText = "\(self.allTutorialText["tuto3Eng"]!)"
+                                if (self.chapterNo == 2) {
+                                    if self.engLangSelection == true{
+                                        self.tempText = "\(self.allTutorialText["tuto3Eng"]!)"
+                                    } else{
+                                        self.tempText = "\(self.allTutorialText["tuto3Indo"]!)"
+                                    }
+                                } else if (self.chapterNo == 6) {
+                                    if self.engLangSelection == true{
+                                        self.tempText = "\(self.allTutorialText["tuto4Eng"]!)"
+                                    }
+                                    else{
+                                        self.tempText = "\(self.allTutorialText["tuto4Indo"]!)"
+                                    }
                                 }
-                                else{
-                                    self.tempText = "\(self.allTutorialText["tuto3Indo"]!)"
-                                }
+                                
                                 self.tutorialText.text = self.tempText
                                 self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
                                 self.textBox.position = CGPoint(x: 0, y: (self.tutorialText.frame.height / 2))
@@ -723,7 +877,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         // new block
         let newBlock = SKSpriteNode(texture: self.blockTexture)
-        newBlock.size = CGSize(width: 15, height: 15)
+        newBlock.size = CGSize(width: self.blockWidth, height: self.blockHeight)
         newBlock.zPosition = Follie.zPos.visibleBlock.rawValue
         
         newBlock.name = "\(self.blockNameFlag)"
@@ -761,7 +915,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             
             let dashedLine = SKShapeNode(path: dashPath)
             dashedLine.zPosition = Follie.zPos.visibleBlock.rawValue
-            dashedLine.lineWidth = 1.5
+            dashedLine.lineWidth = Follie.screenSize.height * CGFloat(Follie.dashedLineRatio)
             dashedLine.strokeColor = SKColor.white
             
             dashedLine.name = "\(self.blockNameFlag)"
@@ -806,7 +960,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         
         let blockY = CGFloat.random(in: self.fairyMinY ... self.fairyMaxY)
         newBlock.position = CGPoint(x: self.blockX, y: blockY)
-
+        
         let blockSpeed: Double = self.totalDistance / self.totalTime
         
         let actions: [SKAction] = [
@@ -856,7 +1010,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             connectingBlock.run(SKAction.sequence(connectingActions))
             self.gameNode.addChild(connectingBlock)
             self.upcomingBlocks.append(connectingBlock)
-
+            
             // Define start & end point for line
             let startPoint = prevNodePos
             let endPoint = connectingBlock.position
@@ -882,7 +1036,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             dashedLine.physicsBody?.collisionBitMask = 0
             
             let lineX = prevNodePos.x + (connectingX - prevNodePos.x)/2
-            //            let lineY = prevNodePos.y + (connectingY - prevNodePos.y)/2
             let lineDistance = CGFloat(self.totalDistance) + (lineX - self.blockX) + dashedLine.frame.width/2
             let lineTime: Double = Double(lineDistance / CGFloat(blockSpeed))
             
@@ -1098,12 +1251,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
         self.currAurora = 0
         self.aurora.particleBirthRate = self.currAurora
     }
-
+    
     func showAurora() {
         if (self.currAurora < self.maxAurora) {
             self.currAurora += self.stepAurora
         }
-
+        
         self.aurora.particleBirthRate = self.currAurora
         self.changeAuroraColor()
     }
@@ -1298,7 +1451,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.fairyNode.run(SKAction.moveBy(x: distance, y: 0, duration: time)) {
                 self.auroraTimer?.invalidate()
                 self.auroraTimer = nil
-
+                
                 // go back to menu
                 let availableLevel = FollieMainMenu.availableChapter
                 if (self.chapterNo == availableLevel && availableLevel != 12) {
@@ -1757,7 +1910,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             // touch right part of the screen start
             if (self.isBlockContact && !self.isHit) {
                 
-                if (self.currBlock != nil && self.currBlock.name == "\(self.thirdTutoCount)"){
+                var nodeCount = self.thirdTutoCount
+                if (self.chapterNo == 6) {
+                    nodeCount = self.fourthTutoCount
+                }
+                if (self.currBlock != nil && self.currBlock.name == "\(nodeCount)"){
                     self.thirdTutoFlag2 = true
                 }
                 else{
@@ -1826,7 +1983,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                                 let newH: CGFloat = 30
                                 let newW = self.lifeBar.size.width * (newH / self.lifeBar.size.height)
                                 self.lifeBar.size = CGSize(width: newW, height: newH)
-                                //                            self.lifeBar.position = CGPoint(x: self.screenW/10, y: self.screenH/10*9)
                                 self.lifeBar.position = CGPoint(x: Follie.screenSize.width*3/4 - self.textBox.frame.width * 3 / 4, y: self.tutorialText.position.y + self.tutorialText.frame.height / 2)
                                 self.lifeBar.zPosition = Follie.zPos.visibleBlock.rawValue
                                 self.lifeBar.alpha = 0
@@ -1901,7 +2057,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                             self.successfulHit()
                         }
                     }
-                    else if (self.onTutoChap2 == true && self.chapterNo == 2 || self.repeatTutorial == true && self.repeatTuto2 == true) {
+                    else if (((self.onTutoChap2 == true && self.chapterNo == 2) || (self.onTutoChap3 == true && self.chapterNo == 6)) || self.repeatTutorial == true && self.repeatTuto2 == true) {
                         
                         // Check Tuto 3 (Kalo scenenya uda berhenti baru bisa proceed)
                         if (self.thirdTuto == true && thirdTutoFlag == true) {
@@ -1982,9 +2138,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
             self.backToMainMenu()
         }
         
-        //        self.blockTimer?.invalidate()
-        //        self.blockTimer = nil
-        
         for node in touchedNodes {
             if (node.name != nil && node.name == "pause" && node.name == self.nodeNameInTouchesBegan) {
                 if (self.isCurrentlyPaused == false) {
@@ -2044,12 +2197,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                             SKAction.fadeAlpha(to: 0, duration: 0.5)
                         ]
                         let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 1.0)
-                        if self.engLangSelection == true{
-                            self.tempText = "\(self.allTutorialText["passed5TutoEng"]!)"
+                        
+                        if (self.chapterNo == 2) {
+                            if self.engLangSelection == true{
+                                self.tempText = "\(self.allTutorialText["passed5TutoEng"]!)"
+                            } else{
+                                self.tempText = "\(self.allTutorialText["passed5TutoIndo"]!)"
+                            }
+                        } else if (self.chapterNo == 6) {
+                            if self.engLangSelection == true{
+                                self.tempText = "\(self.allTutorialText["passed6TutoEng"]!)"
+                            } else{
+                                self.tempText = "\(self.allTutorialText["passed6TutoIndo"]!)"
+                            }
                         }
-                        else{
-                            self.tempText = "\(self.allTutorialText["passed5TutoIndo"]!)"
-                        }
+                        
                         self.tutorialText.text = self.tempText
                         self.tutorialText.alpha = 0
                         self.tutorialText.run(fadeIn)
@@ -2076,9 +2238,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                                 }
                                 else if (self.repeatTutorial == false){
                                     
-                                    UserDefaults.standard.set(true, forKey: "Tutorial2Completed")
+                                    if (self.chapterNo == 2) {
+                                        UserDefaults.standard.set(true, forKey: "Tutorial2Completed")
+                                        self.onTutoChap2 = false
+                                    } else if (self.chapterNo == 6) {
+                                        UserDefaults.standard.set(true, forKey: "Tutorial3Completed")
+                                        self.onTutoChap3 = false
+                                    }
                                     self.onTuto = false
-                                    self.onTutoChap2 = false
                                     self.startGameplay()
                                 }
                             }
@@ -2110,7 +2277,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                     self.thirdTuto2 = false
                     self.thirdTutoFlag = false
                     self.thirdTutoFlag2 = false
-                    self.thirdTutoCount += 2
+                    
+                    if (self.chapterNo == 2) {
+                        self.thirdTutoCount += 2
+                    } else if (self.chapterNo == 6) {
+                        self.fourthTutoCount += 3
+                    }
                     
                     self.helpingFingerHold.removeFromParent()
                     self.tutorialText.removeAllChildren()
@@ -2134,11 +2306,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                         DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1, execute: {
                             self.textHasBeenDisplayed = false
                             self.tutorialText.removeAllChildren()
-                            if self.engLangSelection == true{
-                                self.tempText = "\(self.allTutorialText["tuto3Eng"]!)"
-                            }
-                            else{
-                                self.tempText = "\(self.allTutorialText["tuto3Indo"]!)"
+                            if (self.chapterNo == 2) {
+                                if self.engLangSelection == true{
+                                    self.tempText = "\(self.allTutorialText["tuto3Eng"]!)"
+                                } else{
+                                    self.tempText = "\(self.allTutorialText["tuto3Indo"]!)"
+                                }
+                            } else if (self.chapterNo == 6) {
+                                if self.engLangSelection == true{
+                                    self.tempText = "\(self.allTutorialText["tuto4Eng"]!)"
+                                }
+                                else{
+                                    self.tempText = "\(self.allTutorialText["tuto4Indo"]!)"
+                                }
                             }
                             self.tutorialText.text = self.tempText
                             self.textBox = SKShapeNode(rectOf: CGSize(width: self.tutorialText.frame.width + 20, height: self.tutorialText.frame.height + 20))
@@ -2151,7 +2331,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 self.tutorialText.removeAllChildren()
-                                self.startTutorial3()
+                                
+                                if (self.chapterNo == 2) {
+                                    self.startTutorial3()
+                                } else if (self.chapterNo == 6) {
+                                    self.startTutorial4()
+                                }
                             }
                         })
                     }

@@ -15,6 +15,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
     var engLangSelection: Bool = UserDefaults.standard.bool(forKey: "EnglishLanguage")
     var tuto1Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial1Completed")
     var tuto2Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial2Completed")
+    var tuto3Done: Bool = UserDefaults.standard.bool(forKey: "Tutorial3Completed")
     
     var repeatTutorial : Bool = UserDefaults.standard.bool(forKey: "RepeatTuto")
     
@@ -78,7 +79,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
     var mostInnerSettingsBackground: SKShapeNode!
     var replayTutorialText: SKLabelNode!
     var basicButton: SKSpriteNode!
-    var holdButton: SKSpriteNode!
+    var hold1Button: SKSpriteNode!
+    var hold2Button: SKSpriteNode!
     var screenCover: SKShapeNode!
     var resetButton: SKLabelNode!
     var invisibleResetBox : SKSpriteNode!
@@ -591,6 +593,28 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         replayTutorialText.zPosition = FollieMainMenu.zPos.replaySection.rawValue
         self.addChild(replayTutorialText)
         
+        var hold1ButtonTexture = SKTexture()
+        if (engLangSelection) {
+            if (tuto2Done) {
+                hold1ButtonTexture = SKTexture(imageNamed: "Hold 1 Active")
+            } else {
+                hold1ButtonTexture = SKTexture(imageNamed: "Hold 1 Nonactive")
+            }
+        } else {
+            if (tuto2Done) {
+                hold1ButtonTexture = SKTexture(imageNamed: "Tahan 1 Active")
+            } else {
+                hold1ButtonTexture = SKTexture(imageNamed: "Tahan 1 Nonactive")
+            }
+        }
+        hold1Button = SKSpriteNode(texture: hold1ButtonTexture)
+        hold1Button.name = "Settings Hold 1 Button"
+        hold1Button.size = CGSize(width: hold1Button.size.width * (languageText.frame.height*1.25/hold1Button.size.height), height: languageText.frame.height*1.25)
+        hold1Button.position = CGPoint(x: FollieMainMenu.screenSize.width/2, y: FollieMainMenu.screenSize.height/10*1.6)
+        hold1Button.alpha = 0.0
+        hold1Button.zPosition = FollieMainMenu.zPos.replaySection.rawValue
+        self.addChild(hold1Button)
+        
         var basicButtonTexture = SKTexture()
         if (engLangSelection) {
             if (tuto1Done) {
@@ -608,32 +632,32 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         basicButton = SKSpriteNode(texture: basicButtonTexture)
         basicButton.name = "Settings Basic Button"
         basicButton.size = CGSize(width: basicButton.size.width * (languageText.frame.height*1.25/basicButton.size.height), height: languageText.frame.height*1.25)
-        basicButton.position = CGPoint(x: FollieMainMenu.screenSize.width/2 - 15/396 * FollieMainMenu.screenSize.height - basicButton.size.width/2, y: FollieMainMenu.screenSize.height/10*1.6)
+        basicButton.position = CGPoint(x: FollieMainMenu.screenSize.width/2 - hold1Button.size.width/2 - 15/396 * FollieMainMenu.screenSize.height - basicButton.size.width/2, y: FollieMainMenu.screenSize.height/10*1.6)
         basicButton.alpha = 0.0
         basicButton.zPosition = FollieMainMenu.zPos.replaySection.rawValue
         self.addChild(basicButton)
         
-        var holdButtonTexture = SKTexture()
+        var hold2ButtonTexture = SKTexture()
         if (engLangSelection) {
-            if (tuto2Done) {
-                holdButtonTexture = SKTexture(imageNamed: "Hold Active")
+            if (tuto3Done) {
+                hold2ButtonTexture = SKTexture(imageNamed: "Hold 2 Active")
             } else {
-                holdButtonTexture = SKTexture(imageNamed: "Hold Nonactive")
+                hold2ButtonTexture = SKTexture(imageNamed: "Hold 2 Nonactive")
             }
         } else {
-            if (tuto2Done) {
-                holdButtonTexture = SKTexture(imageNamed: "Tahan Active")
+            if (tuto3Done) {
+                hold2ButtonTexture = SKTexture(imageNamed: "Tahan 2 Active")
             } else {
-                holdButtonTexture = SKTexture(imageNamed: "Tahan Nonactive")
+                hold2ButtonTexture = SKTexture(imageNamed: "Tahan 2 Nonactive")
             }
         }
-        holdButton = SKSpriteNode(texture: holdButtonTexture)
-        holdButton.name = "Settings Hold Button"
-        holdButton.size = CGSize(width: holdButton.size.width * (languageText.frame.height*1.25/holdButton.size.height), height: languageText.frame.height*1.25)
-        holdButton.position = CGPoint(x: FollieMainMenu.screenSize.width/2 + 15/396 * FollieMainMenu.screenSize.height + holdButton.size.width/2, y: FollieMainMenu.screenSize.height/10*1.6)
-        holdButton.alpha = 0.0
-        holdButton.zPosition = FollieMainMenu.zPos.replaySection.rawValue
-        self.addChild(holdButton)
+        hold2Button = SKSpriteNode(texture: hold2ButtonTexture)
+        hold2Button.name = "Settings Hold 2 Button"
+        hold2Button.size = CGSize(width: hold2Button.size.width * (languageText.frame.height*1.25/hold2Button.size.height), height: languageText.frame.height*1.25)
+        hold2Button.position = CGPoint(x: FollieMainMenu.screenSize.width/2 + hold1Button.size.width/2 + 15/396 * FollieMainMenu.screenSize.height + hold2Button.size.width/2, y: FollieMainMenu.screenSize.height/10*1.6)
+        hold2Button.alpha = 0.0
+        hold2Button.zPosition = FollieMainMenu.zPos.replaySection.rawValue
+        self.addChild(hold2Button)
     }
     
     @objc func updateSlider(_ sender:UISlider!) {
@@ -666,7 +690,8 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
         self.mostInnerSettingsBackground.alpha = alphaBackground
         self.replayTutorialText.alpha = alphaAll
         self.basicButton.alpha = alphaAll
-        self.holdButton.alpha = alphaAll
+        self.hold1Button.alpha = alphaAll
+        self.hold2Button.alpha = alphaAll
         self.invisibleBackBox.alpha = alphaAll
         self.resetButton.alpha = alphaAll
         self.invisibleResetBox.alpha = alphaAll
@@ -704,7 +729,9 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                     self.nodeNameInTouchesBegan = node.name
                 } else if (node.name != nil && node.name!.contains("Settings Basic Button")) {
                     self.nodeNameInTouchesBegan = node.name
-                } else if (node.name != nil && node.name!.contains("Settings Hold Button")) {
+                } else if (node.name != nil && node.name!.contains("Settings Hold 1 Button")) {
+                    self.nodeNameInTouchesBegan = node.name
+                } else if (node.name != nil && node.name!.contains("Settings Hold 2 Button")) {
                     self.nodeNameInTouchesBegan = node.name
                 } else if (node.name != nil && node.name!.contains("Settings Reset")) {
                     self.nodeNameInTouchesBegan = node.name
@@ -845,7 +872,7 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                             })
                         }
                     }
-                } else if (node.name != nil && node.name!.contains("Settings Hold Button") && node.name == self.nodeNameInTouchesBegan) {
+                } else if (node.name != nil && node.name!.contains("Settings Hold 1 Button") && node.name == self.nodeNameInTouchesBegan) {
                     if (tuto2Done) {
                         self.run(self.buttonClickedSfx)
                         
@@ -856,6 +883,44 @@ class MainMenu: SKScene, AVAudioPlayerDelegate {
                         
                         self.chapterChosen = true
                         Follie.selectedChapter = 2
+                        
+                        self.player.setVolume(0, fadeDuration: 2)
+                        
+                        UserDefaults.standard.set(true, forKey: "RepeatTuto")
+                        
+                        self.run(SKAction.fadeOut(withDuration: 2.0)) {
+                            // Preload animation
+                            var preAtlas = [SKTextureAtlas]()
+                            preAtlas.append(SKTextureAtlas(named: "Baby"))
+                            
+                            // Move to next scene
+                            SKTextureAtlas.preloadTextureAtlases(preAtlas, withCompletionHandler: { () -> Void in
+                                DispatchQueue.main.sync {
+                                    self.removeAllActions()
+                                    self.removeAllChildren()
+                                    self.player = nil
+                                    self.task = nil
+                                    let transition = SKTransition.fade(withDuration: 1)
+                                    if let scene = SKScene(fileNamed: "GameScene") {
+                                        scene.scaleMode = .aspectFill
+                                        scene.size = Follie.screenSize
+                                        self.view?.presentScene(scene, transition: transition)
+                                    }
+                                }
+                            })
+                        }
+                    }
+                } else if (node.name != nil && node.name!.contains("Settings Hold 2 Button") && node.name == self.nodeNameInTouchesBegan) {
+                    if (tuto3Done) {
+                        self.run(self.buttonClickedSfx)
+                        
+                        UIView.animate(withDuration: 2.0) {
+                            self.sensitivitySlider.alpha = 0.0
+                            self.volumeSlider.alpha = 0.0
+                        }
+                        
+                        self.chapterChosen = true
+                        Follie.selectedChapter = 6
                         
                         self.player.setVolume(0, fadeDuration: 2)
                         

@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Tahan NonActive.png",
+      "filename" : "Hold 1 Nonactive.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Tahan NonActive@2x.png",
+      "filename" : "Hold 1 Nonactive@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Tahan NonActive@3x.png",
+      "filename" : "Hold 1 Nonactive@3x.png",
       "scale" : "3x"
     }
   ],
