@@ -12,7 +12,7 @@ import SpriteKit
 class Fairy {
     init() {}
     
-    private let fairyLineTopPaddingRatio: Double = 1/10 // padding from device top screen to maximum fairy height
+    private let fairyLineTopPaddingRatio: Double = 3/20 // padding from device top screen to maximum fairy height
     
     private let fairyLineRatio: Double = 1/2 // fairy line height ratio to the screen height (allowable fairy movement)
     

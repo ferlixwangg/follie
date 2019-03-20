@@ -24,6 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UserDefaults.standard.set(true, forKey: "LaunchedBefore")
             UserDefaults.standard.set(false, forKey: "Tutorial1Completed")
             UserDefaults.standard.set(false, forKey: "Tutorial2Completed")
+            UserDefaults.standard.set(false, forKey: "Tutorial3Completed")
             UserDefaults.standard.set(true, forKey: "EnglishLanguage")
             UserDefaults.standard.set(false, forKey: "RepeatTuto")
             UserDefaults.standard.set(1.0, forKey: "MusicVolume")

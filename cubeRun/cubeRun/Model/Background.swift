@@ -97,7 +97,7 @@ class Background {
             background1.zPosition = Follie.zPos.background1.rawValue
             
             let newY: CGFloat = CGFloat(Double(Follie.screenSize.height) * Follie.groundRatio + Double(background1.size.height/2))
-            background1.position = CGPoint(x: (background1.size.width / 2.0 + (background1.size.width * CGFloat(i))), y: CGFloat(newY))
+            background1.position = CGPoint(x: (background1.size.width / 2.0 + (background1.size.width * CGFloat(i)) - CGFloat(i)), y: CGFloat(newY))
             
             let time: Double = Double(background1.size.width)/Follie.xSpeed
             
@@ -130,7 +130,7 @@ class Background {
             background2.zPosition = Follie.zPos.background2.rawValue
             
             let newY: CGFloat = CGFloat(Double(Follie.screenSize.height) * Follie.groundRatio + Double(background2.size.height/2))
-            background2.position = CGPoint(x: (background2.size.width / 2.0 + (background2.size.width * CGFloat(i))), y: CGFloat(newY))
+            background2.position = CGPoint(x: (background2.size.width / 2.0 + (background2.size.width * CGFloat(i)) - CGFloat(i)), y: CGFloat(newY))
             
             let time: Double = Double(background2.size.width)/(Follie.xSpeed * 1/2)
             

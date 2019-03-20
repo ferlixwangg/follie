@@ -90,8 +90,8 @@ class Chapter {
             UIColor.init(red: 187/255, green: 100/255, blue: 117/255, alpha: 1)
             ]),
         4: Aurora(colors: [
-            UIColor.init(red: 255/255, green: 209/255, blue: 102211/255, alpha: 1),
-            UIColor.init(red: 248/255, green: 117/255, blue: 9255, alpha: 1),
+            UIColor.init(red: 255/255, green: 209/255, blue: 211/255, alpha: 1),
+            UIColor.init(red: 248/255, green: 117/255, blue: 9/255, alpha: 1),
             UIColor.init(red: 228/255, green: 128/255, blue: 70/255, alpha: 1)
             ]),
         5: Aurora(colors: [

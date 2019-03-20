@@ -55,7 +55,6 @@
 		BA98C9622222A48000873AB8 /* Countdown Tick.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */; };
 		BA98C9642222A4A500873AB8 /* Star Disperse.sks in Resources */ = {isa = PBXBuildFile; fileRef = BA98C9632222A4A500873AB8 /* Star Disperse.sks */; };
 		BAA6EBBD222E6FA900C513C5 /* Aurora.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA6EBBC222E6FA900C513C5 /* Aurora.swift */; };
-		BAA6EBC0222E7F3400C513C5 /* Coba.sks in Resources */ = {isa = PBXBuildFile; fileRef = BAA6EBBE222E7F3400C513C5 /* Coba.sks */; };
 		BAA6EBC1222E7F3400C513C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BAA6EBBF222E7F3400C513C5 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -110,7 +109,6 @@
 		BA98C9612222A48000873AB8 /* Countdown Tick.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Countdown Tick.mp3"; sourceTree = "<group>"; };
 		BA98C9632222A4A500873AB8 /* Star Disperse.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = "Star Disperse.sks"; sourceTree = "<group>"; };
 		BAA6EBBC222E6FA900C513C5 /* Aurora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aurora.swift; sourceTree = "<group>"; };
-		BAA6EBBE222E7F3400C513C5 /* Coba.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Coba.sks; sourceTree = "<group>"; };
 		BAA6EBBF222E7F3400C513C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -256,7 +254,6 @@
 				BA98C9632222A4A500873AB8 /* Star Disperse.sks */,
 				BA5467CB220362C90078924A /* Snow.sks */,
 				85BD971621F9CE86004099DB /* Aurora.sks */,
-				BAA6EBBE222E7F3400C513C5 /* Coba.sks */,
 				BAA6EBBF222E7F3400C513C5 /* Assets.xcassets */,
 			);
 			path = Emitters;
@@ -369,7 +366,6 @@
 				85BD971721F9CE86004099DB /* Aurora.sks in Resources */,
 				BA5467D12203630F0078924A /* DEARJI__.TTF in Resources */,
 				8505DD5E21E5E2FF001D66A6 /* Assets.xcassets in Resources */,
-				BAA6EBC0222E7F3400C513C5 /* Coba.sks in Resources */,
 				85F2DF4222293F2300B4D62C /* #9 - DYATHON - I Need You Here.mp3 in Resources */,
 				BA5467D02203630F0078924A /* Roboto-Regular.ttf in Resources */,
 				85F2DF4322293F2300B4D62C /* #12 - DYATHON - Dear Sister.mp3 in Resources */,

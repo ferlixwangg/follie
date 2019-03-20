@@ -48,6 +48,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     var player: AVAudioPlayer!
     let buttonClickedSfx = SKAction.playSoundFileNamed("Button Click.wav", waitForCompletion: false)
     let resumeCountdownSfx = SKAction.playSoundFileNamed("Countdown Tick.mp3", waitForCompletion: false)
+    var isPlayingMusic: Bool = true
     
     // Timer
     var currSec: Double!
@@ -247,6 +248,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         self.blockTimer?.invalidate()
         self.blockTimer = nil
+        
+        self.isPlayingMusic = false
     }
     
     func setupTutorialLabel() {
@@ -1851,7 +1854,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
                 self.countownNode.run(SKAction.fadeAlpha(to: 0, duration: 0.1))
                 self.screenCover.run(SKAction.fadeAlpha(to: 0, duration: 0.1))
                 
-                if (self.hasStarted && self.repeatTutorial == false) {
+                if (self.hasStarted && self.repeatTutorial == false && self.isPlayingMusic) {
                     self.player.play()
                 }
                 
@@ -2482,13 +2485,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func pauseTimer() {
-        
         if self.repeatTutorial {
+            return
+        }
+        
+        if (!self.isPlayingMusic) {
             return
         }
         
         self.blockTimer?.invalidate()
         self.blockTimer = nil
+        
+        
         
         if (!self.isMelody) {
             self.diffSec = ((Date().timeIntervalSince1970 * 1000.0) - self.currSec) / 1000
@@ -2503,9 +2511,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVAudioPlayerDelegate {
     }
     
     func resumeTimer() {
-        
         if self.repeatTutorial {
             self.isCurrentlyPaused = false
+            return
+        }
+        
+        if (!self.isPlayingMusic) {
             return
         }
         
